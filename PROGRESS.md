@@ -8,6 +8,7 @@
 - 마지막 작업(2026-09-11): 사용자 요청으로 **동화형 서사(`빛이된아이.html`)와 팩트차트(`AI족보.html`) 두 파일을 `AIStory.html` 하나로 병합·재작성**. 톤을 동화에서 인물 전기/저널리즘으로 전환하고, 낭독 분량을 30~40분(10,046자)으로 확장. 원본 두 파일은 삭제됨(버전관리 미추적 상태였으므로 복구는 세션 기록/백업에 의존)
 - 진행 상태: 콘텐츠 재작성 + 음성 재렌더링까지 **전 과정 완료**. `rhel-storage:/home/jjyoo/record`(CPU, GPU 없음, venv, root 권한 없음)에서 사용자가 직접 새 `narration.json`(10,046자) 기준 전체 17클립 재렌더링, `audio/`에 wav+mp3+manifest.json 전량 교체 완료(2026-09-11 15:57). RTF 14.6~19.4(10코어 제한), 총 소요 약 2시간 25분
 - **경로 정정**: README.md는 `tts/` 하위 디렉터리를 전제로 쓰였지만 `extract_narration.py`, `render_tts.py`, `narration.json`, `Containerfile`은 모두 이 디렉터리 **루트**에 있다. 명령 실행 시 `tts/` 접두사를 붙이지 말 것 (CLAUDE.md에도 명시됨)
+- **(2026-09-15) 16번째 장 "가계도 밖에서" 추가 + 정확성 수정**: 기존 15장(다트머스→OpenAI/Anthropic 계보) 구조는 전혀 건드리지 않고, 그 뒤에 NVIDIA·메타·구글 딥마인드·OpenAI·Anthropic·DeepSeek·Mistral의 현재(2026-09) 리더십 8명을 다루는 신규 장을 append. 데이터는 P/ORG와 분리된 `RIVALS` 상수로 두어 SVG 가계도 좌표·엣지 체계는 무변경. 하사비스 카드 설명을 2026-08 구글 딥마인드 리더십 개편(회장·Alphabet Chief Scientist로 전환, 실무는 카부쿠오글루) 반영해 정정. `narration.json` 재추출 결과 기존 00~15 항목은 바이트 단위로 불변, 신규 `16-scene` 1개만 렌더 대상(`--dry-run` 확인 완료). 엔딩 id는 `16-ending`→`17-ending`으로 변경(신규 16장과의 id 충돌 회피) — 텍스트 불변이라 오디오 파일은 재합성 없이 이름만 변경(`audio/16-ending.*`→`17-ending.*`). **아직 안 한 것: 신규 `16-scene` 클립 1개의 실제 음성 합성**(로컬 PC에 torch/omnivoice는 설치돼 있으나 voice_prompt 캐시가 rhel-storage에만 있어 그쪽에서 증분 렌더 권장) + 브라우저 실사용 검증(Chrome 확장 미연결로 이번 세션에선 HTTP/Node 레벨 검증까지만 완료).
 
 ## 완료
 

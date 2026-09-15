@@ -31,7 +31,7 @@ OPENING = {
     ],
 }
 ENDING = {
-    "id": "16-ending",
+    "id": "17-ending",
     "label": "엔딩",
     "lines": [
         "경쟁처럼 보이는 이 지형은, 실은 몇 사람에게서 갈라져 나온 하나의 계보였다.",
