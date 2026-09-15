@@ -1,0 +1,51 @@
+﻿<!--
+  AIStory.html의 SCENES 배열 구조를 보여주는 축소 샘플입니다.
+  실제 콘텐츠(인물 서술·계보도 데이터)는 저장소에 포함하지 않으며,
+  아래는 형식 설명용 더미 장면 1개 + 오프닝/엔딩 연결부 예시입니다.
+-->
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>AIStory 구조 샘플</title>
+</head>
+<body>
+
+<!-- 오프닝/엔딩은 SCENES 순회 루프에 흡수하지 않고 start()/afterScene()에서 명시적으로 재생한다 -->
+<script>
+const OPENING_TEXT = '(예시) 오프닝 문구는 HTML에 하드코딩되어 있고, extract_narration.py의 OPENING 상수와 별도로 동기화해야 한다.';
+
+// 인물/조직/시대 데이터 (계보도 SVG 및 인물 카드가 참조)
+const P = {
+  // id: {name, org, role, years, ...}
+  'example-person': { name:'(예시) 인물명', org:'example-org', role:'(예시) 역할', years:'19xx–20xx' }
+};
+const ORG = {
+  'example-org': { name:'(예시) 조직명', years:'19xx–' }
+};
+
+// 15장 서사 본문 — 각 장은 {year, bg, title, who[], contextImg{src,cap}, lines[]} 형태
+const SCENES = [
+  {
+    year: '(예시) 19xx년 · 장소',
+    bg: '#0F1330',
+    title: '(예시) 장면 제목',
+    who: ['example-person'],                 // 이 장에 등장하는 인물 id 목록 (P 참조, 클릭형 인물 카드로 연결)
+    contextImg: { src: 'context-images/example.jpg', cap: '(예시) 이미지 설명' },
+    at: {},                                    // 계보도 SVG 상 강조 좌표(선택)
+    lines: [
+      '(예시) 문단 1 — extract_narration.py가 이 배열을 그대로 narration.json의 lines[]로 추출한다.',
+      '(예시) 문단 2.'
+    ]
+  }
+  // ... 나머지 장면 반복
+];
+
+// audio/<id>.mp3|wav 가 있으면 사용, 없으면 브라우저 내장 TTS로 자동 폴백
+function clipName(idx) {
+  return String(idx).padStart(2, '0') + '-scene'; // 00-opening / NN-scene / 16-ending 규칙
+}
+</script>
+
+</body>
+</html>

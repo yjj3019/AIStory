@@ -1,0 +1,22 @@
+﻿{
+  "_comment": "render_tts.py가 audio/ 아래에 생성하는 manifest.json 구조 샘플입니다. seconds는 실제 렌더링 후 측정되는 클립 길이(영상 편집용)이며, 여기서는 예시 값입니다.",
+  "engine": "OmniVoice (k2-fsa)",
+  "language": "ko",
+  "granularity": "scene",
+  "speed": 0.94,
+  "format": "mp3",
+  "items": [
+    {
+      "id": "00-opening",
+      "label": "오프닝",
+      "text": "(예시) 오프닝 첫 문장. (예시) 오프닝 두 번째 문장.",
+      "seconds": 14.59
+    },
+    {
+      "id": "01-scene",
+      "label": "1장 · (예시) 연도 · (예시) 장소",
+      "text": "(예시) 1장 첫 번째 문단. (예시) 1장 두 번째 문단.",
+      "seconds": 12.3
+    }
+  ]
+}
