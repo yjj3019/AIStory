@@ -1,0 +1,26 @@
+# OmniVoice 내레이션 렌더러 — CPU 전용 (GPU 없는 서버용)
+# 빌드: podman build -t omnivoice-tts-cpu -f Containerfile.cpu .
+#
+# Containerfile(기본, GPU/CUDA용)의 CPU 변형. RHEL UBI9 베이스 유지, CUDA 런타임만 제거.
+
+FROM registry.access.redhat.com/ubi9/ubi:latest
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HF_HOME=/root/.cache/huggingface
+
+RUN dnf install -y python3.12 python3.12-pip ffmpeg-free \
+    && dnf clean all
+
+RUN python3.12 -m pip install --upgrade pip \
+    && python3.12 -m pip install torch torchaudio \
+    && python3.12 -m pip install omnivoice
+
+WORKDIR /work
+COPY render_tts.py extract_narration.py /work/
+
+# 모델 캐시와 출력 디렉터리는 실행 시 볼륨으로 마운트한다 (:Z 로 SELinux 레이블 지정)
+VOLUME ["/root/.cache/huggingface", "/work/out"]
+
+ENTRYPOINT ["python3.12", "/work/render_tts.py"]
+CMD ["--help"]

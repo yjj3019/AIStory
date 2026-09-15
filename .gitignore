@@ -1,0 +1,15 @@
+﻿# 콘텐츠 산출물 — 아키텍처/파이프라인 소스만 공개, 실제 콘텐츠는 비공개
+AIStory.html
+narration.json
+audio/
+ref/
+portraits/
+context-images/
+
+# MeloTTS CPU feasibility test artifacts (2026-09-10)
+# Large model weights and a throwaway Python venv, not project deliverables.
+checkpoint.pth
+config.json
+vocab.txt
+bert-kor-base/
+melotts-test/
