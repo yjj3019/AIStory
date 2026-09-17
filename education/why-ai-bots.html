@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIStory · AI Bot 시대, 사람들은 왜 열광하는가</title>
+<style>
+  :root {
+    --bg: #0B0D1A;
+    --paper: #F4F1EA;
+    --muted: #A8B0C8;
+    --accent: #22D3C7;
+    --accent2: #B18CFF;
+    --card: #14182C;
+    --measure: 42rem;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--paper); font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif; }
+  body { line-height: 1.65; }
+  #intro {
+    min-height: 100vh; display: grid; place-items: center; text-align: center;
+    padding: 2rem; background: radial-gradient(ellipse at 50% 20%, #1a2150 0%, var(--bg) 70%);
+  }
+  #intro h1 {
+    font-size: clamp(1.6rem, 4vw, 2.6rem); margin: 0 0 .75rem;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  #intro .kicker { color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; }
+  #intro p { max-width: 36rem; margin: 1rem auto 1.75rem;  }
+  #intro p { color: #D5DAEA; }
+  #start {
+    border: 0; cursor: pointer; padding: .85rem 1.6rem; border-radius: 999px; font-weight: 700;
+    color: #061018; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    box-shadow: 0 0 24px rgba(34,211,199,.35);
+  }
+  #start:hover { transform: translateY(-1px); }
+  main { padding: 2rem 1.25rem 7rem; max-width: var(--measure); margin: 0 auto; }
+  .page {
+    display: none; padding: 1.5rem 0 2.5rem; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .page.active { display: block; }
+  .year { color: var(--accent); font-size: .9rem; letter-spacing: .04em; margin-bottom: .35rem; }
+  .page h2 { font-size: clamp(1.25rem, 3vw, 1.75rem); margin: 0 0 1rem; }
+  .lines p {
+    margin: 0 0 1rem; color: #E8EAF4; opacity: .22; filter: blur(1px); transition: .25s ease;
+  }
+  .lines p.active { opacity: 1; filter: none; }
+  #closing {
+    display: none; text-align: center; padding: 4rem 1rem 8rem;
+  }
+  #closing.show { display: block; }
+  #closing .quote { font-size: 1.15rem; max-width: 34rem; margin: 0 auto 1.5rem; color: #E8EAF4; }
+  #player {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: 1rem;
+    display: flex; gap: .5rem; align-items: center; padding: .55rem .75rem;
+    background: rgba(16,18,45,.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08); border-radius: 999px; z-index: 20;
+    pointer-events: none;
+  }
+  #player button {
+    pointer-events: auto; border: 0; cursor: pointer; width: 2.4rem; height: 2.4rem;
+    border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #061018; font-weight: 700;
+  }
+  #player #meta { color: var(--muted); font-size: .8rem; min-width: 9rem; pointer-events: none; }
+  #engine { color: var(--accent); font-size: .75rem; margin-left: .25rem; }
+  .note { color: var(--muted); font-size: .8rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<section id="intro">
+  <div>
+    <div class="kicker">AIStory · Education track</div>
+    <h1>AI Bot 시대, 사람들은 왜 열광하는가</h1>
+    <p>제품 카탈로그가 아니라, 미완의 위임에서 격리·승인·위임 설계까지. 오프닝 + 20장 + 엔딩, 22클립 교육 트랙.</p>
+    <button id="start" type="button">시작</button>
+  </div>
+</section>
+
+<main id="story" hidden></main>
+
+<section id="closing">
+  <p class="quote"></p>
+  <p class="note">로고·제품 스크린샷은 포함하지 않습니다. 내레이션 원본은 이 HTML의 SCENES / OPENING_TEXT / ENDING_TEXT 입니다.</p>
+</section>
+
+<div id="player" hidden>
+  <button id="prev" type="button" aria-label="이전">‹</button>
+  <button id="play" type="button" aria-label="재생">▶</button>
+  <button id="next" type="button" aria-label="다음">›</button>
+  <span id="meta">—</span>
+  <span id="engine"></span>
+</div>
+
+<script>
+// OPENING/ENDING은 SCENES 밖에 두고 extract_narration.py 상수와 동기화한다.
+const OPENING_TEXT = '안녕하세요. 오늘은 제품 카탈로그를 읽지 않습니다. 사람들이 왜 AI 봇에 열광하는가만 따라가겠습니다. 시작점은 답만 남기고 일이 끝나지 않던 한계이고, 오픈소스와 에이전트 소셜을 거쳐 Grok Bot과 Meta Muse까지 온 길을 증거로 보겠습니다. 설명만 삼십 분이고, 질의 시간은 없습니다.';
+const ENDING_TEXT = '오늘은 왜 열광하는가만 따라갔습니다. 제품 이름은 바뀌어도, 실행 환경과 승인 경계를 먼저 적는 습관이 남으면 됩니다. 설명은 여기까지입니다. 들어 주셔서 감사합니다.';
+
+const SCENES = [
+  {
+    year: '1장 · 표지',
+    bg: '#0F1330',
+    title: 'AI Bot 시대, 사람들은 왜 열광하는가',
+    who: [],
+    lines: [
+      '이천이십육년 십월 일일 교육 자료입니다. 부제는 시작점에서 오픈소스와 에이전트 소셜을 지나 Grok Bot과 Meta Muse로 오는 이야기입니다. 마케팅 문구와 확인되지 않은 수치는 넣지 않았습니다. 마지막에는 격리와 승인, 위임 설계로 닫겠습니다.'
+    ]
+  },
+  {
+    year: '2장 · 오늘의 질문',
+    bg: '#0F1330',
+    title: '챗봇은 대답했고, 봇은 일을 맡기기 시작했다',
+    who: [],
+    lines: [
+      '오늘의 질문은 하나입니다. 챗봇은 대답했고, 봇은 일을 맡기기 시작했는데, 사람들은 왜 여기에 열광하는가. 학습 목표는 세 가지입니다. 첫째, 열광의 시작점인 미완의 위임을 말합니다. 둘째, 자가호스팅에서 클라우드까지의 진행 경로를 그립니다. 셋째, 지금의 위임과 지속, 실행 환경, 접근성, 그리고 과열을 격리와 승인에 연결합니다.'
+    ]
+  },
+  {
+    year: '3장 · 용어',
+    bg: '#0F1330',
+    title: '이름만 같다고 같은 도구가 아니다',
+    who: [],
+    lines: [
+      '이름을 AI라고 같다고 보면 안 됩니다. 챗봇은 답을 주고, 코파일럿은 초안을 돕습니다. 에이전트는 목표를 실행하고, 지속형 봇은 역할과 기억, 실행 환경과 승인 게이트까지 갖습니다. 오늘 열광의 대상은 에이전트와 지속형 봇에 가깝습니다. 권한과 결과물만 기억해 주세요.'
+    ]
+  },
+  {
+    year: '4장 · 시작점',
+    bg: '#0F1330',
+    title: '답만 주고 일이 끝나지 않았다',
+    who: [],
+    lines: [
+      '열광의 출발은 신기능이 아니라 미완의 위임입니다. 조사와 초안은 되는데, 툴에 반영하고 끝내는 일은 사람 몫으로 남았습니다. 세션이 바뀌면 맥락이 끊깁니다. 도와준다와 맡긴다의 간극이 쌓였고, 사람들은 그 간극을 메울 도구를 찾기 시작했습니다. 모델이 나빠서가 아니라, 실행과 권한과 지속성 패키지 문제입니다.'
+    ]
+  },
+  {
+    year: '5장 · 진행',
+    bg: '#0F1330',
+    title: '오픈소스와 에이전트 소셜이 먼저 길을 열었다',
+    who: [],
+    lines: [
+      '진행 순서는 이렇습니다. 자가호스팅, 에이전트 소셜, 그다음 클라우드 팀메이트와 개인 가상머신입니다. OpenClaw는 오픈소스 개인 어시스턴트이고, 옛 이름에 Clawdbot과 Moltbot이 있습니다. Hermes Agent는 Nous Research의 자가 호스팅, 지속 메모리 에이전트입니다. Moltbook은 책이 아닙니다. 에이전트만 게시하고 투표하고, 사람은 관찰하는 소셜 네트워크입니다. Instinct는 넣더라도 비공개 접근만 말합니다. 스타 수, 가입 수, 소유 단정은 하지 않습니다.'
+    ]
+  },
+  {
+    year: '6장 · 열광①',
+    bg: '#0F1330',
+    title: '답이 아니라 결과를 맡긴다',
+    who: [],
+    lines: [
+      '현재 열광의 첫째 이유는 위임입니다. 사람들이 반응하는 것은 문장이 아니라 끝난 산출물입니다. 조사에서 초안, 툴 반영까지를 한 단위로 맡깁니다. 제품이 말하는 거의와 끝의 간극은 철학 인용으로만 듣고, 수치 보장처럼 읽지 마세요.'
+    ]
+  },
+  {
+    year: '7장 · 열광②',
+    bg: '#0F1330',
+    title: '매번 새 대화가 아니라 같은 동료다',
+    who: [],
+    lines: [
+      '둘째는 지속성입니다. 매번 새 대화가 아니라 같은 역할의 봇에게 다시 맡깁니다. 기억과 루틴이 편리함을 주지만, 어디에 무엇이 남는지 프라이버시 리스크도 같이 옵니다. 편리와 위험을 한 문장에 붙이세요.'
+    ]
+  },
+  {
+    year: '8장 · 열광③',
+    bg: '#0F1330',
+    title: 'AI가 실행 환경을 갖게 됐다',
+    who: [],
+    lines: [
+      '셋째는 실행 환경입니다. 클라우드 컴퓨터와 Secure VM이 위임의 하드웨어가 됐습니다. 브라우저와 파일로 실제 앱에서 일하고, 기기를 꺼도 클라우드에서 이어집니다. 앞장의 자가호스팅과 대비하면, 환경이 제품화된 현재가 보입니다. Grok Bot 컴퓨터는 사용자 단위입니다. 같은 사용자 봇끼리 공유하고, 봇마다 전용 피씨라는 말은 오해입니다.'
+    ]
+  },
+  {
+    year: '9장 · 열광④',
+    bg: '#0F1330',
+    title: '이름과 접근성이 진입을 낮춘다',
+    who: [],
+    lines: [
+      '넷째는 관계와 접근성입니다. 이름과 아바타, 메신저형 화면, 무료나 번들 진입은 시도 비용을 낮춥니다. 동시에 과도한 신뢰, 권한 방심, 요금 오해가 과열 요소입니다. 귀여워서 산다가 아니라, 진입이 낮아진 만큼 승인 습관이 필요하다고 말하세요.'
+    ]
+  },
+  {
+    year: '10장 · Grok 개요',
+    bg: '#0F1330',
+    title: 'SpaceXAI 제품, Cursor 클라우드에서 돈다',
+    who: [],
+    lines: [
+      '증거로 Grok Bot을 봅니다. 이천이십육년 팔월 십일 베타 공개입니다. 제품과 발표는 SpaceXAI이고, 실행은 Cursor 클라우드의 사용자별 컴퓨터입니다. 접근은 SuperGrok와 Cursor 유료 플랜 등과 번들이며, 단독 달러 정가는 단정하지 않습니다. Enterprise는 대기 명단이 있습니다. 발표 주체와 실행 인프라를 한 줄로 분리해 말하세요.'
+    ]
+  },
+  {
+    year: '11장 · Grok 구조',
+    bg: '#0F1330',
+    title: 'Bot 명단으로 일을 나눈다',
+    who: [],
+    lines: [
+      '중심은 채팅 목록이 아니라 역할 있는 봇 명단입니다. 조사, 검증, 작성처럼 나눠 핸드오프합니다. 같은 사용자 컴퓨터를 공유하므로, 봇을 지워도 파일과 로그인이 남을 수 있습니다. 민감 행동은 Auto Review가 평가하고, 로그인과 이단계 인증, 결제 단계는 사람에게 넘깁니다.'
+    ]
+  },
+  {
+    year: '12장 · Grok 지향',
+    bg: '#0F1330',
+    title: '겨냥점은 AI 동료 팀이다',
+    who: [],
+    lines: [
+      'Grok Bot이 겨냥하는 은유는 개인 비서 한 명이 아니라 작은 팀 위임입니다. 병렬 작업과 그룹 조율이 그 증거입니다. 제품 인용에 나오는 구십 퍼센트와 백 퍼센트 이야기는 철학이지, 서비스 수준 협약 수치가 아닙니다.'
+    ]
+  },
+  {
+    year: '13장 · Muse 개요',
+    bg: '#0F1330',
+    title: '미국부터 나온 개인 agent다',
+    who: [],
+    lines: [
+      '다른 축의 증거로 Muse를 봅니다. 이천이십육년 구월 팔일 발표, 미국 롤아웃입니다. 아이폰, 안드로이드, muse.ai, WhatsApp을 공식으로 포함합니다. 요금은 공식 Help 기준 무료 한도에 Power 이십 달러, Maximum 백 달러입니다. 글라스는 coming soon만 있고 출시일은 확인 불가입니다. 국내 출시도 확인 불가라고만 말하세요.'
+    ]
+  },
+  {
+    year: '14장 · Muse 안전',
+    bg: '#0F1330',
+    title: 'Secure VM과 Sentinel로 경계를 긋는다',
+    who: [],
+    lines: [
+      'Muse는 Secure VM에서 움직입니다. 같은 머신에 분리된 Sentinel이 인터넷 접근을 통제하고, 필요할 때 사람에게 묻습니다. 비밀번호와 결제수단은 에이전트가 직접 보지 않도록 설계했다고 공식 소개합니다. Confidential VM은 later this year로, 아직 미출시입니다. 세계에서 가장 안전 같은 최상급은 쓰지 마세요.'
+    ]
+  },
+  {
+    year: '15장 · Muse 전망',
+    bg: '#0F1330',
+    title: 'personal superintelligence — 전망',
+    who: [],
+    lines: [
+      '이 장은 전망입니다. 기업이 말하는 personal superintelligence라는 장기 방향과, 미국 롤아웃과 Secure VM 같은 사실을 가릅니다. 소셜과 글라스 결합은 가능성일 뿐 확정 로드맵이 아닙니다. 이미 달성한 것처럼 말하지 마세요.'
+    ]
+  },
+  {
+    year: '16장 · 비교',
+    bg: '#0F1330',
+    title: '갈라지는 축은 격리와 승인도다',
+    who: [],
+    lines: [
+      '그래서 비교 축은 생활 대 업무가 아니라 격리와 승인입니다. Grok Bot은 사용자 단위 컴퓨터와 Auto Review, Muse는 Secure VM과 Sentinel입니다. 열광과의 연결은 팀 위임과 개인 목표 위임으로 읽으면 됩니다. 기능 목록만 나열하면 둘 다 메일과 브라우저를 해서 겹쳐 보입니다.'
+    ]
+  },
+  {
+    year: '17장 · 공통 뼈대',
+    bg: '#0F1330',
+    title: '위임형 봇의 뼈대는 같다',
+    who: [],
+    lines: [
+      '오픈소스든 클라우드든 뼈대는 비슷합니다. 실행 환경, 커넥터, 기억, 루틴, 사람 승인. 이 다섯이 조직 체크리스트의 뼈대입니다. 제품 이름이 바뀌어도 이 질문은 남습니다.'
+    ]
+  },
+  {
+    year: '18장 · 리스크',
+    bg: '#0F1330',
+    title: '위임이 커질수록 리스크도 커진다',
+    who: [],
+    lines: [
+      '자격증명은 최소 권한과 잔존 로그인 점검으로, 오작동은 저위험 업무와 승인 게이트로, 프라이버시는 연결 범위와 옵트아웃으로, 비용은 한도 모니터링으로, 책임은 감사 로그로 완화합니다. 수치화되지 않은 사고 보도는 있다고만 하고 숫자를 만들지 마세요.'
+    ]
+  },
+  {
+    year: '19장 · 전망',
+    bg: '#0F1330',
+    title: '전망 세 갈래',
+    who: [],
+    lines: [
+      '전망 세 갈래입니다. 첫째 개인 비서 대중화, 둘째 기업 디지털 인력 편입, 셋째 규제와 신뢰로 속도 조절. 각각 지원 국가, Enterprise 감사 통합, 법제 같은 선행 신호를 관찰하면 됩니다. 국내 출시 일자는 확인 불가입니다.'
+    ]
+  },
+  {
+    year: '20장 · 그래서 우리는',
+    bg: '#0F1330',
+    title: '지금은 위임 설계를 익힐 때다',
+    who: [],
+    lines: [
+      '그래서 우리는 지금 도입보다 위임 설계를 익힙니다. 체크리스트는 저위험 위임, 최소 권한, 승인 게이트, 로그, 국내 출시와 규제 확인 후 도입 검토입니다. 기억할 세 줄입니다. 시작은 답만 주는 한계, 진행은 오픈소스와 에이전트 소셜을 거쳐 클라우드로, 현재는 격리와 승인, 위임 단위 연습이 먼저입니다. Galaxy는 이천이십육년 구월 십오일에서 십칠일 일정만 말합니다.'
+    ]
+  }
+];
+
+const AUDIO_DIR = 'audio/';
+const sceneCount = SCENES.length; // 20 → ending id = 21-ending
+
+function clipName(idx) {
+  // idx: 0=opening, 1..N=scenes, N+1=ending
+  if (idx === 0) return '00-opening';
+  if (idx === sceneCount + 1) return String(sceneCount + 1).padStart(2, '0') + '-ending';
+  return String(idx).padStart(2, '0') + '-scene';
+}
+
+const story = document.getElementById('story');
+const closing = document.getElementById('closing');
+const player = document.getElementById('player');
+const meta = document.getElementById('meta');
+const engineEl = document.getElementById('engine');
+let idx = 0; // 0 opening spoken before scenes; pages map to 1..N
+let audio = null;
+let speaking = false;
+
+function buildPages() {
+  SCENES.forEach((s, i) => {
+    const sec = document.createElement('section');
+    sec.className = 'page';
+    sec.id = 'scene-' + (i + 1);
+    sec.innerHTML = '<div class="year"></div><h2></h2><div class="lines"></div>';
+    sec.querySelector('.year').textContent = s.year;
+    sec.querySelector('h2').textContent = s.title;
+    const lines = sec.querySelector('.lines');
+    (s.lines || []).forEach((t, li) => {
+      const p = document.createElement('p');
+      p.textContent = t;
+      if (li === 0) p.classList.add('active');
+      lines.appendChild(p);
+    });
+    story.appendChild(sec);
+  });
+  closing.querySelector('.quote').textContent = ENDING_TEXT;
+}
+
+function showScene(n) {
+  // n: 1..sceneCount for scenes; sceneCount+1 closing
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  closing.classList.remove('show');
+  if (n >= 1 && n <= sceneCount) {
+    const el = document.getElementById('scene-' + n);
+    if (el) {
+      el.classList.add('active');
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    meta.textContent = (n) + ' / ' + sceneCount + ' · ' + (SCENES[n - 1].year || '');
+  } else if (n === sceneCount + 1) {
+    closing.classList.add('show');
+    meta.textContent = '엔딩';
+  }
+}
+
+function stopAudio() {
+  if (audio) { audio.pause(); audio = null; }
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  speaking = false;
+  document.getElementById('play').textContent = '▶';
+}
+
+function getClip(id) {
+  return new Promise((resolve) => {
+    const a = new Audio();
+    let settled = false;
+    const done = (ok) => { if (!settled) { settled = true; resolve(ok ? a : null); } };
+    a.preload = 'auto';
+    a.addEventListener('canplaythrough', () => done(true), { once: true });
+    a.addEventListener('error', () => done(false), { once: true });
+    a.src = AUDIO_DIR + id + '.mp3';
+    setTimeout(() => done(false), 800);
+  });
+}
+
+async function speakText(id, text, onDone) {
+  stopAudio();
+  speaking = true;
+  document.getElementById('play').textContent = '❚❚';
+  const clip = await getClip(id);
+  if (clip) {
+    engineEl.textContent = '고품질 음성';
+    audio = clip;
+    audio.onended = () => { speaking = false; document.getElementById('play').textContent = '▶'; onDone && onDone(); };
+    audio.play().catch(() => browserTTS(text, onDone));
+  } else {
+    engineEl.textContent = '브라우저 음성';
+    browserTTS(text, onDone);
+  }
+}
+
+function browserTTS(text, onDone) {
+  if (!window.speechSynthesis) { onDone && onDone(); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.onend = () => { speaking = false; document.getElementById('play').textContent = '▶'; onDone && onDone(); };
+  speechSynthesis.speak(u);
+}
+
+function afterOpening() {
+  story.hidden = false;
+  player.hidden = false;
+  idx = 1;
+  showScene(1);
+  playCurrent();
+}
+
+function playCurrent() {
+  if (idx === 0) {
+    speakText('00-opening', OPENING_TEXT, afterOpening);
+    return;
+  }
+  if (idx >= 1 && idx <= sceneCount) {
+    const s = SCENES[idx - 1];
+    showScene(idx);
+    speakText(clipName(idx), (s.lines || []).join(' '), () => {
+      idx += 1;
+      if (idx <= sceneCount) playCurrent();
+      else playEnding();
+    });
+    return;
+  }
+  playEnding();
+}
+
+function playEnding() {
+  idx = sceneCount + 1;
+  showScene(idx);
+  speakText(clipName(idx), ENDING_TEXT, () => {});
+}
+
+document.getElementById('start').addEventListener('click', () => {
+  document.getElementById('intro').style.display = 'none';
+  idx = 0;
+  player.hidden = false;
+  meta.textContent = '오프닝';
+  playCurrent();
+});
+
+document.getElementById('play').addEventListener('click', () => {
+  if (speaking) { stopAudio(); return; }
+  playCurrent();
+});
+document.getElementById('prev').addEventListener('click', () => {
+  stopAudio();
+  if (idx <= 1) { idx = 1; showScene(1); return; }
+  idx -= 1;
+  showScene(idx);
+});
+document.getElementById('next').addEventListener('click', () => {
+  stopAudio();
+  if (idx < sceneCount + 1) { idx += 1; showScene(idx); }
+});
+
+buildPages();
+</script>
+</body>
+</html>

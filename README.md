@@ -2,10 +2,41 @@
 
 브라우저 내장 TTS를 [k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) 로 교체한다.
 
+## Education track (22클립)
+
+신규 교육 주제는 **「AI Bot 시대, 사람들은 왜 열광하는가」** 이다(구 인물사 트랙과 별도).
+
+| 항목 | 경로 |
+|---|---|
+| HTML 셸 (커밋됨) | `education/why-ai-bots.html` |
+| 추출 결과 샘플 | `samples/narration.education-22.json` |
+| 단위 테스트 | `tests/test_extract_narration.py` |
+
+루트 `AIStory.html`은 `.gitignore` 대상이므로, 공개 파이프라인은 위 education HTML을 원본으로 쓴다.
+로고·제품 스크린샷·브랜드 이미지 복제는 포함하지 않는다. Researchy가 이후 lines만 패치할 수 있다.
+
+```bash
+# 1) HTML → narration (22 = 오프닝 + 20장 + 엔딩)
+python extract_narration.py education/why-ai-bots.html -o samples/narration.education-22.json
+
+# 2) 계획만 확인 (모델 불필요)
+python render_tts.py --narration samples/narration.education-22.json --out-dir ./audio --dry-run
+
+# 3) 추출 검증
+python -m unittest tests.test_extract_narration -v
+```
+
+클립 id는 장면 수 N에 동적이다: `00-opening`, `01-scene`…`NN-scene`, `(N+1)-ending`.
+교육 트랙은 N=20 → **`21-ending`**. TTS 실렌더(OmniVoice)는 참조 음성 준비 후 별도 진행.
+
+---
+
+브라우저 내장 TTS를 [k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) 로 교체한다.
+
 ## 왜 사전 렌더링 방식인가
 
 OmniVoice는 PyTorch 기반이라 브라우저에서 직접 돌지 않는다. 실시간 합성이 필요하면 서버를
-띄워야 하는데, 이 이야기의 내레이션은 **한 번 만들어 두면 바뀌지 않는 고정 텍스트 17개**다.
+띄워야 하는데, 이 이야기의 내레이션은 **한 번 만들어 두면 바뀌지 않는 고정 텍스트(교육 트랙 22클립 등)**다.
 미리 렌더링해서 파일로 두는 편이 품질·속도·재현성 모두 유리하고, 최종 목표인 영상 제작에도
 그대로 쓸 수 있다.
 
@@ -14,7 +45,7 @@ AIStory.html                ← 문구의 원본
         │
         │ extract_narration.py
         ▼
-   narration.json       ← 17개 항목 (오프닝 + 15장 + 엔딩)
+   narration.json       ← N+2개 항목 (오프닝 + N장 + 엔딩; 교육=22)
         │
         │ render_tts.py  (OmniVoice)
         ▼
@@ -62,7 +93,7 @@ python -c "import torch,omnivoice; print(torch.__version__, torch.cuda.is_availa
 ## 참조 음성 준비
 
 목소리 일관성이 이 파이프라인의 핵심이다. `create_voice_clone_prompt()` 로 참조 음성을
-한 번만 인코딩해 17개 클립 전부에 재사용하므로, 장면 사이에 톤이 흔들리지 않는다.
+한 번만 인코딩해 전 클립에 재사용하므로, 장면 사이에 톤이 흔들리지 않는다.
 
 권장 조건:
 
@@ -81,7 +112,8 @@ python -c "import torch,omnivoice; print(torch.__version__, torch.cuda.is_availa
 `narration.json`, `Containerfile`이 `tts/` 하위가 아니라 이 디렉터리에 바로 있다.
 
 ```bash
-python extract_narration.py AIStory.html -o narration.json
+python extract_narration.py education/why-ai-bots.html -o samples/narration.education-22.json
+# (로컬 전용 구 트랙) python extract_narration.py AIStory.html -o narration.json
 
 python render_tts.py \
     --narration narration.json \

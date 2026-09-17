@@ -1,5 +1,20 @@
 # PROGRESS.md
 
+프로젝트: **AIStory** — (A) 구 트랙 「인공지능을 만든 사람들」 / (B) 신규 **교육 트랙** 「AI Bot 시대, 사람들은 왜 열광하는가」
+
+## 현재 상태 (교육 22클립 · 2026-09-17)
+
+- 브랜치 작업: `feat/education-22clips-shell`
+- **교육 HTML 셸** 커밋 경로: `education/why-ai-bots.html` (루트 `AIStory.html`은 gitignore → extract 대상은 education)
+- 클립: `00-opening` + `01-scene`…`20-scene` + **`21-ending`** = **22**
+- `extract_narration.py`: 장면 수 N 동적 파싱, 엔딩 id=`(N+1)-ending`, HTML `OPENING_TEXT`/`ENDING_TEXT` 우선
+- 산출: `samples/narration.education-22.json` (extract 검증 완료, 원본 Notion 대본 JSON과 lines 일치)
+- 16장 문구: 「Grok Bot은」(Researchy PASS)
+- **로고·스크린샷 없음**. TTS 실렌더 미실행(dry-run만). Researchy가 이후 lines만 패치 가능.
+- 테스트: `python -m unittest tests.test_extract_narration -v`
+
+---
+
 프로젝트: **인공지능을 만든 사람들** (구 「빛이 된 아이 — 인공지능 70년 이야기」)
 인물 중심 저널리즘 톤 인터랙티브 페이지(`AIStory.html`) + OmniVoice 내레이션
 
