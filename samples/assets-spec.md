@@ -23,6 +23,6 @@
 
 ## audio/ (렌더링된 내레이션)
 
-- 경로: `audio/<id>.mp3` / `audio/<id>.wav`, `id`는 `00-opening` / `NN-scene`(2자리) / `16-ending`
+- 경로: `audio/<id>.mp3` / `audio/<id>.wav`, `id`는 `00-opening` / `NN-scene`(2자리) / `(N+1)-ending` (장면 수 N 기준; 교육 20장→`21-ending`)
 - `audio/manifest.json`: 클립별 실측 길이(초). 구조 샘플은 `samples/audio-manifest.sample.json` 참고
 - 웹페이지는 해당 id의 오디오 파일이 없으면 브라우저 내장 TTS로 자동 폴백한다(오디오 필수 아님)

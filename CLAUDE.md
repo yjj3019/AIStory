@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
+교육 트랙(22클립) 원본 HTML은 `education/why-ai-bots.html`이다. 루트 `AIStory.html`은 gitignore될 수 있다. 엔딩 id는 장면 수 N에 대해 `(N+1)-ending`(교육 N=20 → `21-ending`). 추출: `python extract_narration.py education/why-ai-bots.html -o samples/narration.education-22.json`.
+
 콘텐츠 프로젝트: **「인공지능을 만든 사람들」**. AI 역사(1956 다트머스~2026 현재)를 인물의 업적·회사 이력 중심 저널리즘 톤으로 서술하는 단일 인터랙티브 페이지와, 그 내레이션을 사전 렌더링하는 TTS 파이프라인이 있다. 통합 빌드/테스트 시스템 없음 — 스크립트를 직접 실행한다.
 
 - `AIStory.html` — 유일한 콘텐츠 산출물. 과거에는 동화형 서사(`빛이된아이.html`)와 신문 톤 팩트차트(`AI족보.html`) 두 파일로 나뉘어 있었으나 2026-09-11 하나로 병합됐다(사용자 요청 — 두 파일을 따로 유지할 이유가 없다고 판단). 스크롤 기반 15장 서사(`SCENES` 배열) + 클릭 가능한 SVG 인물 계보도(`P`/`ORG`/`E` 데이터, 옛 `AI족보.html`에서 이식) + 전 장에 적용된 클릭형 인물 카드(`data-map` + `wireMap()`, 옛 `빛이된아이.html` 13장 전용이던 패턴을 일반화)로 구성된다.
@@ -15,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 AIStory.html (SCENES 배열)     ← 문구의 유일한 원본
         │  extract_narration.py
         ▼
-   narration.json               ← 오프닝 1 + 15장 + 엔딩 1 = 17개 항목
+   narration.json               ← 오프닝 1 + N장 + 엔딩 1 (교육 N=20 → 22클립)
         │  render_tts.py (OmniVoice, k2-fsa)
         ▼
    audio/NN-scene.{mp3,wav}     ← 웹페이지가 자동 탐지해서 재생
@@ -24,10 +26,10 @@ AIStory.html (SCENES 배열)     ← 문구의 유일한 원본
 
 - **HTML이 유일한 원본**이다. 대사를 고치려면 `AIStory.html`의 `SCENES` 배열만 고치고, `extract_narration.py`를 재실행해 `narration.json`을 동기화한다. `narration.json`을 직접 편집하지 않는다.
 - `extract_narration.py`는 정규식으로 `const SCENES = [ ... \n];` 블록과 `year:'...'`, `lines:[...]`를 파싱한다. HTML의 이 구조(변수명, 들여쓰기 패턴)를 바꾸면 파서도 함께 고쳐야 한다. 오프닝/엔딩 문구는 HTML이 아니라 `extract_narration.py` 안의 `OPENING`/`ENDING` 상수에 하드코딩되어 있다.
-- 파일명 규칙은 `NN-scene`(2자리, 1-base) / `00-opening` / `16-ending`으로 고정이며, HTML 쪽 `clipName()`과 `render_tts.py`의 `id` 생성 로직이 이 규칙에 동시에 의존한다. 규칙을 바꾸려면 양쪽을 함께 수정한다. 오프닝/엔딩은 `speakText('00-opening', OPENING_TEXT, ...)` / `speakText('16-ending', ENDING_TEXT, ...)`로 재생 흐름(`start()`/`afterScene()`)에 명시적으로 연결돼 있다 — `SCENES` 배열만 순회하는 루프에 다시 흡수시키지 말 것(오프닝/엔딩이 재생되지 않던 과거 버그의 재발 방지).
+- 파일명 규칙은 `NN-scene`(2자리, 1-base) / `00-opening` / `(N+1)-ending`이며, HTML 쪽 `clipName()`과 `render_tts.py`의 `id` 생성 로직이 이 규칙에 동시에 의존한다. 규칙을 바꾸려면 양쪽을 함께 수정한다. 오프닝/엔딩은 `speakText('00-opening', OPENING_TEXT, ...)` / `speakText('16-ending', ENDING_TEXT, ...)`로 재생 흐름(`start()`/`afterScene()`)에 명시적으로 연결돼 있다 — `SCENES` 배열만 순회하는 루프에 다시 흡수시키지 말 것(오프닝/엔딩이 재생되지 않던 과거 버그의 재발 방지).
 - `OPENING_TEXT`는 HTML에 하드코딩돼 있고 `extract_narration.py`의 `OPENING` 상수와 별개다 — 오프닝 문구를 바꾸면 두 곳을 모두 고쳐야 한다. `ENDING_TEXT`는 `#closing .quote` DOM에서 읽어와 중복이 없다.
 - 웹페이지는 `audio/<id>.mp3` 또는 `.wav`를 찾아, **있으면 그걸 쓰고 없으면 브라우저 내장 TTS로 자동 폴백**한다(`AUDIO_DIR`/`getClip`/엔진 표시 로직). 오디오가 아직 없어도 페이지는 항상 정상 동작해야 한다는 게 설계 전제 — 이를 깨는 변경(오디오 필수화 등)은 하지 않는다.
-- `render_tts.py`는 참조 음성(`--ref-audio`)으로 `VoiceClonePrompt`를 **한 번만** 만들어 `voice_prompt.pt`에 캐시하고 17개 클립 전체에 재사용한다. 장면마다 새로 생성하면 목소리 톤이 흔들리므로, 이 캐시-재사용 구조를 우회하는 변경은 피한다.
+- `render_tts.py`는 참조 음성(`--ref-audio`)으로 `VoiceClonePrompt`를 **한 번만** 만들어 `voice_prompt.pt`에 캐시하고 전 클립에 재사용한다. 장면마다 새로 생성하면 목소리 톤이 흔들리므로, 이 캐시-재사용 구조를 우회하는 변경은 피한다.
 - 이미 존재하는 `audio/<id>.wav`는 `--force` 없이는 건너뛴다 — 특정 장면 문구만 고쳤을 때 해당 파일만 지우고 재실행하는 증분 워크플로우를 전제로 한다.
 
 ## Commands

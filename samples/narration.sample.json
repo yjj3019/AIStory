@@ -1,5 +1,5 @@
-﻿{
-  "_comment": "extract_narration.py의 출력 구조를 보여주는 축소 샘플입니다. 실제 대본 텍스트가 아니라 형식 설명용 더미 문장입니다.",
+{
+  "_comment": "extract_narration.py 출력 구조 축소 샘플. 엔딩 id는 장면 수에 따라 동적이다(예: 20장→21-ending). 실교육 대본은 narration.education-22.json.",
   "language": "ko",
   "title": "(예시) 프로젝트 제목",
   "items": [
@@ -15,7 +15,7 @@
     },
     {
       "id": "01-scene",
-      "label": "1장 · (예시) 연도 · (예시) 장소",
+      "label": "1장 · (예시) 표지",
       "lines": [
         "(예시) 1장 첫 번째 문단.",
         "(예시) 1장 두 번째 문단."
@@ -24,7 +24,7 @@
       "chars": 26
     },
     {
-      "id": "16-ending",
+      "id": "21-ending",
       "label": "엔딩",
       "lines": [
         "(예시) 엔딩 문장."

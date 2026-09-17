@@ -5,7 +5,7 @@ OmniVoice 로 「빛이 된 아이」 내레이션을 렌더링한다.
 핵심 설계
 ---------
 1. 참조 음성으로 VoiceClonePrompt 를 한 번 만들어 모든 장면에 재사용한다.
-   → 17개 클립의 목소리가 동일하게 유지된다. 장면마다 따로 생성하면 톤이 흔들린다.
+   → 전 클립의 목소리가 동일하게 유지된다. 장면마다 따로 생성하면 톤이 흔들린다.
    → 공식 문서 tips.md 도 짧은 클립에는 참조 음성 사용을 권장한다.
 2. 이미 만들어진 파일은 건너뛴다. 특정 장면 문구만 고쳤을 때 그 장면만 다시 만들면 된다.
 3. manifest.json 에 실제 길이를 기록한다. 웹페이지와 영상 편집 양쪽에서 쓴다.
@@ -37,8 +37,6 @@ import pathlib
 import subprocess
 import sys
 import time
-
-from tqdm import tqdm
 
 # Windows 콘솔 기본 코드페이지(cp949)는 en-dash(–) 등 일부 한글 문구 속 유니코드 문자를
 # 인코딩하지 못해 UnicodeEncodeError로 즉시 죽는다. UTF-8로 강제 재설정한다.
@@ -209,6 +207,9 @@ def main() -> None:
 
         # ---- 생성 ----
         # tqdm 은 stdout, 로그(LOG)는 stderr 로 나눠서 진행률 표시줄이 로그 줄에 밀려 깨지지 않게 한다.
+        # dry-run 경로에서는 불필요하므로 실제 생성 직전에만 import 한다.
+        from tqdm import tqdm
+
         pbar = tqdm(todo, desc="렌더링", unit="clip", file=sys.stdout)
         for n, u in enumerate(pbar, start=1):
             pbar.set_postfix_str(u["id"])
