@@ -34,8 +34,11 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 #intro h1{font-size:clamp(2rem,min(4.5vw,9vh),6.4rem);line-height:1.12;font-weight:800;letter-spacing:-.02em;margin:.5em 0 .4em}
 #intro h1 em{font-style:normal;color:var(--s-blue)}
 .teaser{font-size:max(17px,2.6vh);color:var(--ink-2);max-width:34rem}
-#introStart{margin-top:clamp(1.2rem,4vh,2.4rem);padding:.85em 2.4em;border-radius:999px;background:var(--s-blue);color:#fff;font-weight:700;font-size:1.1rem;
+#introStart,#introManual{padding:.85em 2.4em;border-radius:999px;background:var(--s-blue);color:#fff;font-weight:700;font-size:1.1rem;
   box-shadow:0 8px 24px rgba(1,86,252,.32);transition:transform .2s ease,box-shadow .2s ease,background .2s}
+.in-btns{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:clamp(1.2rem,4vh,2.4rem)}
+#introManual{background:var(--paper);color:var(--s-blue);border:2px solid var(--s-blue);box-shadow:none}
+#introManual:hover{background:var(--s-blue-soft)}
 #introStart:hover{transform:translateY(-2px);background:var(--s-blue-deep);box-shadow:0 12px 28px rgba(1,86,252,.4)}
 .in-art{width:100%;height:min(52vh,30rem)}
 .in-art svg{width:100%;height:100%;overflow:visible}
@@ -56,22 +59,31 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s}
 .page.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
 .sl-head{flex:none;display:flex;align-items:center;gap:clamp(.8rem,2vw,1.6rem);padding:clamp(.7rem,2vh,1.3rem) clamp(1rem,2.5vw,2rem);
-  background:linear-gradient(120deg,var(--s-blue-deep),var(--s-blue));color:#fff}
+  background:var(--s-blue);color:#fff}
 .ch-no{flex:none;min-width:2.6em;height:2.6em;padding:0 .7em;border-radius:999px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:800;font-size:clamp(.85rem,1.9vh,1.1rem)}
-.sl-head .tt{min-width:0}
+.sl-head .tt{min-width:0;flex:1}
+/* 1956–2026 연표 띠 — 지금 장이 70년 중 어디인지, 장 순서가 시간순인지 보여 준다 */
+.era{flex:none;position:relative;width:clamp(11rem,28vw,24rem);height:2.6rem;margin-left:auto}
+.era .axis{position:absolute;left:0;right:0;top:1.05rem;height:2px;background:rgba(255,255,255,.35)}
+.era .yr{position:absolute;bottom:0;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.75)}
+.era .yr.l{left:0}.era .yr.r{right:0}
+.era .pt{position:absolute;top:calc(1.05rem - 3px);width:8px;height:8px;margin-left:-4px;border-radius:50%;background:rgba(255,255,255,.5)}
+.era .cur{position:absolute;top:calc(1.05rem - 7px);height:16px;margin-left:-8px;border-radius:8px;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.28)}
+.era .cy{position:absolute;top:-.7rem;transform:translateX(-50%);font-size:.78rem;font-weight:800;white-space:nowrap}
 .year{font-size:clamp(.78rem,1.7vh,1rem);font-weight:700;opacity:.82;letter-spacing:.04em}
 .sl-head h2{font-size:clamp(1.15rem,min(2.6vw,4.8vh),2.6rem);line-height:1.22;font-weight:800;letter-spacing:-.01em}
 
 /* ---------- 본문: 도해 ---------- */
 .sl-body{flex:1;min-height:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr);padding:clamp(.6rem,1.6vh,1.1rem) clamp(.8rem,1.6vw,1.4rem)}
 .vis{min-height:0;overflow:auto;display:grid;gap:clamp(.7rem,1.6vh,1.2rem);grid-template-columns:minmax(0,1fr);align-content:stretch}
-.vis.has-photo{grid-template-columns:minmax(0,.5fr) minmax(0,1.5fr)}
+.vis.has-photo{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
 .split-photo{position:relative;min-height:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--s-blue-soft)}
 .split-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .split-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem .9rem .6rem;color:#fff;font-size:.8rem;font-weight:600;
   background:linear-gradient(transparent,rgba(15,23,42,.78))}
 .dg{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(.6rem,1.4vh,1rem)}
-.dg.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+.dg.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center}
+.dg.two .lane{flex:0 0 auto;min-height:6.2rem}
 .dg.dense .lane{min-height:3.6rem;max-height:5.6rem;padding-top:.35rem;padding-bottom:.35rem}
 .dg.dense .por{width:clamp(2.6rem,6.5vh,3.4rem);height:clamp(2.6rem,6.5vh,3.4rem);font-size:1.1rem}
 .dg.dense .dg-steps li{padding-top:.35rem;padding-bottom:.35rem;font-size:max(12px,1.7vh)}
@@ -81,10 +93,10 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 
 /* 인물 레인: 사진 + 이름 + 화살표 이력 */
 .lane{flex:1 1 0;min-height:4.6rem;max-height:10rem;display:grid;grid-template-columns:minmax(9rem,13rem) minmax(0,1fr);align-items:center;gap:clamp(.7rem,1.6vw,1.4rem);
-  padding:.55rem clamp(.7rem,1.4vw,1.1rem);background:var(--paper);border:2.5px solid var(--s-blue);border-radius:14px;text-align:left;cursor:pointer;
+  padding:.55rem clamp(.7rem,1.4vw,1.1rem);background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--s-blue);border-radius:14px;text-align:left;cursor:pointer;
   transition:transform .2s ease,box-shadow .2s ease,background .2s}
 .lane:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(1,86,252,.16)}
-.lane[aria-pressed=true]{background:var(--s-blue-soft);max-height:none}
+.lane[aria-pressed=true]{background:var(--s-blue-soft);max-height:none;flex:0 1 auto}   /* 펼쳐도 화면 전체로 늘어나지 않게 */
 .ln-id{display:flex;align-items:center;gap:.8rem;min-width:0}
 .por{flex:none;width:clamp(3.2rem,9vh,4.8rem);height:clamp(3.2rem,9vh,4.8rem);border-radius:50%;overflow:hidden;display:grid;place-items:center;
   background:var(--s-blue-soft);color:#fff;font-weight:800;font-size:1.4rem;box-shadow:inset 0 0 0 3px var(--paper),0 0 0 2px var(--s-blue)}
@@ -100,9 +112,17 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .dg-steps li:not(:first-child){clip-path:polygon(0 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,0 100%,var(--tip) 50%);margin-left:calc(var(--tip)*-.55)}
 .dg-steps li:last-child{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,var(--tip) 50%)}
 .dg-steps li:only-child{clip-path:none;border-radius:10px;padding-left:.9rem}
-.dg-steps li.out{background:var(--risk)}
+.dg-steps li.out{background:var(--ink-2)}
 .ln-desc{display:none;margin-top:.6rem;font-size:max(14px,1.9vh);line-height:1.65;color:var(--ink-2)}
 .lane[aria-pressed=true] .ln-desc{display:block}
+.page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:.62}
+.lane.speaking{background:var(--s-blue-soft);border-color:var(--s-blue);box-shadow:0 0 0 3px rgba(1,86,252,.22)}
+.lane.speaking .ln-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.lane[aria-pressed=true] .ln-desc{-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}
+.dg.many .lane{min-height:3.4rem;padding-top:.3rem;padding-bottom:.3rem}
+.dg.many .por{width:clamp(2.4rem,6vh,3.2rem);height:clamp(2.4rem,6vh,3.2rem);font-size:1rem}
+.dg.many .dg-steps li{padding-top:.3rem;padding-bottom:.3rem;font-size:max(12px,1.7vh)}
+.dg.many .ln-desc{margin-top:.3rem;font-size:max(12px,1.6vh);line-height:1.5}
 .lane .hint{display:none}
 
 /* 통계 카드 */
@@ -171,6 +191,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 #pos{font-weight:700;color:var(--s-blue)}
 
 @media (max-width:900px){
+  .era{display:none}
   .in-main{grid-template-columns:1fr}
   .in-art{height:30vh}
   .in-foot{display:none}
@@ -182,7 +203,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   #player{gap:.35rem;padding:.4rem .6rem;font-size:.78rem}
   #timer,#timer+.sep{display:none}
 }
-@media (max-height:700px){ .segs{margin-bottom:.35rem} }
+@media (max-height:700px){ .segs{margin-bottom:.35rem} .stat{padding:.4rem .8rem} .stat b{font-size:1.5rem} .lane{padding-top:.3rem;padding-bottom:.3rem} .ln-desc{margin-top:.3rem;line-height:1.5} .split-photo figcaption{padding-top:1rem} }
 @media (max-height:640px){ #engine,#engine ~ .sep{display:none} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -196,10 +217,10 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   <div class="in-top"><span><b>AI</b> STORY</span><span>1956 — 2026</span></div>
   <div class="in-main">
     <div>
-      <p class="kicker rise" style="--i:0">1956 — 2026 · 70년의 계보</p>
+      <p class="kicker rise" style="--i:0">70년의 계보</p>
       <h1 class="rise" style="--i:1">인공지능을<br><em>만든 사람들</em></h1>
       <p class="teaser rise" style="--i:2">경쟁하는 연구소들처럼 보이지만, 실은 몇 사람에게서 갈라져 나온 하나의 계보다.</p>
-      <button id="introStart" class="rise" style="--i:3">시작</button>
+      <div class="in-btns rise" style="--i:3"><button id="introStart">들으며 시작</button><button id="introManual">직접 넘기기</button></div>
     </div>
     <div class="in-art rise" style="--i:2" aria-hidden="true">
       <svg viewBox="0 0 400 300">
@@ -240,8 +261,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 /* 사진이 없는 인물은 이름 해시로 고정된 2톤 그라디언트 + 이니셜 */
 function initialColor(seed){
   let h=0; for(let i=0;i<seed.length;i++) h=(h*31+seed.charCodeAt(i))>>>0;
-  const hue=h%360;
-  return `linear-gradient(135deg,hsl(${hue},52%,38%),hsl(${(hue+34)%360},58%,24%))`;
+  const hue=205+(h%30);   /* 205~235 블루 계열만 — 브랜드 색 사이에서 튀지 않게 */
+  return `linear-gradient(135deg,hsl(${hue},55%,42%),hsl(${hue+8},60%,26%))`;
 }
 function attachPortraitFallback(root){
   root.querySelectorAll('img.por-img').forEach(img=>{
@@ -274,6 +295,15 @@ const who1=k=>P[k]||RIVALS[k];
 const pages=[];
 const cur=SCENES.map(()=>0);
 
+const ERA0=1956, ERA1=2026;
+const eraPct=y=>Math.max(0,Math.min(100,(y-ERA0)/(ERA1-ERA0)*100));
+function eraHTML(year){
+  const ys=(year.match(/(?:19|20)\d\d/g)||[]).map(Number); if(!ys.length) return '';
+  const a=ys[0], b=ys.length>1&&ys[1]>a?ys[1]:a;
+  const dots=SCENES.map(sc=>{const m=sc.year.match(/(?:19|20)\d\d/); return m?`<i class="pt" style="left:${eraPct(+m[0]).toFixed(1)}%"></i>`:'';}).join('');
+  const w=b>a?`calc(${(eraPct(b)-eraPct(a)).toFixed(1)}% + 16px)`:'16px';
+  return `<div class="era" aria-hidden="true"><i class="axis"></i>${dots}<i class="cur" style="left:${eraPct(a).toFixed(1)}%;width:${w}"></i><span class="cy" style="left:${eraPct((a+b)/2).toFixed(1)}%">${a}${b>a?'–'+b:''}</span><span class="yr l">${ERA0}</span><span class="yr r">${ERA1}</span></div>`;
+}
 function laneHTML(k){
   const d=who1(k), n=(d.t||[]).length;
   const steps=(d.t||[]).map((x,j)=>{const[label,flag]=x.split('|');
@@ -292,15 +322,17 @@ SCENES.forEach((sc,i)=>{
   const statsOnly=sc.stats&&!people.length&&!sc.table;
   const stats=sc.stats?`<div class="stats${statsOnly?' only':''}">${sc.stats.map(x=>`<div class="stat"><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div>`).join('')}</div>`:'';
   const table=sc.table?`<table class="tb"><tr>${sc.table.h.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${sc.table.r.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`:'';
-  const lanes=people.map(laneHTML).join('');
+  let lanes=people.map(laneHTML).join('');
+  if(people.length<=2) lanes=lanes.replace(/aria-pressed="false"/g,'aria-pressed="true"');   /* 1~2인 장은 설명을 펼쳐 빈 공간을 채운다 */
+  const many=people.length>=4?' many':'';
   let main;
   if(table&&lanes&&!photo) main=`<div class="dg two"><div class="dg-col">${lanes}</div><div class="dg-col">${stats}${table}</div></div>`;
-  else if(table&&lanes) main=`<div class="dg dense">${stats}${lanes}${table}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
-  else main=`<div class="dg">${stats&&!statsOnly?stats:''}${lanes}${table}${statsOnly?stats:''}</div>`;
+  else if(table&&lanes) main=`<div class="dg dense${many}">${stats}${lanes}${table}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
+  else main=`<div class="dg${many}">${stats&&!statsOnly?stats:''}${lanes}${table}${statsOnly?stats:''}</div>`;
   const segs=SENTS[i].map((_,k)=>`<i class="seg${k===0?' active':''}" data-k="${k}"></i>`).join('');
   const script=sc.lines.map((l,li)=>`<li data-li="${li}">${esc(l)}</li>`).join('');
   s.innerHTML=`
-    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2>${esc(sc.title)}</h2></div></div>
+    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2>${esc(sc.title)}</h2></div>${eraHTML(sc.year)}</div>
     <div class="sl-body">
       <div class="vis${photo?' has-photo':''}">${photo}${main}</div>
       <aside class="script" aria-label="전체 대본"><div class="script-head"><span>전체 대본</span><button class="cn" data-act="close" aria-label="대본 닫기">×</button></div><ol>${script}</ol></aside>
@@ -366,6 +398,13 @@ function setSent(i,k){
   t.style.animation='none'; void t.offsetWidth; t.style.animation='';
   p.querySelectorAll('.seg').forEach((el,n)=>{ el.classList.toggle('active',n===k); el.classList.toggle('done',n<k); });
   p.querySelectorAll('.script li').forEach(el=>el.classList.toggle('on',+el.dataset.li===list[k].li));
+  if(k===0) p.querySelectorAll('.lane').forEach(el=>el.classList.remove('speaking'));
+  const hits=[...p.querySelectorAll('.lane')].filter(el=>{
+    const d=who1(el.dataset.map), parts=d.n.split(' '), last=parts[parts.length-1];
+    return list[k].t.includes(d.n)||(last.length>=2&&list[k].t.includes(last));
+  });
+  if(hits.length){ p.querySelectorAll('.lane').forEach(el=>el.classList.toggle('speaking',hits.includes(el))); p.classList.add('has-speaker'); }
+  else if(k===0) p.classList.remove('has-speaker');
   const on=p.querySelector('.script li.on'); if(on&&p.querySelector('.script').classList.contains('open')) on.scrollIntoView({block:'nearest'});
 }
 function syncUI(){
@@ -483,11 +522,12 @@ document.addEventListener('keydown',e=>{
 });
 
 getClip(clipName(0)); markEngine(); go(0);
-$('introStart').onclick=()=>{
+function closeIntro(){
   const intro=$('intro'); intro.classList.add('hide');
   setTimeout(()=>{ intro.hidden=true; },reduceMotion?0:700);
-  start();
-};
+}
+$('introStart').onclick=()=>{ closeIntro(); start(); };      /* 들으며 시작: 바로 낭독 */
+$('introManual').onclick=()=>{ closeIntro(); };               /* 직접 넘기기: 소리 없이 시작 */
 </script>
 </body>
 </html>
