@@ -256,7 +256,16 @@ function attachPortraitFallback(root){
 }
 
 /* 나레이션 문장 분해 — 자막은 한 번에 한 문장만 보여준다. 문구는 SCENES 그대로이며 새로 쓰지 않는다. */
-const splitSentences=line=>line.split(/(?<=[.?!])\s+(?=[가-힣A-Z"“(0-9])/).map(s=>s.trim()).filter(Boolean);
+/* lookbehind 없이 구현 — Safari 16.4 미만에서 (?<=...) 는 스크립트 전체를 SyntaxError 로 멈춘다. */
+function splitSentences(line){
+  const out=[], re=/[.?!]\s+/g; let last=0, m;
+  while((m=re.exec(line))){
+    const next=line.charAt(m.index+m[0].length);
+    if(next&&/[가-힣A-Z"“(0-9]/.test(next)){ out.push(line.slice(last,m.index+1)); last=m.index+m[0].length; }
+  }
+  out.push(line.slice(last));
+  return out.map(s=>s.trim()).filter(Boolean);
+}
 const SENTS=SCENES.map(sc=>sc.lines.flatMap((l,li)=>splitSentences(l).map(t=>({t,li}))));
 
 /* ---------- 슬라이드 생성 ---------- */
