@@ -8,6 +8,7 @@
     python build_slide.py --src X.html -o Y.html
 """
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -19,17 +20,27 @@ for _s in (sys.stdout, sys.stderr):
         pass
 
 # (상수명, 여는 정규식, 닫는 마커) — 닫는 마커는 줄 첫머리의 `};` / `];`
-BLOCKS = [("P", "{", "\n};"), ("RIVALS", "{", "\n};"), ("SCENES", "[", "\n];")]
+BLOCKS = [("P", "{", "\n};"), ("RIVALS", "{", "\n};"), ("EXTRAS", "{", "\n};"), ("SCENES", "[", "\n];")]
 
 
 def extract(html: str, name: str, opener: str, closer: str) -> str:
     m = re.search("^const " + re.escape(name) + " = " + re.escape(opener), html, re.M)
     if not m:
+        if name == "EXTRAS":      # 16장 시절 원본에는 확장 인물 블록이 없다 — 선택 항목
+            return "const EXTRAS = {};"
         raise SystemExit(f"[오류] AIStory.html 에서 `const {name} = {opener}` 를 찾지 못했다 — 구조가 바뀌었는가?")
     end = html.find(closer, m.end())
     if end < 0:
         raise SystemExit(f"[오류] `{name}` 블록의 끝({closer.strip()})을 찾지 못했다.")
     return html[m.start(): end + len(closer)] + ";"
+
+
+def end_quote(html: str) -> str:
+    """원본 HTML 의 #closing .quote 안쪽 HTML(줄바꿈은 <br>)을 그대로 가져온다."""
+    m = re.search(r'<section id="closing"[^>]*>\s*<p class="quote">(.*?)</p>', html, re.S)
+    if not m:
+        raise SystemExit("[오류] 원본에서 #closing .quote 를 찾지 못했다")
+    return m.group(1).strip()
 
 
 def main() -> None:
@@ -38,6 +49,7 @@ def main() -> None:
     ap.add_argument("--src", default=str(here / "AIStory.html"))
     ap.add_argument("--template", default=str(here / "slide.template.html"))
     ap.add_argument("-o", "--out", default=str(here / "AIStory-slide.html"))
+    ap.add_argument("--audio-dir", default="audio/", help="오디오 폴더(예: audio18/)")
     a = ap.parse_args()
 
     src = Path(a.src).read_text(encoding="utf-8")
@@ -45,8 +57,12 @@ def main() -> None:
     if "/*DATA*/" not in tpl:
         raise SystemExit("[오류] 템플릿에 /*DATA*/ 마커가 없다.")
 
-    data = "\n\n".join(extract(src, *b) for b in BLOCKS)
-    Path(a.out).write_text(tpl.replace("/*DATA*/", data), encoding="utf-8", newline="\n")
+    data = "\n\n".join(extract(src, *b) for b in BLOCKS) + "\n\nObject.assign(RIVALS, EXTRAS);" + "\nconst END_QUOTE = " + json.dumps(end_quote(src), ensure_ascii=False) + ";"  # 계보도 밖 인물 = RIVALS + EXTRAS
+    out = tpl.replace("/*DATA*/", data)
+    if "const AUDIO_DIR='audio/'" not in out:
+        raise SystemExit("[오류] 템플릿에서 AUDIO_DIR 선언을 찾지 못했다")
+    out = out.replace("const AUDIO_DIR='audio/'", "const AUDIO_DIR='" + a.audio_dir + "'")
+    Path(a.out).write_text(out, encoding="utf-8", newline="\n")
     print(f"생성: {a.out}  (SCENES 원본 {a.src})")
 
 

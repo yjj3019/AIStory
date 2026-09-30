@@ -31,10 +31,10 @@ OPENING = {
     ],
 }
 ENDING = {
-    "id": "17-ending",
+    "id": "ending",   # main() 이 장 수를 세어 NN-ending 으로 확정한다
     "label": "엔딩",
     "lines": [
-        "경쟁처럼 보이는 이 지형은, 실은 몇 사람에게서 갈라져 나온 하나의 계보였다.",
+        "경쟁처럼 보이는 이 지형의 중심에는, 몇 사람에게서 갈라져 나온 하나의 계보가 있었다.",
     ],
 }
 
@@ -83,7 +83,13 @@ def main() -> None:
     args = ap.parse_args()
 
     html = pathlib.Path(args.html).read_text(encoding="utf-8")
-    items = [OPENING] + parse_scenes(html) + [ENDING]
+    scenes = parse_scenes(html)
+    m = re.search(r'<section id="closing"[^>]*>\s*<p class="quote">(.*?)</p>', html, flags=re.S)
+    if m:   # HTML 이 엔딩 문구의 원본 — <br> 는 공백으로
+        quote = re.sub(r"\s+", " ", strip_tags(re.sub(r"<br\s*/?>", " ", m.group(1))))
+        ENDING["lines"] = [quote]
+    ENDING["id"] = f"{len(scenes) + 1:02d}-ending"   # 장 수에 맞춰 자동 결정(하드코딩 금지)
+    items = [OPENING] + scenes + [ENDING]
 
     for it in items:
         # OmniVoice 에 한 번에 넘길 문장. 줄 사이는 마침표 간격으로 자연스럽게 이어진다.

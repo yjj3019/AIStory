@@ -84,6 +84,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .dg{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(.6rem,1.4vh,1rem)}
 .dg.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center}
 .dg.two .lane{flex:0 0 auto;min-height:6.2rem}
+.dg.two.many .lane{min-height:4.2rem}
 .dg.dense .lane{min-height:3.6rem;max-height:5.6rem;padding-top:.35rem;padding-bottom:.35rem}
 .dg.dense .por{width:clamp(2.6rem,6.5vh,3.4rem);height:clamp(2.6rem,6.5vh,3.4rem);font-size:1.1rem}
 .dg.dense .dg-steps li{padding-top:.35rem;padding-bottom:.35rem;font-size:max(12px,1.7vh)}
@@ -326,7 +327,7 @@ SCENES.forEach((sc,i)=>{
   if(people.length<=2) lanes=lanes.replace(/aria-pressed="false"/g,'aria-pressed="true"');   /* 1~2인 장은 설명을 펼쳐 빈 공간을 채운다 */
   const many=people.length>=4?' many':'';
   let main;
-  if(table&&lanes&&!photo) main=`<div class="dg two"><div class="dg-col">${lanes}</div><div class="dg-col">${stats}${table}</div></div>`;
+  if(table&&lanes&&!photo) main=`<div class="dg two${many}"><div class="dg-col">${lanes}</div><div class="dg-col">${stats}${table}</div></div>`;
   else if(table&&lanes) main=`<div class="dg dense${many}">${stats}${lanes}${table}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
   else main=`<div class="dg${many}">${stats&&!statsOnly?stats:''}${lanes}${table}${statsOnly?stats:''}</div>`;
   const segs=SENTS[i].map((_,k)=>`<i class="seg${k===0?' active':''}" data-k="${k}"></i>`).join('');
@@ -355,7 +356,7 @@ SCENES.forEach((sc,i)=>{
 /* 엔딩 슬라이드 */
 const endPage=document.createElement('section');
 endPage.className='page end';endPage.id='closing';
-endPage.innerHTML=`<p class="quote">경쟁처럼 보이는 이 지형은,<br>실은 <em>몇 사람에게서 갈라져 나온</em><br>하나의 계보였다.</p>
+endPage.innerHTML=`<p class="quote">${END_QUOTE}</p>
   <p class="cred">인공지능을 만든 사람들 · 1956년 다트머스 회의부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
   <p class="pc">인물 사진 출처(Wikimedia Commons, CC 라이선스): John McCarthy CC BY 2.0 · Marvin Minsky CC BY-SA 2.0 · Claude Shannon CC BY 2.0 · Geoffrey Hinton CC BY-SA 4.0 · Yann LeCun CC BY-SA 2.0 · Yoshua Bengio CC BY-SA 2.0 · Ilya Sutskever CC BY-SA 4.0 · Demis Hassabis CC BY-SA 4.0 · Elon Musk CC BY-SA 3.0 · Sam Altman CC BY 2.0 · Dario Amodei CC BY 2.0 · Greg Brockman CC BY 3.0 · Mira Murati CC BY 4.0. 나머지 인물은 사진 없이 이니셜로 표시됩니다.</p>`;
 deck.appendChild(endPage);pages.push(endPage);
@@ -422,6 +423,7 @@ function go(i){
 const AUDIO_DIR='audio/', AUDIO_EXT=['mp3','wav'];
 const clips={}; let engine='browser';
 const clipName=i=>String(i+1).padStart(2,'0')+'-scene';
+const endingId=()=>String(SCENES.length+1).padStart(2,'0')+'-ending';   /* extract_narration.py 와 같은 규칙 */
 /* extract_narration.py 의 OPENING 과 같은 문구를 유지한다. 엔딩은 DOM 에서 읽어 중복을 피한다. */
 const OPENING_TEXT='지금부터 인공지능을 만든 사람들의 이야기를 전해드립니다. 1956년 다트머스에서 시작해 지금까지 이어진, 70년에 걸친 하나의 계보입니다.';
 const ENDING_TEXT=(endPage.querySelector('.quote').textContent||'').replace(/\s+/g,' ').trim();
@@ -459,7 +461,7 @@ function speakText(id,text,onend){
 function afterScene(i){
   if(!playing) return;
   if(i<N-1){ setTimeout(()=>{ if(!playing) return; go(i+1); speak(i+1); },900); }
-  else { go(N); speakText('17-ending',ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
+  else { go(N); speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
 }
 /* 자막 동기화(근사): 클립이 장 전체 1개 파일이라 문장별 타이밍이 없다.
    문장 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정한다 — 몇 초 어긋날 수 있다.
