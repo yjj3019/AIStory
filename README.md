@@ -5,7 +5,7 @@
 ## 왜 사전 렌더링 방식인가
 
 OmniVoice는 PyTorch 기반이라 브라우저에서 직접 돌지 않는다. 실시간 합성이 필요하면 서버를
-띄워야 하는데, 이 이야기의 내레이션은 **한 번 만들어 두면 바뀌지 않는 고정 텍스트 17개**다.
+띄워야 하는데, 이 이야기의 내레이션은 **한 번 만들어 두면 바뀌지 않는 고정 텍스트 20개**다.
 미리 렌더링해서 파일로 두는 편이 품질·속도·재현성 모두 유리하고, 최종 목표인 영상 제작에도
 그대로 쓸 수 있다.
 
@@ -14,15 +14,15 @@ AIStory.html                ← 문구의 원본
         │
         │ extract_narration.py
         ▼
-   narration.json       ← 17개 항목 (오프닝 + 15장 + 엔딩)
+   narration.json       ← 20개 항목 (오프닝 + 18장 + 엔딩)
         │
         │ render_tts.py  (OmniVoice)
         ▼
-   audio/*.wav|mp3      ← 웹페이지가 자동으로 찾아 재생
-   audio/manifest.json  ← 클립별 실제 길이 (영상 편집용)
+   audio18/*.wav|mp3      ← 웹페이지가 자동으로 찾아 재생
+   audio18/manifest.json  ← 클립별 실제 길이 (영상 편집용)
 ```
 
-웹페이지는 `audio/01-scene.mp3` 또는 `.wav` 를 찾는다. **있으면 그걸 쓰고, 없으면 브라우저
+웹페이지는 `audio18/01-scene.mp3` 또는 `.wav` 를 찾는다. **있으면 그걸 쓰고, 없으면 브라우저
 내장 음성으로 자동 전환**한다. 재생 바 오른쪽에 현재 어떤 엔진인지 표시된다.
 
 ## 확인된 사실
@@ -62,7 +62,7 @@ python -c "import torch,omnivoice; print(torch.__version__, torch.cuda.is_availa
 ## 참조 음성 준비
 
 목소리 일관성이 이 파이프라인의 핵심이다. `create_voice_clone_prompt()` 로 참조 음성을
-한 번만 인코딩해 17개 클립 전부에 재사용하므로, 장면 사이에 톤이 흔들리지 않는다.
+한 번만 인코딩해 20개 클립 전부에 재사용하므로, 장면 사이에 톤이 흔들리지 않는다.
 
 권장 조건:
 
@@ -87,7 +87,7 @@ python render_tts.py \
     --narration narration.json \
     --ref-audio ref/narrator.wav \
     --ref-text "안녕하세요. 오늘은 아주 오래된 이야기를 하나 들려드리려고 합니다. 천천히, 편안하게 들어 주세요." \
-    --out-dir ./audio \
+    --out-dir ./audio18 \
     --speed 0.94 \
     --mp3
 ```
@@ -111,9 +111,9 @@ Windows 콘솔(cp949)에서 실행할 경우 스크립트가 UTF-8 출력으로 
 특정 장면 문구만 고쳤다면 그 파일만 지우고 다시 돌리면 된다.
 
 ```bash
-rm ./audio/06-scene.*
+rm ./audio18/06-scene.*
 python render_tts.py --narration narration.json --ref-audio ref/narrator.wav \
-    --ref-text "..." --out-dir ./audio --mp3
+    --ref-text "..." --out-dir ./audio18 --mp3
 ```
 
 ## 결과 확인
@@ -124,7 +124,7 @@ python -m http.server 8000
 ```
 
 재생 바 오른쪽이 **"고품질 음성"** 이면 렌더링된 파일을 쓰는 중이다. "브라우저 음성"이면
-`audio/` 안의 파일 이름이 `01-scene.mp3` 형식인지 확인한다.
+`audio18/` 안의 파일 이름이 `01-scene.mp3` 형식인지 확인한다.
 
 `file://` 로 직접 열어도 동작하지만, HTTP로 서빙하는 편이 안정적이다.
 
@@ -137,7 +137,7 @@ podman run --rm \
     --device nvidia.com/gpu=all \
     -v ./narration.json:/work/narration.json:ro,Z \
     -v ./ref:/work/ref:ro,Z \
-    -v ../audio:/work/out:Z \
+    -v ../audio18:/work/out:Z \
     -v ~/.cache/huggingface:/root/.cache/huggingface:Z \
     omnivoice-tts \
     --narration /work/narration.json --ref-audio /work/ref/narrator.wav \
@@ -149,13 +149,13 @@ HF 캐시를 마운트해야 매번 모델을 다시 받지 않는다.
 
 ## 영상 제작으로 넘어갈 때
 
-`audio/manifest.json` 에 클립별 실제 길이가 초 단위로 들어 있다. 장면 전환 타이밍을
+`audio18/manifest.json` 에 클립별 실제 길이가 초 단위로 들어 있다. 장면 전환 타이밍을
 여기에 맞추면 된다.
 
 ```bash
 python - <<'EOF'
 import json
-m=json.load(open('audio/manifest.json'))
+m=json.load(open('audio18/manifest.json'))
 t=0
 for it in m['items']:
     print(f"{t//60:02.0f}:{t%60:05.2f}  {it['label']}")
