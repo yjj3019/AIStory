@@ -453,6 +453,22 @@ function go(i){
 /* ---------- 음성: audio/<id>.{mp3,wav} 우선, 없으면 브라우저 TTS ---------- */
 const AUDIO_DIR='audio/', AUDIO_EXT=['mp3','wav'];
 const clips={}; let engine='browser';
+/* 실측 자막 앵커(audio/sync.json — stt_check.py 가 STT 단어 시각으로 만든다): {클립id:[[글자비율,시각(초)],...]}.
+   있으면 글자 수 비율 대신 앵커 사이를 보간해 현재 위치(글자 비율)를 구한다. 없거나 깨져 있으면 t/dur 로 폴백. */
+let SYNC=null;
+fetch(AUDIO_DIR+'sync.json').then(r=>r.ok?r.json():null).then(j=>{SYNC=j;}).catch(()=>{});
+function fracAt(id,t,dur){
+  const an=SYNC&&SYNC[id];
+  if(!an||an.length<2) return t/dur;
+  if(t<=an[0][1]) return an[0][0];
+  for(let k=1;k<an.length;k++){
+    if(t<=an[k][1]){
+      const f0=an[k-1][0],t0=an[k-1][1],f1=an[k][0],t1=an[k][1];
+      return t1>t0?f0+(f1-f0)*(t-t0)/(t1-t0):f1;
+    }
+  }
+  return 1;
+}
 const clipName=i=>String(i+1).padStart(2,'0')+'-scene';
 const endingId=()=>String(SCENES.length+1).padStart(2,'0')+'-ending';   /* extract_narration.py 와 같은 규칙 */
 /* extract_narration.py 의 OPENING 과 같은 문구를 유지한다. 엔딩은 DOM 에서 읽어 중복을 피한다. */
@@ -526,12 +542,12 @@ function afterScene(i){
    문장 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정한다 — 몇 초 어긋날 수 있다.
    render_tts.py --granularity line 으로 문장(줄)당 클립을 만들면 정확해진다. */
 function wireCaptionSync(i,a){
-  const chars=SENTS[i].map(x=>x.t.length), total=chars.reduce((s,c)=>s+c,0);
+  const chars=SENTS[i].map(x=>x.t.replace(/\s/g,'').length), total=chars.reduce((s,c)=>s+c,0);   /* 공백 제외 — sync.json 앵커와 같은 좌표 */
   if(!total) return;
   a.ontimeupdate=()=>{
     const dur=a.duration; if(!dur||!isFinite(dur)) return;
     let acc=0,idx=0;
-    for(let k=0;k<chars.length;k++){ acc+=chars[k]; idx=k; if(a.currentTime<=(acc/total)*dur) break; }
+    for(let k=0;k<chars.length;k++){ acc+=chars[k]; idx=k; if(fracAt(clipName(i),a.currentTime,dur)<=acc/total) break; }
     if(idx!==cur[i]) setSent(i,idx);
   };
 }
