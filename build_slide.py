@@ -55,7 +55,7 @@ def main() -> None:
     ap.add_argument("--src", default=str(here / "AIStory.html"))
     ap.add_argument("--template", default=str(here / "slide.template.html"))
     ap.add_argument("-o", "--out", default=str(here / "AIStory-slide.html"))
-    ap.add_argument("--audio-dir", default="audio/", help="오디오 폴더(예: audio18/)")
+    ap.add_argument("--audio-dir", default="audio18/", help="오디오 폴더. 기본값 audio18/ (v18 낭독)")
     a = ap.parse_args()
 
     src = Path(a.src).read_text(encoding="utf-8")

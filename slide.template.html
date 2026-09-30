@@ -460,10 +460,18 @@ function getClip(id){
   if(clips[id]) return clips[id];
   const a=new Audio(); a.preload='auto'; a.dataset.ok='0';
   let k=0;
-  const tryNext=()=>{ if(k>=AUDIO_EXT.length){ a.dataset.ok='fail'; return; } a.src=AUDIO_DIR+id+'.'+AUDIO_EXT[k++]; };
-  a.addEventListener('canplaythrough',()=>{ a.dataset.ok='1'; if(engine!=='omnivoice'){ engine='omnivoice'; markEngine(); } });
+  const tryNext=()=>{ if(k>=AUDIO_EXT.length){ a.dataset.ok='fail'; a.dispatchEvent(new Event('clipfail')); return; } a.src=AUDIO_DIR+id+'.'+AUDIO_EXT[k++]; };
+  a.addEventListener('canplaythrough',()=>{ a.dataset.ok='1'; if(!playing&&engine!=='omnivoice'){ engine='omnivoice'; markEngine(); } });   /* 재생 중에는 실제 재생 쪽이 라벨을 정한다 */
   a.addEventListener('error',tryNext);
   tryNext(); clips[id]=a; return a;
+}
+/* 확장자 탐색(mp3→wav)이 끝나기 전에 play() 를 부르면 src 교체로 거부돼 브라우저 음성으로 샌다 — 확정될 때까지 기다린다(최대 4초). */
+function whenReady(a,cb){
+  if(a.dataset.ok!=='0'){ cb(); return; }
+  let done=false; const fire=()=>{ if(done) return; done=true; cb(); };
+  a.addEventListener('canplaythrough',fire,{once:true});
+  a.addEventListener('clipfail',fire,{once:true});
+  setTimeout(fire,4000);
 }
 function markEngine(){ $('engine').textContent=engine==='omnivoice'?'고품질 음성':'브라우저 음성'; }
 
@@ -476,15 +484,21 @@ let playing=false;
 const plain=i=>SCENES[i].lines.join(' ');
 
 function browserSay(text,onend){
-  if(!synth){ onend&&onend(); return; }
+  engine='browser'; markEngine();
+  if(!synth||typeof SpeechSynthesisUtterance==='undefined'){ onend&&onend(); return; }
   const u=new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=.94; u.pitch=1;
-  if(koVoice) u.voice=koVoice; u.onend=onend; synth.speak(u);
+  if(koVoice) u.voice=koVoice; u.onend=onend;
+  u.onerror=e=>{ if(e.error==='canceled'||e.error==='interrupted') return; onend&&onend(); };
+  synth.speak(u);
 }
 function speakText(id,text,onend){
   const a=getClip(id);
-  if(a.dataset.ok==='fail'){ browserSay(text,onend); return; }
-  a.onended=onend; a.currentTime=0;
-  const pr=a.play(); if(pr&&pr.catch) pr.catch(()=>browserSay(text,onend));
+  whenReady(a,()=>{
+    if(a.dataset.ok==='fail'){ browserSay(text,onend); return; }
+    a.onended=onend; a.currentTime=0;
+    const pr=a.play(); engine='omnivoice'; markEngine();
+    if(pr&&pr.catch) pr.catch(()=>browserSay(text,onend));
+  });
 }
 function afterScene(i){
   if(!playing) return;
@@ -507,10 +521,15 @@ function wireCaptionSync(i,a){
 function speak(i){
   silence();
   const a=getClip(clipName(i));
-  if(a.dataset.ok==='fail'){ browserSay(plain(i),()=>afterScene(i)); return; }
-  wireCaptionSync(i,a);
-  a.onended=()=>afterScene(i); a.currentTime=0;
-  const pr=a.play(); if(pr&&pr.catch) pr.catch(()=>browserSay(plain(i),()=>afterScene(i)));
+  if(i+1<N) getClip(clipName(i+1));   /* 다음 장 미리 로딩 */
+  whenReady(a,()=>{
+    if(!playing) return;   /* 대기 중 멈춤을 눌렀으면 재생하지 않는다 */
+    if(a.dataset.ok==='fail'){ browserSay(plain(i),()=>afterScene(i)); return; }
+    wireCaptionSync(i,a);
+    a.onended=()=>afterScene(i); a.currentTime=0;
+    const pr=a.play(); engine='omnivoice'; markEngine();
+    if(pr&&pr.catch) pr.catch(()=>browserSay(plain(i),()=>afterScene(i)));
+  });
 }
 function silence(){
   if(synth) synth.cancel();
