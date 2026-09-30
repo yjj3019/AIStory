@@ -13,3 +13,5 @@ config.json
 vocab.txt
 bert-kor-base/
 melotts-test/
+# 슬라이드형 산출물 (build_slide.py 생성물 — 콘텐츠 포함이라 비공개)
+AIStory-slide.html

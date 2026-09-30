@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>인공지능을 만든 사람들 — 슬라이드</title>
+<!-- 생성물: build_slide.py 가 AIStory.html 의 P / RIVALS / SCENES 를 복사해 만든다. 직접 편집 금지(slide.template.html 을 고친다). -->
+<style>
+:root{
+  --s-blue:#0156FC; --s-blue-deep:#003BB8; --s-blue-soft:#E8F0FF;
+  --ink:#0F172A; --ink-2:#334155; --ink-3:#64748B; --line:#D6E0F5; --paper:#FFFFFF; --bg:#F3F6FD;
+  --risk:#E03131; --human:#0B7285; --pending:#B7791F;
+  --g:clamp(.9rem,2.2vh,1.6rem);
+  --font:Pretendard,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);overflow:hidden;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue);outline-offset:2px}
+
+/* ---------- 오프닝 ---------- */
+#intro{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:2rem;
+  background:radial-gradient(ellipse at 78% 18%,var(--s-blue-soft) 0,transparent 55%),radial-gradient(ellipse at 10% 90%,#DCE7FF 0,transparent 50%),var(--bg);
+  transition:opacity .7s ease,transform .7s ease}
+#intro::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--s-blue) 1px,transparent 1.5px);background-size:26px 26px;opacity:.12;
+  -webkit-mask-image:radial-gradient(ellipse at 70% 30%,#000,transparent 70%);mask-image:radial-gradient(ellipse at 70% 30%,#000,transparent 70%)}
+#intro.hide{opacity:0;transform:scale(1.02);pointer-events:none}
+.in-main{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;max-width:76rem;width:100%}
+.in-top{position:absolute;top:clamp(1rem,3vh,2rem);left:clamp(1.2rem,4vw,3rem);right:clamp(1.2rem,4vw,3rem);display:flex;justify-content:space-between;
+  font-size:.85rem;font-weight:700;color:var(--ink-3);letter-spacing:.04em}
+.in-top b{color:var(--s-blue)}
+.kicker{font-size:clamp(.85rem,1.6vh,1.05rem);font-weight:700;color:var(--s-blue);letter-spacing:.08em}
+#intro h1{font-size:clamp(2rem,min(4.5vw,9vh),6.4rem);line-height:1.12;font-weight:800;letter-spacing:-.02em;margin:.5em 0 .4em}
+#intro h1 em{font-style:normal;color:var(--s-blue)}
+.teaser{font-size:max(17px,2.6vh);color:var(--ink-2);max-width:34rem}
+#introStart{margin-top:clamp(1.2rem,4vh,2.4rem);padding:.85em 2.4em;border-radius:999px;background:var(--s-blue);color:#fff;font-weight:700;font-size:1.1rem;
+  box-shadow:0 8px 24px rgba(1,86,252,.32);transition:transform .2s ease,box-shadow .2s ease,background .2s}
+#introStart:hover{transform:translateY(-2px);background:var(--s-blue-deep);box-shadow:0 12px 28px rgba(1,86,252,.4)}
+.in-art{width:100%;height:min(52vh,30rem)}
+.in-art svg{width:100%;height:100%;overflow:visible}
+.in-art .ln{fill:none;stroke:var(--s-blue);stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:inDraw 1.4s ease .5s forwards}
+.in-art .nd{fill:var(--paper);stroke:var(--s-blue);stroke-width:3}
+.in-art .nd.root{fill:var(--s-blue)}
+.in-art .lb{font-size:13px;font-weight:700;fill:var(--ink-2)}
+.in-foot{position:absolute;bottom:clamp(1rem,3vh,2rem);left:clamp(1.2rem,4vw,3rem);font-size:.82rem;color:var(--ink-3)}
+.rise{opacity:0;animation:inUp .8s ease forwards;animation-delay:calc(var(--i,0)*110ms)}
+@keyframes inUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes inDraw{to{stroke-dashoffset:0}}
+
+/* ---------- 상단 진행 표시 ---------- */
+#bar{position:fixed;top:0;left:0;height:4px;width:0;background:var(--s-blue);z-index:40;transition:width .5s ease}
+
+/* ---------- 슬라이드 ---------- */
+#deck{position:fixed;inset:0}
+.page{position:absolute;inset:clamp(.6rem,2vh,1.4rem) clamp(.6rem,2.5vw,2rem) clamp(4.6rem,10vh,6rem);display:flex;flex-direction:column;min-height:0;
+  background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(15,23,42,.08);
+  opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s}
+.page.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
+.sl-head{flex:none;display:flex;align-items:center;gap:clamp(.8rem,2vw,1.6rem);padding:clamp(.8rem,2.2vh,1.5rem) clamp(1rem,2.5vw,2rem);
+  background:linear-gradient(120deg,var(--s-blue-deep),var(--s-blue));color:#fff}
+.ch-no{flex:none;min-width:2.6em;height:2.6em;padding:0 .7em;border-radius:999px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:800;font-size:clamp(.85rem,1.9vh,1.1rem)}
+.sl-head .tt{min-width:0}
+.year{font-size:clamp(.78rem,1.7vh,1rem);font-weight:700;opacity:.82;letter-spacing:.04em}
+.sl-head h2{font-size:clamp(1.15rem,min(2.6vw,4.8vh),2.6rem);line-height:1.22;font-weight:800;letter-spacing:-.01em}
+.sl-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:0}
+.sl-body.solo{grid-template-columns:minmax(0,1fr)}
+.sl-side{min-height:0;overflow:auto;padding:clamp(.9rem,2.4vh,1.6rem) clamp(1rem,2vw,1.6rem);background:linear-gradient(180deg,var(--s-blue-soft),#F6F9FF);
+  border-right:1px solid var(--line);display:flex;flex-direction:column;gap:var(--g)}
+.sl-main{min-height:0;position:relative}
+.lines{height:100%;overflow:auto;padding:clamp(1rem,3vh,2rem) clamp(1.2rem,3vw,2.6rem);scroll-behavior:smooth;
+  -webkit-mask-image:linear-gradient(#0000,#000 4%,#000 94%,#0000);mask-image:linear-gradient(#0000,#000 4%,#000 94%,#0000)}
+.step{font-size:max(17px,min(2.6vh,1.55vw));line-height:1.75;color:var(--ink-3);opacity:.55;padding:.55em 0 .55em 1rem;border-left:4px solid transparent;
+  transition:opacity .35s,color .35s,border-color .35s;cursor:pointer}
+.step.active{color:var(--ink);opacity:1;border-left-color:var(--s-blue);font-weight:500}
+
+/* 좌측 시각 요소 */
+.hero-por{display:flex;gap:.8rem;flex-wrap:wrap}
+.hero-por-item{flex:1 1 4.5rem;max-width:7rem;text-align:center}
+.hero-por-photo,.por{border-radius:50%;overflow:hidden;background:var(--s-blue-soft);box-shadow:inset 0 0 0 3px var(--paper),0 0 0 2px var(--s-blue)}
+.hero-por-photo{aspect-ratio:1;width:100%;display:grid;place-items:center;font-weight:800;font-size:2.2rem;color:#fff}
+.hero-por-photo img,.por img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-por-name{display:block;margin-top:.45rem;font-weight:700;font-size:.92rem}
+.hero-context{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+.hero-context img{width:100%;max-height:28vh;object-fit:cover;display:block}
+.hero-context figcaption{padding:.5rem .8rem;font-size:.8rem;color:var(--ink-3)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(6.5rem,1fr));gap:.6rem}
+.stats div{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--s-blue);border-radius:10px;padding:.7rem .8rem}
+.stats b{display:block;font-size:clamp(1.3rem,3.2vh,2rem);font-weight:800;color:var(--s-blue);line-height:1.1}
+.stats span{font-size:.8rem;color:var(--ink-2)}
+.tb{width:100%;border-collapse:collapse;font-size:.88rem;background:var(--paper);border-radius:10px;overflow:hidden}
+.tb th{background:var(--s-blue);color:#fff;text-align:left;padding:.5rem .7rem}
+.tb td{padding:.5rem .7rem;border-top:1px solid var(--line)}
+.people{display:flex;flex-direction:column;gap:.5rem}
+.pcard{display:flex;align-items:center;gap:.7rem;text-align:left;width:100%;padding:.5rem .7rem;background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s}
+.pcard:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(1,86,252,.14);border-color:var(--s-blue)}
+.pcard[aria-pressed=true]{border-color:var(--s-blue);background:var(--s-blue-soft)}
+.pcard .por{flex:none;width:2.6rem;height:2.6rem;display:grid;place-items:center;font-weight:800;color:#fff;font-size:1rem}
+.pcard .t b{display:block;font-size:.95rem}
+.pcard .t span{font-size:.78rem;color:var(--ink-3)}
+.mapinfo .panel{background:var(--paper);border:1px solid var(--s-blue);border-radius:12px;padding:.9rem 1rem}
+.mapinfo h3{font-size:1.05rem}
+.mapinfo .en{font-size:.78rem;color:var(--ink-3);margin-bottom:.4rem}
+.mapinfo .desc{font-size:.9rem;color:var(--ink-2);line-height:1.6}
+.mapinfo .track{list-style:none;display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem}
+.mapinfo .track li{font-size:.75rem;font-weight:600;padding:.2rem .6rem;border-radius:999px;background:var(--s-blue-soft);color:var(--s-blue-deep)}
+.mapinfo .track li.out{background:#FDECEC;color:var(--risk)}
+.mono{letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+
+/* 엔딩 */
+.page.end{justify-content:center;align-items:center;text-align:center;padding:2rem;
+  background:radial-gradient(ellipse at 50% 0,var(--s-blue-soft),transparent 60%),var(--paper)}
+.end .quote{font-size:clamp(1.4rem,min(3.4vw,6vh),3.2rem);font-weight:800;line-height:1.35;letter-spacing:-.01em}
+.end .quote em{font-style:normal;color:var(--s-blue)}
+.end .cred{margin-top:2rem;font-size:.9rem;color:var(--ink-2)}
+.end .pc{margin-top:1rem;max-width:44rem;font-size:.72rem;line-height:1.8;color:var(--ink-3)}
+
+/* ---------- 플레이어 ---------- */
+#player{position:fixed;left:50%;bottom:clamp(.8rem,2.4vh,1.6rem);transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:.6rem;
+  padding:.5rem .9rem;border-radius:999px;background:rgba(255,255,255,.78);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 8px 28px rgba(15,23,42,.14);font-size:.85rem;white-space:nowrap}
+#player button{width:2.4rem;height:2.4rem;border-radius:10px;font-weight:800;transition:background .2s}
+#player button:hover{background:var(--s-blue-soft)}
+#player #play{width:auto;padding:0 1.1rem;background:var(--s-blue);color:#fff}
+#player #play:hover{background:var(--s-blue-deep)}
+#player .sep{width:1px;height:1.3rem;background:var(--line)}
+#engine{color:var(--human);font-weight:600}
+#pos{font-weight:700;color:var(--s-blue)}
+
+@media (max-width:900px){
+  .in-main{grid-template-columns:1fr}
+  .in-art{height:30vh}
+  .in-foot{display:none}
+  .sl-body,.sl-body.solo{grid-template-columns:minmax(0,1fr);overflow:auto;display:block}
+  .sl-side{overflow:visible;border-right:0;border-bottom:1px solid var(--line)}
+  .lines{height:auto;overflow:visible;-webkit-mask-image:none;mask-image:none}
+  .sl-main{position:static}
+  #player{gap:.35rem;padding:.4rem .6rem;font-size:.78rem}
+  #timer,#timer+.sep{display:none}
+}
+@media (max-height:700px){ .hero-context img{max-height:18vh} .stats b{font-size:1.3rem} }
+@media (max-height:640px){ #engine,#engine ~ .sep{display:none} }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .rise{opacity:1}.in-art .ln{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+
+<div id="intro">
+  <div class="in-top"><span><b>AI</b> STORY</span><span>1956 — 2026</span></div>
+  <div class="in-main">
+    <div>
+      <p class="kicker rise" style="--i:0">1956 — 2026 · 70년의 계보</p>
+      <h1 class="rise" style="--i:1">인공지능을<br><em>만든 사람들</em></h1>
+      <p class="teaser rise" style="--i:2">경쟁하는 연구소들처럼 보이지만, 실은 몇 사람에게서 갈라져 나온 하나의 계보다.</p>
+      <button id="introStart" class="rise" style="--i:3">시작</button>
+    </div>
+    <div class="in-art rise" style="--i:2" aria-hidden="true">
+      <svg viewBox="0 0 400 300">
+        <path class="ln" pathLength="1" d="M200 40 C200 90 90 90 90 150 M200 40 C200 100 200 110 200 150 M200 40 C200 90 310 90 310 150 M90 150 C90 200 60 210 60 260 M90 150 C90 200 130 210 130 260 M310 150 C310 200 280 210 280 260 M310 150 C310 200 350 210 350 260"/>
+        <circle class="nd root" cx="200" cy="40" r="14"/>
+        <circle class="nd" cx="90" cy="150" r="10"/><circle class="nd" cx="200" cy="150" r="10"/><circle class="nd" cx="310" cy="150" r="10"/>
+        <circle class="nd" cx="60" cy="260" r="7"/><circle class="nd" cx="130" cy="260" r="7"/><circle class="nd" cx="280" cy="260" r="7"/><circle class="nd" cx="350" cy="260" r="7"/>
+        <text class="lb" x="222" y="36">1956</text>
+      </svg>
+    </div>
+  </div>
+  <div class="in-foot">공개된 사실을 바탕으로 재구성했습니다.</div>
+</div>
+
+<div id="bar"></div>
+<main id="deck"></main>
+
+<div id="player" role="group" aria-label="이야기 재생">
+  <button id="prev" aria-label="이전 장">‹</button>
+  <button id="play">들려주기</button>
+  <button id="next" aria-label="다음 장">›</button>
+  <span class="sep"></span>
+  <span id="pos">– / –</span>
+  <span class="sep"></span>
+  <span id="timer" title="재생 경과 시간 / 예상 전체 길이">0:00 / 40:00</span>
+  <span class="sep"></span>
+  <span id="engine" title="audio/ 폴더에 렌더링된 음성이 있으면 자동으로 사용합니다">브라우저 음성</span>
+</div>
+
+<script>
+/*DATA*/
+
+const portraitURL=k=>`portraits/${k}.jpg`;
+const $=id=>document.getElementById(id);
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* 사진이 없는 인물은 이름 해시로 고정된 2톤 그라디언트 + 이니셜 */
+function initialColor(seed){
+  let h=0; for(let i=0;i<seed.length;i++) h=(h*31+seed.charCodeAt(i))>>>0;
+  const hue=h%360;
+  return `linear-gradient(135deg,hsl(${hue},52%,38%),hsl(${(hue+34)%360},58%,24%))`;
+}
+function attachPortraitFallback(root){
+  root.querySelectorAll('img.por-img').forEach(img=>{
+    img.addEventListener('error',()=>{
+      const b=img.parentNode;
+      img.remove();
+      b.textContent=img.dataset.initial;
+      b.classList.add('mono');
+      b.style.background=initialColor(img.dataset.id||img.alt||img.dataset.initial||'?');
+    });
+  });
+}
+
+/* ---------- 슬라이드 생성 ---------- */
+const deck=$('deck');
+const who1=k=>P[k]||RIVALS[k];
+const pages=[];
+
+SCENES.forEach((sc,i)=>{
+  const s=document.createElement('section');
+  s.className='page';s.id='s'+i;
+  const people=(sc.who||[]).filter(who1);
+  const heroKeys=people.slice(0,3);
+  const hero=heroKeys.length?`<div class="hero-por">${heroKeys.map(k=>{const d=who1(k);
+    return `<div class="hero-por-item"><div class="hero-por-photo"><img class="por-img" src="${portraitURL(k)}" alt="${d.n}" data-initial="${d.m}" data-id="${k}" loading="lazy"></div><span class="hero-por-name">${d.n}</span></div>`;}).join('')}</div>`:'';
+  const ctx=sc.contextImg?`<figure class="hero-context"><img src="${sc.contextImg.src}" alt="${sc.contextImg.cap}" loading="lazy"><figcaption>${sc.contextImg.cap}</figcaption></figure>`:'';
+  const stats=sc.stats?`<div class="stats">${sc.stats.map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`:'';
+  const table=sc.table?`<table class="tb"><tr>${sc.table.h.map(h=>`<th>${h}</th>`).join('')}</tr>${sc.table.r.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</table>`:'';
+  const cards=people.length?`<div class="people">${people.map(k=>{const d=who1(k);
+    return `<button class="pcard" type="button" aria-pressed="false" data-map="${k}" aria-label="${d.n} — 눌러서 알아보기">
+      <span class="por"><img class="por-img" src="${portraitURL(k)}" alt="" data-initial="${d.m}" data-id="${k}"></span>
+      <span class="t"><b>${d.n}</b><span>${(d.t||[]).map(x=>x.split('|')[0]).slice(0,3).join(' → ')}</span></span></button>`;}).join('')}</div><div class="mapinfo" hidden></div>`:'';
+  const side=hero+ctx+stats+table+cards;
+  s.innerHTML=`
+    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${sc.year}</div><h2>${sc.title}</h2></div></div>
+    <div class="sl-body${side?'':' solo'}">
+      ${side?`<aside class="sl-side">${side}</aside>`:''}
+      <div class="sl-main"><div class="lines">${sc.lines.map((l,k)=>`<p class="step${k===0?' active':''}" data-k="${k}">${l}</p>`).join('')}</div></div>
+    </div>`;
+  deck.appendChild(s);pages.push(s);
+  attachPortraitFallback(s);
+  wireMap(s);
+  s.querySelectorAll('.step').forEach(el=>el.onclick=()=>setActive(i,+el.dataset.k,false));
+});
+
+/* 엔딩 슬라이드 */
+const endPage=document.createElement('section');
+endPage.className='page end';endPage.id='closing';
+endPage.innerHTML=`<p class="quote">경쟁처럼 보이는 이 지형은,<br>실은 <em>몇 사람에게서 갈라져 나온</em><br>하나의 계보였다.</p>
+  <p class="cred">인공지능을 만든 사람들 · 1956년 다트머스 회의부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
+  <p class="pc">인물 사진 출처(Wikimedia Commons, CC 라이선스): John McCarthy CC BY 2.0 · Marvin Minsky CC BY-SA 2.0 · Claude Shannon CC BY 2.0 · Geoffrey Hinton CC BY-SA 4.0 · Yann LeCun CC BY-SA 2.0 · Yoshua Bengio CC BY-SA 2.0 · Ilya Sutskever CC BY-SA 4.0 · Demis Hassabis CC BY-SA 4.0 · Elon Musk CC BY-SA 3.0 · Sam Altman CC BY 2.0 · Dario Amodei CC BY 2.0 · Greg Brockman CC BY 3.0 · Mira Murati CC BY 4.0. 나머지 인물은 사진 없이 이니셜로 표시됩니다.</p>`;
+deck.appendChild(endPage);pages.push(endPage);
+const N=SCENES.length, TOTAL=pages.length;
+
+/* 인물 카드 → 상세 패널 */
+function wireMap(section){
+  const info=section.querySelector('.mapinfo'); if(!info) return;
+  section.addEventListener('click',e=>{
+    const t=e.target.closest('[data-map]'); if(!t) return;
+    const k=t.dataset.map, d=who1(k); if(!d) return;
+    const track=(d.t||[]).map(s=>{const[label,flag]=s.split('|');return `<li class="${flag==='out'?'out':''}">${label}</li>`;}).join('');
+    info.hidden=false;
+    info.innerHTML=`<div class="panel"><h3>${d.n}</h3><div class="en">${d.e}</div><p class="desc">${d.d}</p><ul class="track">${track}</ul></div>`;
+    section.querySelectorAll('[data-map]').forEach(n=>n.setAttribute('aria-pressed',n.dataset.map===k?'true':'false'));
+  });
+}
+
+/* ---------- 내비게이션 ---------- */
+let current=0;
+function setActive(i,k,scroll=true){
+  const steps=pages[i].querySelectorAll('.step');
+  steps.forEach((el,n)=>el.classList.toggle('active',n===k));
+  if(scroll&&steps[k]) steps[k].scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
+}
+function syncUI(){
+  pages.forEach((p,n)=>p.classList.toggle('active',n===current));
+  $('bar').style.width=((current+1)/TOTAL*100)+'%';
+  $('pos').textContent=current<N?`${current+1} / ${N}`:'끝';
+}
+function go(i){
+  current=Math.max(0,Math.min(TOTAL-1,i));
+  syncUI();
+  if(current<N) setActive(current,0,false);
+  const l=pages[current].querySelector('.lines'); if(l) l.scrollTop=0;
+}
+
+/* ---------- 음성: audio/<id>.{mp3,wav} 우선, 없으면 브라우저 TTS ---------- */
+const AUDIO_DIR='audio/', AUDIO_EXT=['mp3','wav'];
+const clips={}; let engine='browser';
+const clipName=i=>String(i+1).padStart(2,'0')+'-scene';
+/* extract_narration.py 의 OPENING 과 같은 문구를 유지한다. 엔딩은 DOM 에서 읽어 중복을 피한다. */
+const OPENING_TEXT='지금부터 인공지능을 만든 사람들의 이야기를 전해드립니다. 1956년 다트머스에서 시작해 지금까지 이어진, 70년에 걸친 하나의 계보입니다.';
+const ENDING_TEXT=(endPage.querySelector('.quote').textContent||'').replace(/\s+/g,' ').trim();
+
+function getClip(id){
+  if(clips[id]) return clips[id];
+  const a=new Audio(); a.preload='auto'; a.dataset.ok='0';
+  let k=0;
+  const tryNext=()=>{ if(k>=AUDIO_EXT.length){ a.dataset.ok='fail'; return; } a.src=AUDIO_DIR+id+'.'+AUDIO_EXT[k++]; };
+  a.addEventListener('canplaythrough',()=>{ a.dataset.ok='1'; if(engine!=='omnivoice'){ engine='omnivoice'; markEngine(); } });
+  a.addEventListener('error',tryNext);
+  tryNext(); clips[id]=a; return a;
+}
+function markEngine(){ $('engine').textContent=engine==='omnivoice'?'고품질 음성':'브라우저 음성'; }
+
+const synth=window.speechSynthesis; let koVoice=null;
+function pickVoice(){ if(!synth) return; const vs=synth.getVoices();
+  koVoice=vs.find(v=>v.lang==='ko-KR'&&/female|여성|유나|Yuna|Heami/i.test(v.name))||vs.find(v=>v.lang==='ko-KR')||vs.find(v=>v.lang.startsWith('ko'))||null; }
+pickVoice(); if(synth&&synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice;
+
+let playing=false;
+const plain=i=>SCENES[i].lines.join(' ');
+
+function browserSay(text,onend){
+  if(!synth){ onend&&onend(); return; }
+  const u=new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=.94; u.pitch=1;
+  if(koVoice) u.voice=koVoice; u.onend=onend; synth.speak(u);
+}
+function speakText(id,text,onend){
+  const a=getClip(id);
+  if(a.dataset.ok==='fail'){ browserSay(text,onend); return; }
+  a.onended=onend; a.currentTime=0;
+  const pr=a.play(); if(pr&&pr.catch) pr.catch(()=>browserSay(text,onend));
+}
+function afterScene(i){
+  if(!playing) return;
+  if(i<N-1){ setTimeout(()=>{ if(!playing) return; go(i+1); speak(i+1); },900); }
+  else { go(N); speakText('17-ending',ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
+}
+/* 문장 자막 동기화(근사): 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정 */
+function wireCaptionSync(i,a){
+  const chars=SCENES[i].lines.map(l=>l.length), total=chars.reduce((s,c)=>s+c,0);
+  if(!total) return;
+  a.ontimeupdate=()=>{
+    const dur=a.duration; if(!dur||!isFinite(dur)) return;
+    let acc=0,idx=0;
+    for(let k=0;k<chars.length;k++){ acc+=chars[k]; idx=k; if(a.currentTime<=(acc/total)*dur) break; }
+    const cur=pages[i].querySelector('.step.active');
+    if(!cur||+cur.dataset.k!==idx) setActive(i,idx);
+  };
+}
+function speak(i){
+  silence();
+  const a=getClip(clipName(i));
+  if(a.dataset.ok==='fail'){ browserSay(plain(i),()=>afterScene(i)); return; }
+  wireCaptionSync(i,a);
+  a.onended=()=>afterScene(i); a.currentTime=0;
+  const pr=a.play(); if(pr&&pr.catch) pr.catch(()=>browserSay(plain(i),()=>afterScene(i)));
+}
+function silence(){
+  if(synth) synth.cancel();
+  Object.values(clips).forEach(a=>{ try{a.pause(); a.ontimeupdate=null;}catch(e){} });
+}
+
+/* 재생 경과 타이머 */
+let elapsedSec=0,targetSec=40*60,timerInt=null;
+const fmtTime=s=>{ s=Math.max(0,Math.round(s)); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; };
+const renderTimer=()=>{ $('timer').textContent=`${fmtTime(elapsedSec)} / ${fmtTime(targetSec)}`; };
+fetch(AUDIO_DIR+'manifest.json').then(r=>r.ok?r.json():null).then(m=>{
+  if(!m||!m.items) return; const sum=m.items.reduce((s,it)=>s+(it.seconds||0),0);
+  if(sum>0){ targetSec=sum; renderTimer(); }
+}).catch(()=>{});
+const timerStart=()=>{ clearInterval(timerInt); timerInt=setInterval(()=>{ elapsedSec++; renderTimer(); },1000); };
+const timerStop=()=>clearInterval(timerInt);
+renderTimer();
+
+let openingDone=false;
+function start(){
+  playing=true; $('play').textContent='멈추기';
+  if(current>=N) go(0);
+  if(!openingDone&&current===0){ elapsedSec=0; renderTimer(); }
+  timerStart();
+  if(!openingDone&&current===0){
+    openingDone=true;
+    speakText('00-opening',OPENING_TEXT,()=>{ if(playing) speak(current); });
+  } else speak(current);
+}
+function stop(){ playing=false; $('play').textContent='들려주기'; silence(); timerStop(); }
+$('play').onclick=()=>playing?stop():start();
+$('prev').onclick=()=>{ const n=current-1; stop(); go(n); };
+$('next').onclick=()=>{ const n=current+1; stop(); go(n); };
+document.addEventListener('keydown',e=>{
+  if(e.target.closest&&e.target.closest('button')&&(e.key===' '||e.key==='Enter')) return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){ const n=current+1; stop(); go(n); }
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){ const n=current-1; stop(); go(n); }
+  else if(e.key===' '){ e.preventDefault(); $('play').click(); }
+});
+
+getClip(clipName(0)); markEngine(); go(0);
+$('introStart').onclick=()=>{
+  const intro=$('intro'); intro.classList.add('hide');
+  setTimeout(()=>{ intro.hidden=true; },reduceMotion?0:700);
+  start();
+};
+</script>
+</body>
+</html>
