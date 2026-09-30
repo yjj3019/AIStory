@@ -9,13 +9,12 @@
 :root{
   --s-blue:#0156FC; --s-blue-deep:#003BB8; --s-blue-soft:#E8F0FF;
   --ink:#0F172A; --ink-2:#334155; --ink-3:#64748B; --line:#D6E0F5; --paper:#FFFFFF; --bg:#F3F6FD;
-  --risk:#E03131; --human:#0B7285; --pending:#B7791F;
-  --g:clamp(.9rem,2.2vh,1.6rem);
+  --risk:#E03131; --risk-bg:#FDECEC; --human:#0B7285; --pending:#B7791F; --pending-bg:#FFF6E0;
   --font:Pretendard,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:var(--font);color:var(--ink);background:var(--bg);overflow:hidden;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);overflow:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue);outline-offset:2px}
 
@@ -49,65 +48,106 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 @keyframes inUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes inDraw{to{stroke-dashoffset:0}}
 
-/* ---------- 상단 진행 표시 ---------- */
+/* ---------- 슬라이드 프레임 ---------- */
 #bar{position:fixed;top:0;left:0;height:4px;width:0;background:var(--s-blue);z-index:40;transition:width .5s ease}
-
-/* ---------- 슬라이드 ---------- */
 #deck{position:fixed;inset:0}
 .page{position:absolute;inset:clamp(.6rem,2vh,1.4rem) clamp(.6rem,2.5vw,2rem) clamp(4.6rem,10vh,6rem);display:flex;flex-direction:column;min-height:0;
-  background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(15,23,42,.08);
+  background:var(--paper);border:1px solid rgba(1,86,252,.1);border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(15,23,42,.08);
   opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s}
 .page.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
-.sl-head{flex:none;display:flex;align-items:center;gap:clamp(.8rem,2vw,1.6rem);padding:clamp(.8rem,2.2vh,1.5rem) clamp(1rem,2.5vw,2rem);
+.sl-head{flex:none;display:flex;align-items:center;gap:clamp(.8rem,2vw,1.6rem);padding:clamp(.7rem,2vh,1.3rem) clamp(1rem,2.5vw,2rem);
   background:linear-gradient(120deg,var(--s-blue-deep),var(--s-blue));color:#fff}
 .ch-no{flex:none;min-width:2.6em;height:2.6em;padding:0 .7em;border-radius:999px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:800;font-size:clamp(.85rem,1.9vh,1.1rem)}
 .sl-head .tt{min-width:0}
 .year{font-size:clamp(.78rem,1.7vh,1rem);font-weight:700;opacity:.82;letter-spacing:.04em}
 .sl-head h2{font-size:clamp(1.15rem,min(2.6vw,4.8vh),2.6rem);line-height:1.22;font-weight:800;letter-spacing:-.01em}
-.sl-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:0}
-.sl-body.solo{grid-template-columns:minmax(0,1fr)}
-.sl-side{min-height:0;overflow:auto;padding:clamp(.9rem,2.4vh,1.6rem) clamp(1rem,2vw,1.6rem);background:linear-gradient(180deg,var(--s-blue-soft),#F6F9FF);
-  border-right:1px solid var(--line);display:flex;flex-direction:column;gap:var(--g)}
-.sl-main{min-height:0;position:relative}
-.lines{height:100%;overflow:auto;padding:clamp(1rem,3vh,2rem) clamp(1.2rem,3vw,2.6rem);scroll-behavior:smooth;
-  -webkit-mask-image:linear-gradient(#0000,#000 4%,#000 94%,#0000);mask-image:linear-gradient(#0000,#000 4%,#000 94%,#0000)}
-.step{font-size:max(17px,min(2.6vh,1.55vw));line-height:1.75;color:var(--ink-3);opacity:.55;padding:.55em 0 .55em 1rem;border-left:4px solid transparent;
-  transition:opacity .35s,color .35s,border-color .35s;cursor:pointer}
-.step.active{color:var(--ink);opacity:1;border-left-color:var(--s-blue);font-weight:500}
 
-/* 좌측 시각 요소 */
-.hero-por{display:flex;gap:.8rem;flex-wrap:wrap}
-.hero-por-item{flex:1 1 4.5rem;max-width:7rem;text-align:center}
-.hero-por-photo,.por{border-radius:50%;overflow:hidden;background:var(--s-blue-soft);box-shadow:inset 0 0 0 3px var(--paper),0 0 0 2px var(--s-blue)}
-.hero-por-photo{aspect-ratio:1;width:100%;display:grid;place-items:center;font-weight:800;font-size:2.2rem;color:#fff}
-.hero-por-photo img,.por img{width:100%;height:100%;object-fit:cover;display:block}
-.hero-por-name{display:block;margin-top:.45rem;font-weight:700;font-size:.92rem}
-.hero-context{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
-.hero-context img{width:100%;max-height:28vh;object-fit:cover;display:block}
-.hero-context figcaption{padding:.5rem .8rem;font-size:.8rem;color:var(--ink-3)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(6.5rem,1fr));gap:.6rem}
-.stats div{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--s-blue);border-radius:10px;padding:.7rem .8rem}
-.stats b{display:block;font-size:clamp(1.3rem,3.2vh,2rem);font-weight:800;color:var(--s-blue);line-height:1.1}
-.stats span{font-size:.8rem;color:var(--ink-2)}
-.tb{width:100%;border-collapse:collapse;font-size:.88rem;background:var(--paper);border-radius:10px;overflow:hidden}
-.tb th{background:var(--s-blue);color:#fff;text-align:left;padding:.5rem .7rem}
-.tb td{padding:.5rem .7rem;border-top:1px solid var(--line)}
-.people{display:flex;flex-direction:column;gap:.5rem}
-.pcard{display:flex;align-items:center;gap:.7rem;text-align:left;width:100%;padding:.5rem .7rem;background:var(--paper);border:1px solid var(--line);border-radius:12px;
-  transition:transform .2s ease,box-shadow .2s ease,border-color .2s}
-.pcard:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(1,86,252,.14);border-color:var(--s-blue)}
-.pcard[aria-pressed=true]{border-color:var(--s-blue);background:var(--s-blue-soft)}
-.pcard .por{flex:none;width:2.6rem;height:2.6rem;display:grid;place-items:center;font-weight:800;color:#fff;font-size:1rem}
-.pcard .t b{display:block;font-size:.95rem}
-.pcard .t span{font-size:.78rem;color:var(--ink-3)}
-.mapinfo .panel{background:var(--paper);border:1px solid var(--s-blue);border-radius:12px;padding:.9rem 1rem}
-.mapinfo h3{font-size:1.05rem}
-.mapinfo .en{font-size:.78rem;color:var(--ink-3);margin-bottom:.4rem}
-.mapinfo .desc{font-size:.9rem;color:var(--ink-2);line-height:1.6}
-.mapinfo .track{list-style:none;display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem}
-.mapinfo .track li{font-size:.75rem;font-weight:600;padding:.2rem .6rem;border-radius:999px;background:var(--s-blue-soft);color:var(--s-blue-deep)}
-.mapinfo .track li.out{background:#FDECEC;color:var(--risk)}
-.mono{letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+/* ---------- 본문: 도해 ---------- */
+.sl-body{flex:1;min-height:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr);padding:clamp(.6rem,1.6vh,1.1rem) clamp(.8rem,1.6vw,1.4rem)}
+.vis{min-height:0;overflow:auto;display:grid;gap:clamp(.7rem,1.6vh,1.2rem);grid-template-columns:minmax(0,1fr);align-content:stretch}
+.vis.has-photo{grid-template-columns:minmax(0,.5fr) minmax(0,1.5fr)}
+.split-photo{position:relative;min-height:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--s-blue-soft)}
+.split-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.split-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem .9rem .6rem;color:#fff;font-size:.8rem;font-weight:600;
+  background:linear-gradient(transparent,rgba(15,23,42,.78))}
+.dg{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(.6rem,1.4vh,1rem)}
+.dg.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+.dg.dense .lane{min-height:3.6rem;max-height:5.6rem;padding-top:.35rem;padding-bottom:.35rem}
+.dg.dense .por{width:clamp(2.6rem,6.5vh,3.4rem);height:clamp(2.6rem,6.5vh,3.4rem);font-size:1.1rem}
+.dg.dense .dg-steps li{padding-top:.35rem;padding-bottom:.35rem;font-size:max(12px,1.7vh)}
+.dg.dense .tb{font-size:max(12px,1.6vh)}
+.dg.dense .tb td,.dg.dense .tb th{padding:.28rem .7rem}
+.dg-col{min-height:0;display:flex;flex-direction:column;gap:clamp(.5rem,1.2vh,.9rem)}
+
+/* 인물 레인: 사진 + 이름 + 화살표 이력 */
+.lane{flex:1 1 0;min-height:4.6rem;max-height:10rem;display:grid;grid-template-columns:minmax(9rem,13rem) minmax(0,1fr);align-items:center;gap:clamp(.7rem,1.6vw,1.4rem);
+  padding:.55rem clamp(.7rem,1.4vw,1.1rem);background:var(--paper);border:2.5px solid var(--s-blue);border-radius:14px;text-align:left;cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s}
+.lane:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(1,86,252,.16)}
+.lane[aria-pressed=true]{background:var(--s-blue-soft);max-height:none}
+.ln-id{display:flex;align-items:center;gap:.8rem;min-width:0}
+.por{flex:none;width:clamp(3.2rem,9vh,4.8rem);height:clamp(3.2rem,9vh,4.8rem);border-radius:50%;overflow:hidden;display:grid;place-items:center;
+  background:var(--s-blue-soft);color:#fff;font-weight:800;font-size:1.4rem;box-shadow:inset 0 0 0 3px var(--paper),0 0 0 2px var(--s-blue)}
+.por img{width:100%;height:100%;object-fit:cover;display:block}
+.ln-id b{display:block;font-size:max(16px,2.3vh);font-weight:800;line-height:1.2}
+.ln-id i{display:block;font-style:normal;font-size:.78rem;color:var(--ink-3)}
+.ln-body{min-width:0}
+.dg-steps{list-style:none;display:flex;gap:.25rem}
+.dg-steps li{--tip:.9rem;flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:.55rem calc(var(--tip) + .35rem) .55rem .9rem;color:#fff;font-weight:800;font-size:max(13px,1.9vh);line-height:1.2;
+  background:color-mix(in srgb,var(--s-blue) calc(var(--p)*100%),var(--s-blue-deep));
+  clip-path:polygon(0 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,0 100%)}
+.dg-steps li:not(:first-child){clip-path:polygon(0 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,0 100%,var(--tip) 50%);margin-left:calc(var(--tip)*-.55)}
+.dg-steps li:last-child{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,var(--tip) 50%)}
+.dg-steps li:only-child{clip-path:none;border-radius:10px;padding-left:.9rem}
+.dg-steps li.out{background:var(--risk)}
+.ln-desc{display:none;margin-top:.6rem;font-size:max(14px,1.9vh);line-height:1.65;color:var(--ink-2)}
+.lane[aria-pressed=true] .ln-desc{display:block}
+.lane .hint{display:none}
+
+/* 통계 카드 */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:clamp(.5rem,1.2vw,.9rem)}
+.stat{background:var(--paper);border:2.5px solid var(--s-blue);border-radius:14px;padding:.8rem 1rem;text-align:center}
+.stat b{display:block;font-size:clamp(1.8rem,5.2vh,3.4rem);font-weight:800;color:var(--s-blue);line-height:1.05;letter-spacing:-.02em}
+.stat span{display:block;margin-top:.3rem;font-size:max(13px,1.9vh);color:var(--ink-2);font-weight:600}
+.stats.only{flex:1;align-content:center}
+.stats.only .stat{padding:clamp(1rem,4vh,2.4rem) 1rem}
+
+/* 매트릭스(표) */
+.tb{width:100%;border-collapse:separate;border-spacing:0;font-size:max(13px,1.8vh);background:var(--paper);border:2.5px solid var(--s-blue);border-radius:14px;overflow:hidden}
+.tb th{background:var(--s-blue);color:#fff;text-align:left;padding:.5rem .8rem;font-weight:800}
+.tb td{padding:.42rem .8rem;border-top:1px solid var(--line)}
+.tb tr:nth-child(even) td{background:#F6F9FF}
+.tb td:first-child{font-weight:700}
+
+/* ---------- 요약 띠 = 자막 ---------- */
+.cap{flex:none;padding:.55rem clamp(.8rem,1.6vw,1.4rem) clamp(.6rem,1.6vh,1rem);border-top:1px solid var(--line);background:linear-gradient(180deg,#F6F9FF,var(--paper))}
+.segs{display:flex;gap:3px;height:6px;margin-bottom:.55rem}
+.seg{flex:1 1 0;min-width:2px;border-radius:3px;background:var(--line);cursor:pointer;transition:background .3s,transform .2s}
+.seg.done{background:color-mix(in srgb,var(--s-blue) 55%,var(--line))}
+.seg.active{background:var(--s-blue);transform:scaleY(1.7)}
+.cap-row{display:flex;align-items:center;gap:.6rem}
+.cap-text{flex:1;min-width:0;padding:.2rem 0 .2rem 1rem;border-left:5px solid var(--s-blue);font-size:max(18px,min(3vh,1.9vw));font-weight:700;line-height:1.45;color:var(--ink);
+  min-height:calc(2 * 1.45em + .4rem);display:flex;align-items:center}
+.cap-text span{animation:capIn .35s ease}
+@keyframes capIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.cn{flex:none;width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid var(--line);background:var(--paper);font-weight:800;color:var(--s-blue);transition:background .2s}
+.cn:hover{background:var(--s-blue-soft)}
+.btn-script{flex:none;padding:.45rem .9rem;border-radius:999px;border:1.5px solid var(--s-blue);color:var(--s-blue);font-weight:700;font-size:.85rem;transition:background .2s,color .2s}
+.btn-script:hover,.btn-script[aria-expanded=true]{background:var(--s-blue);color:#fff}
+
+/* 전체 대본 드로어 */
+.script{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;background:var(--paper);
+  transform:translateY(102%);transition:transform .4s ease;visibility:hidden}
+.script.open{transform:none;visibility:visible}
+.script-head{flex:none;display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.4rem;border-bottom:1px solid var(--line);font-weight:800;color:var(--s-blue-deep)}
+.script ol{list-style:none;overflow:auto;padding:1rem clamp(1rem,3vw,2.4rem) 2rem;display:flex;flex-direction:column;gap:.5rem;counter-reset:s}
+.script li{counter-increment:s;position:relative;padding:.8rem 1rem .8rem 3.2rem;border-radius:12px;line-height:1.75;font-size:max(15px,2vh);color:var(--ink-3);cursor:pointer;border:1px solid transparent}
+.script li::before{content:counter(s,decimal-leading-zero);position:absolute;left:.9rem;top:.85rem;width:1.8rem;height:1.8rem;border-radius:50%;display:grid;place-items:center;
+  font-size:.7rem;font-weight:800;border:2px solid var(--line);background:var(--paper);color:var(--ink-3)}
+.script li:hover{background:var(--s-blue-soft)}
+.script li.on{color:var(--ink);font-weight:600;background:var(--s-blue-soft);border-color:var(--s-blue)}
+.script li.on::before{background:var(--s-blue);border-color:var(--s-blue);color:#fff}
 
 /* 엔딩 */
 .page.end{justify-content:center;align-items:center;text-align:center;padding:2rem;
@@ -116,6 +156,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .end .quote em{font-style:normal;color:var(--s-blue)}
 .end .cred{margin-top:2rem;font-size:.9rem;color:var(--ink-2)}
 .end .pc{margin-top:1rem;max-width:44rem;font-size:.72rem;line-height:1.8;color:var(--ink-3)}
+.mono{letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 
 /* ---------- 플레이어 ---------- */
 #player{position:fixed;left:50%;bottom:clamp(.8rem,2.4vh,1.6rem);transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:.6rem;
@@ -133,14 +174,15 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   .in-main{grid-template-columns:1fr}
   .in-art{height:30vh}
   .in-foot{display:none}
-  .sl-body,.sl-body.solo{grid-template-columns:minmax(0,1fr);overflow:auto;display:block}
-  .sl-side{overflow:visible;border-right:0;border-bottom:1px solid var(--line)}
-  .lines{height:auto;overflow:visible;-webkit-mask-image:none;mask-image:none}
-  .sl-main{position:static}
+  .vis.has-photo{grid-template-columns:minmax(0,1fr)}
+  .split-photo{height:28vh}
+  .dg.two{grid-template-columns:minmax(0,1fr)}
+  .lane{grid-template-columns:minmax(0,1fr);max-height:none}
+  .cap-row{flex-wrap:wrap}
   #player{gap:.35rem;padding:.4rem .6rem;font-size:.78rem}
   #timer,#timer+.sep{display:none}
 }
-@media (max-height:700px){ .hero-context img{max-height:18vh} .stats b{font-size:1.3rem} }
+@media (max-height:700px){ .segs{margin-bottom:.35rem} }
 @media (max-height:640px){ #engine,#engine ~ .sep{display:none} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -193,6 +235,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 const portraitURL=k=>`portraits/${k}.jpg`;
 const $=id=>document.getElementById(id);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* 사진이 없는 인물은 이름 해시로 고정된 2톤 그라디언트 + 이니셜 */
 function initialColor(seed){
@@ -212,36 +255,60 @@ function attachPortraitFallback(root){
   });
 }
 
+/* 나레이션 문장 분해 — 자막은 한 번에 한 문장만 보여준다. 문구는 SCENES 그대로이며 새로 쓰지 않는다. */
+const splitSentences=line=>line.split(/(?<=[.?!])\s+(?=[가-힣A-Z"“(0-9])/).map(s=>s.trim()).filter(Boolean);
+const SENTS=SCENES.map(sc=>sc.lines.flatMap((l,li)=>splitSentences(l).map(t=>({t,li}))));
+
 /* ---------- 슬라이드 생성 ---------- */
 const deck=$('deck');
 const who1=k=>P[k]||RIVALS[k];
 const pages=[];
+const cur=SCENES.map(()=>0);
+
+function laneHTML(k){
+  const d=who1(k), n=(d.t||[]).length;
+  const steps=(d.t||[]).map((x,j)=>{const[label,flag]=x.split('|');
+    return `<li class="${flag==='out'?'out':''}" style="--p:${n>1?(j/(n-1)).toFixed(2):1}">${esc(label)}</li>`;}).join('');
+  return `<div class="lane" role="button" tabindex="0" aria-pressed="false" data-map="${k}" aria-label="${esc(d.n)} — 눌러서 알아보기">
+    <div class="ln-id"><span class="por"><img class="por-img" src="${portraitURL(k)}" alt="" data-initial="${esc(d.m)}" data-id="${k}"></span>
+      <div><b>${esc(d.n)}</b><i>${esc(d.e||'')}</i></div></div>
+    <div class="ln-body"><ol class="dg-steps">${steps}</ol><p class="ln-desc">${esc(d.d||'')}</p></div></div>`;
+}
 
 SCENES.forEach((sc,i)=>{
   const s=document.createElement('section');
   s.className='page';s.id='s'+i;
   const people=(sc.who||[]).filter(who1);
-  const heroKeys=people.slice(0,3);
-  const hero=heroKeys.length?`<div class="hero-por">${heroKeys.map(k=>{const d=who1(k);
-    return `<div class="hero-por-item"><div class="hero-por-photo"><img class="por-img" src="${portraitURL(k)}" alt="${d.n}" data-initial="${d.m}" data-id="${k}" loading="lazy"></div><span class="hero-por-name">${d.n}</span></div>`;}).join('')}</div>`:'';
-  const ctx=sc.contextImg?`<figure class="hero-context"><img src="${sc.contextImg.src}" alt="${sc.contextImg.cap}" loading="lazy"><figcaption>${sc.contextImg.cap}</figcaption></figure>`:'';
-  const stats=sc.stats?`<div class="stats">${sc.stats.map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`:'';
-  const table=sc.table?`<table class="tb"><tr>${sc.table.h.map(h=>`<th>${h}</th>`).join('')}</tr>${sc.table.r.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</table>`:'';
-  const cards=people.length?`<div class="people">${people.map(k=>{const d=who1(k);
-    return `<button class="pcard" type="button" aria-pressed="false" data-map="${k}" aria-label="${d.n} — 눌러서 알아보기">
-      <span class="por"><img class="por-img" src="${portraitURL(k)}" alt="" data-initial="${d.m}" data-id="${k}"></span>
-      <span class="t"><b>${d.n}</b><span>${(d.t||[]).map(x=>x.split('|')[0]).slice(0,3).join(' → ')}</span></span></button>`;}).join('')}</div><div class="mapinfo" hidden></div>`:'';
-  const side=hero+ctx+stats+table+cards;
+  const photo=sc.contextImg?`<figure class="split-photo"><img src="${sc.contextImg.src}" alt="${esc(sc.contextImg.cap)}" loading="lazy"><figcaption>${esc(sc.contextImg.cap)}</figcaption></figure>`:'';
+  const statsOnly=sc.stats&&!people.length&&!sc.table;
+  const stats=sc.stats?`<div class="stats${statsOnly?' only':''}">${sc.stats.map(x=>`<div class="stat"><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div>`).join('')}</div>`:'';
+  const table=sc.table?`<table class="tb"><tr>${sc.table.h.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${sc.table.r.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`:'';
+  const lanes=people.map(laneHTML).join('');
+  let main;
+  if(table&&lanes&&!photo) main=`<div class="dg two"><div class="dg-col">${lanes}</div><div class="dg-col">${stats}${table}</div></div>`;
+  else if(table&&lanes) main=`<div class="dg dense">${stats}${lanes}${table}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
+  else main=`<div class="dg">${stats&&!statsOnly?stats:''}${lanes}${table}${statsOnly?stats:''}</div>`;
+  const segs=SENTS[i].map((_,k)=>`<i class="seg${k===0?' active':''}" data-k="${k}"></i>`).join('');
+  const script=sc.lines.map((l,li)=>`<li data-li="${li}">${esc(l)}</li>`).join('');
   s.innerHTML=`
-    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${sc.year}</div><h2>${sc.title}</h2></div></div>
-    <div class="sl-body${side?'':' solo'}">
-      ${side?`<aside class="sl-side">${side}</aside>`:''}
-      <div class="sl-main"><div class="lines">${sc.lines.map((l,k)=>`<p class="step${k===0?' active':''}" data-k="${k}">${l}</p>`).join('')}</div></div>
-    </div>`;
+    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2>${esc(sc.title)}</h2></div></div>
+    <div class="sl-body">
+      <div class="vis${photo?' has-photo':''}">${photo}${main}</div>
+      <aside class="script" aria-label="전체 대본"><div class="script-head"><span>전체 대본</span><button class="cn" data-act="close" aria-label="대본 닫기">×</button></div><ol>${script}</ol></aside>
+    </div>
+    <footer class="cap">
+      <div class="segs" aria-hidden="true">${segs}</div>
+      <div class="cap-row">
+        <button class="cn" data-act="sprev" aria-label="이전 문장">‹</button>
+        <p class="cap-text" aria-live="polite"><span></span></p>
+        <button class="cn" data-act="snext" aria-label="다음 문장">›</button>
+        <button class="btn-script" data-act="script" aria-expanded="false">대본</button>
+      </div>
+    </footer>`;
   deck.appendChild(s);pages.push(s);
   attachPortraitFallback(s);
-  wireMap(s);
-  s.querySelectorAll('.step').forEach(el=>el.onclick=()=>setActive(i,+el.dataset.k,false));
+  wireSlide(s,i);
+  setSent(i,0);
 });
 
 /* 엔딩 슬라이드 */
@@ -253,25 +320,44 @@ endPage.innerHTML=`<p class="quote">경쟁처럼 보이는 이 지형은,<br>실
 deck.appendChild(endPage);pages.push(endPage);
 const N=SCENES.length, TOTAL=pages.length;
 
-/* 인물 카드 → 상세 패널 */
-function wireMap(section){
-  const info=section.querySelector('.mapinfo'); if(!info) return;
-  section.addEventListener('click',e=>{
-    const t=e.target.closest('[data-map]'); if(!t) return;
-    const k=t.dataset.map, d=who1(k); if(!d) return;
-    const track=(d.t||[]).map(s=>{const[label,flag]=s.split('|');return `<li class="${flag==='out'?'out':''}">${label}</li>`;}).join('');
-    info.hidden=false;
-    info.innerHTML=`<div class="panel"><h3>${d.n}</h3><div class="en">${d.e}</div><p class="desc">${d.d}</p><ul class="track">${track}</ul></div>`;
-    section.querySelectorAll('[data-map]').forEach(n=>n.setAttribute('aria-pressed',n.dataset.map===k?'true':'false'));
+/* 슬라이드 내 상호작용: 인물 레인 펼치기, 자막 이동, 대본 드로어 */
+function wireSlide(s,i){
+  const toggleLane=t=>{
+    const on=t.getAttribute('aria-pressed')!=='true';
+    s.querySelectorAll('.lane').forEach(n=>n.setAttribute('aria-pressed','false'));
+    t.setAttribute('aria-pressed',on?'true':'false');
+  };
+  s.addEventListener('click',e=>{
+    const lane=e.target.closest('.lane'); if(lane){ toggleLane(lane); return; }
+    const seg=e.target.closest('.seg'); if(seg){ stop(); setSent(i,+seg.dataset.k); return; }
+    const li=e.target.closest('.script li'); if(li){ stop(); setSent(i,SENTS[i].findIndex(x=>x.li===+li.dataset.li)); return; }
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const a=b.dataset.act;
+    if(a==='sprev'){ stop(); setSent(i,cur[i]-1); }
+    else if(a==='snext'){ stop(); setSent(i,cur[i]+1); }
+    else if(a==='script'||a==='close'){
+      const open=!s.querySelector('.script').classList.contains('open');
+      s.querySelector('.script').classList.toggle('open',open);
+      s.querySelector('.btn-script').setAttribute('aria-expanded',String(open));
+    }
+  });
+  s.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ') return;
+    const lane=e.target.closest('.lane'); if(!lane) return;
+    e.preventDefault(); e.stopPropagation(); toggleLane(lane);
   });
 }
 
 /* ---------- 내비게이션 ---------- */
 let current=0;
-function setActive(i,k,scroll=true){
-  const steps=pages[i].querySelectorAll('.step');
-  steps.forEach((el,n)=>el.classList.toggle('active',n===k));
-  if(scroll&&steps[k]) steps[k].scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
+function setSent(i,k){
+  const list=SENTS[i]; k=Math.max(0,Math.min(list.length-1,k)); cur[i]=k;
+  const p=pages[i];
+  const t=p.querySelector('.cap-text span'); t.textContent=list[k].t;
+  t.style.animation='none'; void t.offsetWidth; t.style.animation='';
+  p.querySelectorAll('.seg').forEach((el,n)=>{ el.classList.toggle('active',n===k); el.classList.toggle('done',n<k); });
+  p.querySelectorAll('.script li').forEach(el=>el.classList.toggle('on',+el.dataset.li===list[k].li));
+  const on=p.querySelector('.script li.on'); if(on&&p.querySelector('.script').classList.contains('open')) on.scrollIntoView({block:'nearest'});
 }
 function syncUI(){
   pages.forEach((p,n)=>p.classList.toggle('active',n===current));
@@ -281,8 +367,7 @@ function syncUI(){
 function go(i){
   current=Math.max(0,Math.min(TOTAL-1,i));
   syncUI();
-  if(current<N) setActive(current,0,false);
-  const l=pages[current].querySelector('.lines'); if(l) l.scrollTop=0;
+  if(current<N) setSent(current,0);
 }
 
 /* ---------- 음성: audio/<id>.{mp3,wav} 우선, 없으면 브라우저 TTS ---------- */
@@ -328,16 +413,17 @@ function afterScene(i){
   if(i<N-1){ setTimeout(()=>{ if(!playing) return; go(i+1); speak(i+1); },900); }
   else { go(N); speakText('17-ending',ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
 }
-/* 문장 자막 동기화(근사): 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정 */
+/* 자막 동기화(근사): 클립이 장 전체 1개 파일이라 문장별 타이밍이 없다.
+   문장 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정한다 — 몇 초 어긋날 수 있다.
+   render_tts.py --granularity line 으로 문장(줄)당 클립을 만들면 정확해진다. */
 function wireCaptionSync(i,a){
-  const chars=SCENES[i].lines.map(l=>l.length), total=chars.reduce((s,c)=>s+c,0);
+  const chars=SENTS[i].map(x=>x.t.length), total=chars.reduce((s,c)=>s+c,0);
   if(!total) return;
   a.ontimeupdate=()=>{
     const dur=a.duration; if(!dur||!isFinite(dur)) return;
     let acc=0,idx=0;
     for(let k=0;k<chars.length;k++){ acc+=chars[k]; idx=k; if(a.currentTime<=(acc/total)*dur) break; }
-    const cur=pages[i].querySelector('.step.active');
-    if(!cur||+cur.dataset.k!==idx) setActive(i,idx);
+    if(idx!==cur[i]) setSent(i,idx);
   };
 }
 function speak(i){
@@ -381,7 +467,7 @@ $('play').onclick=()=>playing?stop():start();
 $('prev').onclick=()=>{ const n=current-1; stop(); go(n); };
 $('next').onclick=()=>{ const n=current+1; stop(); go(n); };
 document.addEventListener('keydown',e=>{
-  if(e.target.closest&&e.target.closest('button')&&(e.key===' '||e.key==='Enter')) return;
+  if(e.target.closest&&e.target.closest('button,[role=button]')&&(e.key===' '||e.key==='Enter')) return;
   if(e.key==='ArrowRight'||e.key==='PageDown'){ const n=current+1; stop(); go(n); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ const n=current-1; stop(); go(n); }
   else if(e.key===' '){ e.preventDefault(); $('play').click(); }
