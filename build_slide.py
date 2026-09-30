@@ -43,6 +43,12 @@ def end_quote(html: str) -> str:
     return m.group(1).strip()
 
 
+def roll_inner(html: str) -> str:
+    """원본의 엔딩 크레딧 롤(<!--ROLL-->…<!--/ROLL-->) 안쪽 HTML. 16장 시절 원본에는 없다."""
+    m = re.search(r"<!--ROLL-->(.*?)<!--/ROLL-->", html, re.S)
+    return m.group(1) if m else ""
+
+
 def main() -> None:
     here = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -57,7 +63,7 @@ def main() -> None:
     if "/*DATA*/" not in tpl:
         raise SystemExit("[오류] 템플릿에 /*DATA*/ 마커가 없다.")
 
-    data = "\n\n".join(extract(src, *b) for b in BLOCKS) + "\n\nObject.assign(RIVALS, EXTRAS);" + "\nconst END_QUOTE = " + json.dumps(end_quote(src), ensure_ascii=False) + ";"  # 계보도 밖 인물 = RIVALS + EXTRAS
+    data = "\n\n".join(extract(src, *b) for b in BLOCKS) + "\n\nObject.assign(RIVALS, EXTRAS);" + "\nconst END_QUOTE = " + json.dumps(end_quote(src), ensure_ascii=False) + ";" + "\nconst ROLL_HTML = " + json.dumps(roll_inner(src), ensure_ascii=False) + ";"  # 계보도 밖 인물 = RIVALS + EXTRAS
     out = tpl.replace("/*DATA*/", data)
     if "const AUDIO_DIR='audio/'" not in out:
         raise SystemExit("[오류] 템플릿에서 AUDIO_DIR 선언을 찾지 못했다")

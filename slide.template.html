@@ -170,6 +170,27 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .script li.on{color:var(--ink);font-weight:600;background:var(--s-blue-soft);border-color:var(--s-blue)}
 .script li.on::before{background:var(--s-blue);border-color:var(--s-blue);color:#fff}
 
+/* 엔딩 크레딧(롤) */
+.page.roll{align-items:center;padding:0;background:radial-gradient(ellipse at 50% 0,var(--s-blue-soft),transparent 60%),var(--paper)}
+.page.roll .roll-view{--rv:64vh;position:relative;flex:1;min-height:0;width:min(44rem,92%);overflow:hidden;
+  -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+.page.roll .roll-track{padding-top:var(--rv);text-align:center;line-height:1.9;color:var(--ink-3)}
+.page.roll.active .roll-track{animation:rollUp 95s linear forwards}
+.page.roll .roll-view:hover .roll-track{animation-play-state:paused}
+@keyframes rollUp{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+.page.roll .rl-title{font-size:clamp(1.5rem,4vw,2.4rem);font-weight:800;color:var(--ink);margin-bottom:3.5rem}
+.page.roll .rl-title small{display:block;margin-top:.6rem;font-size:.85rem;font-weight:500;letter-spacing:.1em;color:var(--ink-3)}
+.page.roll .rl-sec{margin-bottom:2.6rem}
+.page.roll .rl-sec h3{font-size:.8rem;font-weight:700;letter-spacing:.14em;color:var(--s-blue);margin-bottom:.4rem}
+.page.roll .rl-sec p{font-size:max(16px,2.3vh);color:var(--ink);margin:0}
+.page.roll .rsub{font-size:.85rem;color:var(--ink-3)}
+.page.roll .ph{font-size:.82rem;line-height:1.7;margin:.35rem 0;color:var(--ink-2)}
+.page.roll .ph.rsub{color:var(--ink-3)}
+.page.roll .ph a{color:inherit;text-decoration:underline}
+.page.roll .rl-end{margin:4rem 0 2rem;font-size:1.4rem;font-weight:700;color:var(--ink)}
+.page.roll .rl-end small{display:block;margin-top:.5rem;font-size:.85rem;font-weight:400;color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){ .page.roll.active .roll-track{animation:none} .page.roll .roll-view{overflow:auto;-webkit-mask-image:none;mask-image:none} .page.roll .roll-track{padding-top:0} }
+
 /* 엔딩 */
 .page.end{justify-content:center;align-items:center;text-align:center;padding:2rem;
   background:radial-gradient(ellipse at 50% 0,var(--s-blue-soft),transparent 60%),var(--paper)}
@@ -360,6 +381,11 @@ endPage.innerHTML=`<p class="quote">${END_QUOTE}</p>
   <p class="cred">인공지능을 만든 사람들 · 1956년 다트머스 회의부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
   <p class="pc">인물 사진 출처(Wikimedia Commons, CC 라이선스): John McCarthy CC BY 2.0 · Marvin Minsky CC BY-SA 2.0 · Claude Shannon CC BY 2.0 · Geoffrey Hinton CC BY-SA 4.0 · Yann LeCun CC BY-SA 2.0 · Yoshua Bengio CC BY-SA 2.0 · Ilya Sutskever CC BY-SA 4.0 · Demis Hassabis CC BY-SA 4.0 · Elon Musk CC BY-SA 3.0 · Sam Altman CC BY 2.0 · Dario Amodei CC BY 2.0 · Greg Brockman CC BY 3.0 · Mira Murati CC BY 4.0. 나머지 인물은 사진 없이 이니셜로 표시됩니다.</p>`;
 deck.appendChild(endPage);pages.push(endPage);
+if(typeof ROLL_HTML==='string'&&ROLL_HTML){       /* 엔딩 다음 화면: 영화식 크레딧 */
+  const rp=document.createElement('section'); rp.className='page roll'; rp.id='credits';
+  rp.innerHTML=`<div class="roll-view"><div class="roll-track">${ROLL_HTML}</div></div>`;
+  deck.appendChild(rp); pages.push(rp);
+}
 const N=SCENES.length, TOTAL=pages.length;
 
 /* 슬라이드 내 상호작용: 인물 레인 펼치기, 자막 이동, 대본 드로어 */
@@ -413,7 +439,7 @@ function setSent(i,k){
 function syncUI(){
   pages.forEach((p,n)=>p.classList.toggle('active',n===current));
   $('bar').style.width=((current+1)/TOTAL*100)+'%';
-  $('pos').textContent=current<N?`${current+1} / ${N}`:'끝';
+  $('pos').textContent=current<N?`${current+1} / ${N}`:(current===N?'끝':'크레딧');
 }
 function go(i){
   current=Math.max(0,Math.min(TOTAL-1,i));
@@ -463,7 +489,7 @@ function speakText(id,text,onend){
 function afterScene(i){
   if(!playing) return;
   if(i<N-1){ setTimeout(()=>{ if(!playing) return; go(i+1); speak(i+1); },900); }
-  else { go(N); speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
+  else { go(N); speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); if(pages.length>N+1) go(N+1); }); }
 }
 /* 자막 동기화(근사): 클립이 장 전체 1개 파일이라 문장별 타이밍이 없다.
    문장 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정한다 — 몇 초 어긋날 수 있다.
