@@ -114,6 +114,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .dg-steps li:last-child{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,var(--tip) 50%)}
 .dg-steps li:only-child{clip-path:none;border-radius:10px;padding-left:.9rem}
 .dg-steps li.out{background:var(--ink-2)}
+.ln-why{display:block;font-weight:600;margin-bottom:.2rem}
 .ln-desc{display:none;margin-top:.6rem;font-size:max(14px,1.9vh);line-height:1.65;color:var(--ink-2)}
 .lane[aria-pressed=true] .ln-desc{display:block}
 .page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:.62}
@@ -335,7 +336,7 @@ function laneHTML(k){
   return `<div class="lane" role="button" tabindex="0" aria-pressed="false" data-map="${k}" aria-label="${esc(d.n)} — 눌러서 알아보기">
     <div class="ln-id"><span class="por"><img class="por-img" src="${portraitURL(k)}" alt="" data-initial="${esc(d.m)}" data-id="${k}"></span>
       <div><b>${esc(d.n)}</b><i>${esc(d.e||'')}</i></div></div>
-    <div class="ln-body"><ol class="dg-steps">${steps}</ol><p class="ln-desc">${esc(d.d||'')}</p></div></div>`;
+    <div class="ln-body"><ol class="dg-steps">${steps}</ol><p class="ln-desc">${d.why?`<b class="ln-why">${esc(d.why)}</b> `:''}${esc(d.d||'')}</p></div></div>`;
 }
 
 SCENES.forEach((sc,i)=>{
