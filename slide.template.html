@@ -170,6 +170,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .script li.on{color:var(--ink);font-weight:600;background:var(--s-blue-soft);border-color:var(--s-blue)}
 .script li.on::before{background:var(--s-blue);border-color:var(--s-blue);color:#fff}
 
+.aiNote{margin-top:1.2rem;font-size:max(12px,1.5vh);line-height:1.6;color:var(--ink-3);max-width:32rem}
 /* 엔딩 크레딧(롤) */
 .page.roll{align-items:center;padding:0;background:radial-gradient(ellipse at 50% 0,var(--s-blue-soft),transparent 60%),var(--paper)}
 .page.roll .roll-view{--rv:64vh;position:relative;flex:1;min-height:0;width:min(44rem,92%);overflow:hidden;
@@ -243,6 +244,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
       <h1 class="rise" style="--i:1">인공지능을<br><em>만든 사람들</em></h1>
       <p class="teaser rise" style="--i:2">경쟁하는 연구소들처럼 보이지만, 실은 몇 사람에게서 갈라져 나온 하나의 계보다.</p>
       <div class="in-btns rise" style="--i:3"><button id="introStart">들으며 시작</button><button id="introManual">직접 넘기기</button></div>
+      <p class="aiNote rise" style="--i:4">이 이야기의 원고는 AI(Claude)가 썼고, 사실 관계는 AI 여러 개와 웹 검색으로 점검했습니다. 낭독 음성도 AI로 합성했습니다.</p>
     </div>
     <div class="in-art rise" style="--i:2" aria-hidden="true">
       <svg viewBox="0 0 400 300">
@@ -473,6 +475,19 @@ function whenReady(a,cb){
   a.addEventListener('clipfail',fire,{once:true});
   setTimeout(fire,4000);
 }
+/* 재생 중 네트워크 끊김·디코딩 오류 대비: 재생 위치가 10초 넘게 멈추거나 error 가 나면 브라우저 음성으로 넘긴다(한 번만). */
+function guardClip(a,fb){
+  clearInterval(a._g);
+  let done=false,last=-1,stuck=0;
+  const bail=()=>{ if(done) return; done=true; clearInterval(a._g); try{a.pause();}catch(e){} if(playing) fb(); };
+  a.addEventListener('error',bail,{once:true});
+  a._g=setInterval(()=>{
+    if(a.ended){ done=true; clearInterval(a._g); return; }
+    if(a.paused) return;                       /* 사용자가 멈춘 것은 오류가 아니다 */
+    if(a.currentTime===last){ if(++stuck>=10) bail(); } else { last=a.currentTime; stuck=0; }
+  },1000);
+  return bail;
+}
 function markEngine(){ $('engine').textContent=engine==='omnivoice'?'고품질 음성':'브라우저 음성'; }
 
 const synth=window.speechSynthesis; let koVoice=null;
@@ -497,7 +512,8 @@ function speakText(id,text,onend){
     if(a.dataset.ok==='fail'){ browserSay(text,onend); return; }
     a.onended=onend; a.currentTime=0;
     const pr=a.play(); engine='omnivoice'; markEngine();
-    if(pr&&pr.catch) pr.catch(()=>browserSay(text,onend));
+    const gb=guardClip(a,()=>browserSay(text,onend));
+    if(pr&&pr.catch) pr.catch(gb);
   });
 }
 function afterScene(i){
@@ -528,12 +544,13 @@ function speak(i){
     wireCaptionSync(i,a);
     a.onended=()=>afterScene(i); a.currentTime=0;
     const pr=a.play(); engine='omnivoice'; markEngine();
-    if(pr&&pr.catch) pr.catch(()=>browserSay(plain(i),()=>afterScene(i)));
+    const gb=guardClip(a,()=>browserSay(plain(i),()=>afterScene(i)));
+    if(pr&&pr.catch) pr.catch(gb);
   });
 }
 function silence(){
   if(synth) synth.cancel();
-  Object.values(clips).forEach(a=>{ try{a.pause(); a.ontimeupdate=null;}catch(e){} });
+  Object.values(clips).forEach(a=>{ try{a.pause(); a.ontimeupdate=null; clearInterval(a._g);}catch(e){} });
 }
 
 /* 재생 경과 타이머 */
