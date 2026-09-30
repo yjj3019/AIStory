@@ -40,6 +40,30 @@ ENDING = {
 
 TAG = re.compile(r"<[^>]+>")
 
+# 낭독용 표기 치환 — TTS 에 넘기는 문구(narration.json)에만 적용하고 화면 문구(HTML)는 그대로 둔다.
+# STT(Whisper) 받아쓰기로 실제 오독이 확인된 것만 넣는다(2026-10-01 시험 합성 17건으로 검증).
+#   수츠케버 → "수츠케버"가 "수축해버"로 읽힘 / Thinking Machines Lab → "틴킹 메신 슬랩" / AMI Labs → "에이마이 랩스" /
+#   LawZero → "러지로" / Azure → "에지어". DNNresearch·Series H·Attention… 은 단독으론 맞았으나 문맥에서 빠진 적이 있어 포함.
+# 긴 패턴이 먼저 와야 한다.
+SPOKEN = [
+    ("Attention Is All You Need", "어텐션 이즈 올 유 니드"),
+    ("Thinking Machines Lab", "씽킹 머신스 랩"),
+    ("Thinking Machines", "씽킹 머신스"),
+    ("DNNresearch", "디엔엔 리서치"),
+    ("AMI Labs", "에이엠아이 랩스"),
+    ("Series H", "시리즈 에이치"),
+    ("LawZero", "로 제로"),
+    ("Azure", "애저"),
+    ("Cohere", "코히어"),
+    ("수츠케버", "수츠케 버"),
+]
+
+
+def to_spoken(s: str) -> str:
+    for a, b in SPOKEN:
+        s = s.replace(a, b)
+    return s
+
 
 def strip_tags(s: str) -> str:
     """<span class="hi"> 같은 강조 태그를 제거한다."""
@@ -99,8 +123,12 @@ def main() -> None:
 
     for it in items:
         # OmniVoice 에 한 번에 넘길 문장. 줄 사이는 마침표 간격으로 자연스럽게 이어진다.
+        display = " ".join(it["lines"])
+        it["lines"] = [to_spoken(x) for x in it["lines"]]
         it["text"] = " ".join(it["lines"])
         it["chars"] = len(it["text"])
+        if it["text"] != display:
+            it["display_text"] = display   # 화면 문구 원문 — 자막 좌표(sync.json)는 이것을 기준으로 잡는다
 
     out = {
         "language": "ko",
