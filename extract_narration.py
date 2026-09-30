@@ -63,6 +63,10 @@ def parse_scenes(html: str) -> list[dict]:
 
     scenes = []
     for i, (year, block) in enumerate(zip(years, line_blocks), start=1):
+        # lines 블록의 각 줄은 홑따옴표 문자열이어야 한다. 큰따옴표·백틱·주석이 섞이면 조용히 유실되므로 중단한다.
+        for bl in (x.strip() for x in block.splitlines()):
+            if bl and not re.fullmatch(r"'(?:[^'\\]|\\.)*',?", bl):
+                sys.exit(f"{i}장 lines 블록에 홑따옴표 문자열이 아닌 줄이 있습니다: {bl[:60]}")
         raw = re.findall(r"'((?:[^'\\]|\\.)*)'", block)
         lines = [strip_tags(x.replace("\\'", "'")) for x in raw]
         lines = [x for x in lines if x]
@@ -85,9 +89,11 @@ def main() -> None:
     html = pathlib.Path(args.html).read_text(encoding="utf-8")
     scenes = parse_scenes(html)
     m = re.search(r'<section id="closing"[^>]*>\s*<p class="quote">(.*?)</p>', html, flags=re.S)
-    if m:   # HTML 이 엔딩 문구의 원본 — <br> 는 공백으로
-        quote = re.sub(r"\s+", " ", strip_tags(re.sub(r"<br\s*/?>", " ", m.group(1))))
-        ENDING["lines"] = [quote]
+    if not m:
+        sys.exit("HTML 에서 #closing .quote 를 찾지 못했습니다(엔딩 문구의 원본).")
+    # HTML 이 엔딩 문구의 원본 — <br> 는 공백으로
+    quote = re.sub(r"\s+", " ", strip_tags(re.sub(r"<br\s*/?>", " ", m.group(1))))
+    ENDING["lines"] = [quote]
     ENDING["id"] = f"{len(scenes) + 1:02d}-ending"   # 장 수에 맞춰 자동 결정(하드코딩 금지)
     items = [OPENING] + scenes + [ENDING]
 

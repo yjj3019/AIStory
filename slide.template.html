@@ -342,7 +342,7 @@ SCENES.forEach((sc,i)=>{
       <div class="segs" aria-hidden="true">${segs}</div>
       <div class="cap-row">
         <button class="cn" data-act="sprev" aria-label="이전 문장">‹</button>
-        <p class="cap-text" aria-live="polite"><span></span></p>
+        <p class="cap-text" aria-live="off"><span></span></p>
         <button class="cn" data-act="snext" aria-label="다음 문장">›</button>
         <button class="btn-script" data-act="script" aria-expanded="false">대본</button>
       </div>
@@ -400,9 +400,11 @@ function setSent(i,k){
   p.querySelectorAll('.seg').forEach((el,n)=>{ el.classList.toggle('active',n===k); el.classList.toggle('done',n<k); });
   p.querySelectorAll('.script li').forEach(el=>el.classList.toggle('on',+el.dataset.li===list[k].li));
   if(k===0) p.querySelectorAll('.lane').forEach(el=>el.classList.remove('speaking'));
-  const hits=[...p.querySelectorAll('.lane')].filter(el=>{
-    const d=who1(el.dataset.map), parts=d.n.split(' '), last=parts[parts.length-1];
-    return list[k].t.includes(d.n)||(last.length>=2&&list[k].t.includes(last));
+  const laneEls=[...p.querySelectorAll('.lane')], lastCount={};
+  laneEls.forEach(el=>{ const q=who1(el.dataset.map).n.split(' '), l=q[q.length-1]; lastCount[l]=(lastCount[l]||0)+1; });
+  const hits=laneEls.filter(el=>{   /* 전체 이름 | 같은 성이 없을 때의 성 | 세 글자 이상의 이름 */
+    const d=who1(el.dataset.map), parts=d.n.split(' '), first=parts[0], last=parts[parts.length-1], txt=list[k].t;
+    return txt.includes(d.n)||(last.length>=2&&lastCount[last]===1&&txt.includes(last))||(parts.length>1&&first.length>=3&&txt.includes(first));
   });
   if(hits.length){ p.querySelectorAll('.lane').forEach(el=>el.classList.toggle('speaking',hits.includes(el))); p.classList.add('has-speaker'); }
   else if(k===0) p.classList.remove('has-speaker');
@@ -517,6 +519,8 @@ $('play').onclick=()=>playing?stop():start();
 $('prev').onclick=()=>{ const n=current-1; stop(); go(n); };
 $('next').onclick=()=>{ const n=current+1; stop(); go(n); };
 document.addEventListener('keydown',e=>{
+  const intro=$('intro'); if(intro&&!intro.hidden&&!intro.classList.contains('hide')) return;   /* 인트로가 떠 있는 동안 뒤에서 재생·이동되지 않게 */
+  if(e.key==='Escape'){ const sc=pages[current]&&pages[current].querySelector('.script.open'); if(sc){ sc.classList.remove('open'); const b=pages[current].querySelector('.btn-script'); if(b){ b.setAttribute('aria-expanded','false'); b.focus(); } return; } }
   if(e.target.closest&&e.target.closest('button,[role=button]')&&(e.key===' '||e.key==='Enter')) return;
   if(e.key==='ArrowRight'||e.key==='PageDown'){ const n=current+1; stop(); go(n); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ const n=current-1; stop(); go(n); }
