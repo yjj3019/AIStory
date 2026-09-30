@@ -5,9 +5,9 @@ OmniVoice 로 「빛이 된 아이」 내레이션을 렌더링한다.
 핵심 설계
 ---------
 1. 참조 음성으로 VoiceClonePrompt 를 한 번 만들어 모든 장면에 재사용한다.
-   → 17개 클립의 목소리가 동일하게 유지된다. 장면마다 따로 생성하면 톤이 흔들린다.
+   → 모든 클립의 목소리가 동일하게 유지된다. 장면마다 따로 생성하면 톤이 흔들린다.
    → 공식 문서 tips.md 도 짧은 클립에는 참조 음성 사용을 권장한다.
-2. 이미 만들어진 파일은 건너뛴다. 특정 장면 문구만 고쳤을 때 그 장면만 다시 만들면 된다.
+2. 이미 만들어진 파일은 건너뛴다(manifest 의 문구와 일치할 때만). 문구가 바뀐 장면은 자동으로 다시 만든다.
 3. manifest.json 에 실제 길이를 기록한다. 웹페이지와 영상 편집 양쪽에서 쓴다.
 
 사용법
@@ -31,14 +31,13 @@ OmniVoice 로 「빛이 된 아이」 내레이션을 렌더링한다.
 """
 
 import argparse
+import hashlib
 import json
 import logging
 import pathlib
 import subprocess
 import sys
 import time
-
-from tqdm import tqdm
 
 # Windows 콘솔 기본 코드페이지(cp949)는 en-dash(–) 등 일부 한글 문구 속 유니코드 문자를
 # 인코딩하지 못해 UnicodeEncodeError로 즉시 죽는다. UTF-8로 강제 재설정한다.
@@ -142,12 +141,34 @@ def main() -> None:
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    todo = [u for u in units if args.force or not (out_dir / f"{u['id']}.wav").exists()]
+    # 이미 있는 wav 라도 manifest 에 기록된 문구와 다르면 낡은 것이므로 다시 만든다(파일 존재만 보면
+    # 문구를 고치거나 장을 재배열했을 때 엉뚱한 낭독이 조용히 남는다).
+    prev_text: dict[str, str] = {}
+    prev_manifest = out_dir / "manifest.json"
+    if prev_manifest.exists():
+        try:
+            for it in json.loads(prev_manifest.read_text(encoding="utf-8")).get("items", []):
+                prev_text[it["id"]] = it.get("text", "")
+        except Exception as e:  # 손상된 manifest 는 검증 불가로 취급
+            LOG.warning("manifest 를 읽지 못했습니다(%s) — 문구 일치 검증을 건너뜁니다.", e)
+    else:
+        LOG.warning("manifest.json 이 없어 기존 wav 의 문구 일치를 확인할 수 없습니다(존재하면 건너뜁니다).")
+
+    def stale(u: dict) -> bool:
+        return (out_dir / f"{u['id']}.wav").exists() and u["id"] in prev_text and prev_text[u["id"]] != u["text"]
+
+    todo = [
+        u for u in units
+        if args.force or not (out_dir / f"{u['id']}.wav").exists() or stale(u)
+    ]
+    stale_ids = [u["id"] for u in units if stale(u)]
+    if stale_ids:
+        LOG.warning("문구가 바뀌어 다시 만드는 기존 클립 %d개: %s", len(stale_ids), ", ".join(stale_ids))
     LOG.info("전체 %d개 중 %d개 생성 대상", len(units), len(todo))
 
     if args.dry_run:
         for u in units:
-            mark = "생성" if u in todo else "건너뜀"
+            mark = ("생성(문구 변경)" if u["id"] in stale_ids else "생성") if u in todo else "건너뜀"
             print(f"  [{mark}] {u['id']:<18} {len(u['text']):>4}자  {u['label']}")
         return
 
@@ -209,6 +230,8 @@ def main() -> None:
 
         # ---- 생성 ----
         # tqdm 은 stdout, 로그(LOG)는 stderr 로 나눠서 진행률 표시줄이 로그 줄에 밀려 깨지지 않게 한다.
+        from tqdm import tqdm
+
         pbar = tqdm(todo, desc="렌더링", unit="clip", file=sys.stdout)
         for n, u in enumerate(pbar, start=1):
             pbar.set_postfix_str(u["id"])
@@ -223,7 +246,10 @@ def main() -> None:
                 guidance_scale=args.guidance_scale,
             )
             wav = out_dir / f"{u['id']}.wav"
-            sf.write(str(wav), audios[0], model.sampling_rate)
+            part = out_dir / f"{u['id']}.wav.part"
+            sf.write(str(part), audios[0], model.sampling_rate, format="WAV")
+            part.replace(wav)                                # 도중에 죽어도 잘린 wav 가 남지 않는다
+            (out_dir / f"{u['id']}.mp3").unlink(missing_ok=True)   # 옛 mp3 가 새 wav 를 가리지 않게
             dur = len(audios[0]) / model.sampling_rate
             elapsed = time.time() - t0
             rtf = elapsed / max(dur, 1e-6)
@@ -250,7 +276,7 @@ def main() -> None:
         except Exception:
             dur = None
         entries.append(
-            {"id": u["id"], "label": u["label"], "text": u["text"], "seconds": dur}
+            {"id": u["id"], "label": u["label"], "text": u["text"], "text_sha1": hashlib.sha1(u["text"].encode("utf-8")).hexdigest(), "seconds": dur}
         )
 
     manifest = out_dir / "manifest.json"
