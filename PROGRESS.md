@@ -18,6 +18,118 @@
   - **narration.json 재추출 결과 이번 라운드에서 추가로 05-scene/09-scene/13-scene/15-scene 텍스트가 바뀜** — 앞선 라운드의 14-scene/16-scene과 합쳐 **총 6개 클립(05·09·13·14·15·16-scene)의 기존 오디오가 지금 낡은 문구를 읽는 상태**. `render_tts.py --dry-run`은 파일 존재만 확인하므로 이 6개를 스킵 대상으로 잘못 표시함 — 실제 렌더 전 반드시 `audio/{05,09,13,14,15,16}-scene.*`를 삭제하고 재실행해야 함.
   - 미해결로 남긴 것: 16장 마지막 장 진입 시 모바일 라이더 제한 해제(`isFinalChapter`)가 이제 `at:{}`인 16장을 대상으로 하는데 시각적으로 어떻게 보이는지는 브라우저 확인 필요(코드상 동작 자체는 정상, 스타일 영향은 미검증). 페이페이 리 등 본문에만 등장하고 카드가 없는 인물 추가는 스코프 확장이라 보류.
 
+- **(2026-09-16) 오디오 6클립 재렌더링 완료 확인 + 실브라우저 검증 완료 — "다음 우선순위"의 2개 항목 모두 종료**
+  - **오디오**: 이 PC(Windows, GPU 없음)에서 로컬 렌더링을 3회 시도했으나 전부 실패 — ① HF Xet CDN(`cas-server.xethub.hf.co`) 접속 불가 ② 로컬 모델 사본(`melotts-test/omnivoice-local/`)으로 우회해도 `model.generate()` 단계에서 트레이스백 없는 네이티브 크래시 재현. 사용자가 "렌더링은 이 PC에서 실행되면 안 된다"고 명시 지시 → **이후 이 PC에서 TTS 렌더링 시도 전면 중단**.
+  - SSH(`rhel-storage`, 172.21.18.235)로 원격 상태 확인 결과, **6개 클립(05·09·13·14·15·16-scene) 재렌더링이 2026-09-15 18:39~21:43 사이 이미 완료돼 있었음**(`render_seq.log`: "완료: 18개 클립, 총 30.9분"). 이 세션 로컬 시도 이전에 끝난 작업인데 PROGRESS.md가 그 시점 이후 갱신되지 않아 누락돼 있었음. 원격 `narration.json` md5(`590d532b...`)가 로컬과 완전히 일치해 같은 문구 기준 렌더임을 확인 후 6개 클립(wav+mp3)과 `manifest.json`을 SSH로 다운로드, 로컬 `audio/`에 병합 완료 — **18개 클립 전량 구비**.
+  - 정합성 검증: ffprobe로 18개 전 클립 디코딩 확인(손상 없음), wav↔mp3 길이 완전 일치, `manifest.json` 기록 길이 vs 실측 길이 오차 없음. Node vm으로 `AIStory.html`의 `P`/`ORG`/`E`/`RIVALS`/`SCENES` 객체 리터럴을 직접 파싱해 참조 무결성 확인(끊긴 링크 없음, 모든 `who[]` 카드 키가 실존), `clipName()`이 만드는 오디오 id와 `audio/` 실파일이 1:1 일치.
+  - **실브라우저 검증** (Claude 데스크톱 앱 내장 브라우저 사용 — Chrome 확장은 이번에도 끝내 미연결): 로컬 `python -m http.server 8000`에 죽지 않은 좀비 서버 3개가 얽혀 첫 요청이 404였던 것을 정리 후 재검증. 인트로→"시작"→1장 진입→"이야기 듣기" 재생(엔진 라벨 **"고품질 음성"** 확인, 브라우저 폴백 아님)→인물 카드 클릭(`aria-pressed` 토글 + 상세 패널 펼침 정상)→"다음 장" 네비게이션(`1/16→2/16`)→계보도 SVG(circle 40개·path/line 23개 정상 렌더) 전부 정상. JS 콘솔 예외 없음.
+  - **발견한 미해결 항목(버그 아님, 콘텐츠 자산 누락)**: 인물 초상화 12명분 이미지 404 — `krizhevsky, vaswani, shazeer, gomez, daniela, schulman, leike, huang, liang, mensch, lample`. 카드 동작 자체는 정상(이니셜 폴백으로 추정), 사진 보강 여부는 별도 결정 필요.
+
+- **(2026-09-17) 사진 없는 12명의 이니셜 폴백 스타일 개선 — 사용자 요청("빈 칸처럼 매끄럽지 않다")**
+  - 사용자에게 3가지 방향(폴백 스타일 개선 / 실사진 웹 검색 확보 / AI 생성 일러스트) 중 택 1 요청 → **"현재 이니셜 폴백 스타일 개선"** 선택. 실사진·AI 생성 이미지는 이번 스코프에서 제외.
+  - `AIStory.html`: `.por` 원형 배지에 `inset box-shadow` 링 추가(사진/이니셜 공통 적용, 경계 또렷하게), `initialColor()`가 인물별 고유 단색(hsl) 대신 **135도 2톤 그라디언트**(`hsl(h)→hsl(h+34)`)를 반환하도록 변경, 폴백 배지에 `.mono` 클래스(letter-spacing + text-shadow)를 붙여 이니셜 글자에 입체감 부여. `hero-por`(장별 대형 사진)·`feature-img`(매거진 브레이크)는 애초에 `PORTRAIT_KEYS`로 실사진 보유자만 걸러 쓰므로 이번 변경 대상이 아님(기존 설계 그대로 유지).
+  - **검증**: `node -e`로 `<script>` 블록 전체를 `new Function()`에 통과시켜 **JS 문법 오류 없음 확인**. Chrome 확장이 이번에도 연결되지 않아(`tabs_context_mcp` 실패) **실브라우저 렌더링 확인은 못 함 — [unverified]**. CSS 변경(그라디언트 배경·box-shadow·letter-spacing)은 표준 속성만 사용해 구문 오류 위험은 낮으나, 실제 화면에서 그라디언트 대비·가독성은 다음 세션에서 브라우저로 눈으로 확인 필요.
+  - 이 PC는 background job이라 worktree 격리가 강제되는데 `AIStory.html`은 `.gitignore` 대상(추적 안 됨)이라 worktree에 자동 복사되지 않음 → worktree 안으로 수동 복사해 수정 후 원본 경로로 다시 복사하는 방식으로 우회. git 커밋 대상 파일이 아니므로 이 변경은 git 이력에는 남지 않음(PROGRESS.md 기록이 유일한 추적 수단).
+
+- **(2026-09-18) 히어로(장 좌측 상단 대형 인물 카드) 영역도 사진 없는 인물이면 빈 칸이 되던 문제 수정 — 사용자 지적("설명에는 등장하는 인물이 사진에는 추가되어 있지 않아 스토리 매치가 안 됨")**
+  - **원인**: `heroPeople`이 `(sc.who||[]).filter(k=>PORTRAIT_KEYS.has(k))`로 **사진 보유자만** 걸러 썼음. 본문 카드(`.pcard`, 하단)는 전작업에서 이미 폴백 처리했지만, 장 좌측 상단의 대형 히어로 카드(`.hero-por`, `.chapter-visual` 안, `chapter-grid` 좌측 36% 칼럼)는 사진 없는 사람을 아예 목록에서 제외해버려 **8장(트랜스포머: 바스와니·셰이저·고메즈 3명 전원 사진 없음)은 히어로 영역 자체가 완전히 비어 있었음** — 본문은 세 사람을 설명하는데 위쪽엔 아무도 안 보이는 스토리 불일치.
+  - **수정**: `heroPeople=featurePerson?[]:(sc.who||[]).slice(0,3)`으로 필터 제거(사진 유무와 무관하게 본문이 언급하는 인물 그대로 사용). 히어로 `<img>`에도 `por-img` 클래스 + `data-initial`/`data-id`를 달아 기존 `attachPortraitFallback()`이 그대로 작동하게 함(404 시 텍스트+그라디언트 배지로 치환). `.hero-por-photo.mono` CSS 규칙 신설(글자 크기를 데스크톱 sticky 칼럼 104px/모바일 132px/태블릿 200px 각 브레이크포인트에 맞게 조정). `P[k]`뿐 아니라 `P[k]||RIVALS[k]`로 조회하도록 수정(16장은 인물 전원이 `RIVALS`에만 있어 기존 코드였다면 `P[k].n`에서 `undefined` 에러가 났을 지점).
+  - `PORTRAIT_KEYS`는 삭제하지 않고 매거진 브레이크(`feature-img`, 풀블리드 단일 사진 3개 장)에만 계속 사용 — 그쪽은 화면 전체를 이니셜로 채우면 어색해 실사진 보유자만 후보로 쓰는 기존 설계를 유지.
+  - **검증**: 실제 `AIStory.html`을 로컬 서버로 띄우고 헤드리스 Chrome(`--dump-dom`, `--virtual-time-budget`)으로 실제 런타임 DOM을 확인 — 3가지 케이스 모두 정상 확인: ① 8장(전원 사진 없음, 트랜스포머) 3명 전부 그라디언트+이니셜 배지로 렌더 ② 13장(연쇄 이탈, 사진 있는 사람+없는 사람 혼합) 수츠케버는 실사진, 라이케·슐먼은 배지로 정상 혼재 ③ 16장(`RIVALS` 전용 인물, 가계도 밖에서) 젠슨 황·량원펑·멘시 전원 `P[k]||RIVALS[k]` 경로로 정상 렌더, `undefined` 에러 없음. 순수 픽셀 스크린샷은 인트로 오버레이+IntersectionObserver 페이드인 타이밍 때문에 헤드리스에서 빈 화면만 나와 포기하고 DOM 덤프로 대체 검증(구조·클래스·색상·텍스트까지 전부 실제 브라우저 엔진이 계산한 값이라 신뢰도는 동일).
+  - 검증에 쓴 `_verify_hero.html`(인트로 자동 클릭 스크립트 주입한 임시 사본)은 AIStory 디렉터리에 생성 후 확인 즉시 삭제 — 실제 파일은 건드리지 않음.
+
+- **(2026-09-29) 외부 검토서 반영 (a안) + 슬라이드 페이지 신설**
+  - `AIStory-slide.html` 신설(BotStory 디자인 참조, 슬라이드형·자막 띠·인물 이력 화살표). 원본은 `AIStory.html`이며 `build_slide.py` + `slide.template.html`로 생성(`python build_slide.py`). 브랜치 `worktree-slide-page`에 로컬 커밋(푸시는 GitHub 이메일 프라이버시 설정으로 거부됨).
+  - 외부 검토서 사실검증(서브에이전트 웹 검색 16항목) 후 **확정 오류 5건 + 표현 정정 3건** 반영: ① AMI Labs 시점 "2026년 6월"→**2026-03-10 출범(10.3억 달러, 르쿤 executive chairman)** — 이전 3라운드 팩트체크가 놓친 오류 ② 12장 브록만 사임 "다음 날"→**해임 당일** ③ 5장 이미지넷 2009년 "1,400만 장"→**320만 장(이후 확대)** ④ 르쿤 FAIR "10여 년 이끌었다"→2013~18 디렉터·이후 수석 AI 과학자 ⑤ 다리오 "AGI 2026~2027"→"powerful AI 이르면 2026년께"(2027 근거 미확인) ⑥ 베라 루빈 "출시"→3월 양산 진입 발표·7월 출하 시작 ⑦ 카부쿠오글루 SVP 표기.
+  - **⚠ 오디오 재렌더 필요**: narration.json 재추출 결과 **05·12·14·15-scene 4개 클립 문구가 바뀜**(다른 클립 불변). 기존 `audio/{05,12,14,15}-scene.*`는 지금 낡은 문구를 읽는 상태 — 삭제하지 않았음(승인 전). rhel-storage에서 해당 파일 삭제 후 증분 렌더 필요(이 PC 렌더링 금지).
+  - **미반영(사용자 결정 대기)**: 최신 사건 추가(머스크 소송 평결 2026-05-18, SpaceX–xAI 합병 2026-02-02, OpenAI 구조개편 완료 2025-10-28, SSI CEO/엔비디아 50억 달러 2026-07-27, LawZero 2025-06-03), "여섯 개 회사" 셈법 통일, 2장 "20년" 완화, 6→7·10→11장 시간순, 15장 "수츠케버에게서 OpenAI가" 과잉 주장, 크레딧 저작자·링크 보강, gpu-alexnet.jpg 5장 이동. 검토서 오류: RIVALS 초상 크레딧 누락(사진 자체가 없음)·"셈이다 8회"(실제 4회)·"딥마인드는 힌튼 아닌 개츠비 계열"(개츠비 유닛 설립자가 힌튼).
+- **(2026-09-29, 후속) 슬라이드 디자인 제안 검토 → 권장안 적용**: 외부 디자인 검토서를 16장 실측(1366×768·1920×1080)으로 검증해 채택/조정/기각 판정 후 적용. ① 자막에 나온 인물 레인 자동 강조+설명 펼침(이름 전체/2자 이상 성 매칭 — 제안 코드의 한 글자 성 오매칭·전체 흐림 결함 수정) ② `|out` 색을 빨강→`--ink-2`(제안한 `--pending`은 흰 글자 대비 3.64:1로 오히려 미달; 빨강은 4.51:1) ③ 통계 "2장"→"GPU 2개" ④ 레인 테두리 경량화(통계·표는 BotStory 2.5px 유지) ⑤ 이니셜 색 205~235 블루 한정(슬라이드만) ⑥ 헤더 단색(BotStory 원본과 일치) ⑦ 사진 폭 1fr/1.6fr, `gpu-alexnet.jpg`를 8장→5장 이동 ⑧ 1~2인 장 설명 기본 펼침 ⑨ 1956–2026 연표 띠 ⑩ 인트로 "들으며 시작/직접 넘기기" 분리, 키커 중복 제거 ⑪ 문장 분할 정규식 lookbehind 제거(Safari<16.4). **낭독 문구 불변**(narration.json 동일) → 재렌더 불필요.
+  - **검증**: 16장 전부 `.vis` 스크롤 0 (1366×768, 1920×1080, 1280×720 상당). 1264×625급 극저 높이에서만 15장 5px. 기각: 도트 패턴·블러 플레이어 제거(둘 다 BotStory 원본 요소), 화살표 라벨 축약(실측상 높이 편차 없음), 출처 슬라이드 분리(저작자·링크 자료 미확보로 보류).
+  - **남은 것**: 위 (a)안 4개 클립(05·12·14·15-scene) 재렌더 여전히 필요, 최신 사건 5건·"여섯 개 회사" 통일 등은 사용자 결정 대기, 저작자명·원본 링크 크레딧 보강.
+
+- **(2026-09-30) 16장 → 18장 재구성 (v18) — 병렬 에이전트 작업 완료, 기존 파일은 그대로 두고 v18 로 병치**
+  - **산출물(루트 `.git/info/exclude` 로 로컬 제외 — 브랜치의 `.gitignore` 가 main 에 병합되기 전까지는 이 로컬 규칙이 유일한 방어선)**: `AIStory.v18.html`(원본형 페이지, 오디오 폴더 `audio18/`), `AIStory-slide.v18.html`(슬라이드형), `narration.v18.json`(20클립: 00-opening, 01~18-scene, 19-ending). 기존 `AIStory.html`/`narration.json`/`audio/` 는 **건드리지 않았다**(16장 구성·옛 오디오 그대로 동작).
+  - **왜 병치인가**: 클립 id 가 장 번호에만 의존하고 `render_tts.py` 는 "파일 존재"만 보고 건너뛰므로, 새 장 번호로 `audio/` 를 그대로 쓰면 5~16장 전부 다른 장의 낭독이 재생된다(구조 리뷰 S-01). 그래서 v18 은 별도 폴더 `audio18/` 를 보고, 없으면 브라우저 TTS 로 폴백한다.
+  - **신 구성**: 1 다트머스 · 2 첫 겨울(로젠블랫) · 3 기호주의 몰락·연결주의 부활 · 4 비주류 시절의 세 사람 · **5 데이터와 GPU(신설)** · 6 AlexNet · **7 딥마인드(신설)** · 8 OpenAI 창립(+알파고–이세돌) · 9 트랜스포머(+attention 기원, 일곱 개 회사) · 10 머스크의 이탈(+2025–26 결말) · **11 GPT와 스케일링(신설)** · 12 Anthropic(창업진 명단) · 13 ChatGPT · 14 해임과 복귀(+나델라) · 15 연쇄 이탈(+카파시) · 16 구글과 메타(+구 6장 튜링상 회고 통합) · 17 지금 · 18 가계도 밖에서. 인물 카드 17명 추가(`EXTRAS`, 계보도 P/ORG/E 는 무변경). 엔딩 문구: "경쟁처럼 보이는 이 지형의 중심에는, 몇 사람에게서 갈라져 나온 하나의 계보가 있었다."(오프닝은 불변 → `00-opening` 클립 재사용 가능).
+  - **검증 절차**: 청사진 브리프 → 9 에이전트 병렬 작성(웹 검색 검증) → 4 리뷰어 병렬(사실 A/B·편집·구조; Critical 2·Major 39·Minor 56) → 6 에이전트 병렬 수정 → 자동 검증(`.agent/assemble.py`: 인물 키 무결성·JS 문법·파서·who-본문 정합·미사용 카드). 분량 12,576자 ≈ 35분(현재 31분 → +약 4분). 슬라이드 18장 전부 1366×768·1920×1080 스크롤 0(1280×720급에서 3·17장만 소폭).
+  - **주요 사실 정정(리뷰 발견)**: 5장 이미지넷 착수 시 페이페이 리 소속=프린스턴(2009 스탠퍼드), 고양이 실험=이미지 1,000만 장, 12장 창업진 '회사 소개 페이지 기준 7명'(출처별 7/8), 14장 복귀=21일 밤(미국 시간) 원칙 합의·29일 확정, 15장 라이케 5월, 16장 스케일AI=투자(인수 아님)·1억 달러 보상=올트먼 주장/메타 부인·PBC=영리 법인, 17장 다리오 '2024년 글에서 이르면 2026년'(2027 근거 없음), 18장 엔비디아 '모든 조직에 독점 공급' 삭제(구글 TPU 등 반례), 카파시 2026-05 Anthropic 합류(17장), 조경현 2026-01 제넨텍 퇴사·NYU 복귀.
+  - **⚠ 렌더링(rhel-storage, 이 PC 금지)**: `audio18/` 에 20클립 필요. 문구 불변인 `00-opening.*` 만 옛 `audio/` 에서 복사해 재사용 가능(나머지 19개는 새 합성; `17-ending` 은 문구가 바뀌어 재사용 불가). 절차: `mkdir audio18 && cp audio/00-opening.* audio18/` → `python render_tts.py --narration narration.v18.json --ref-audio ref/narrator.wav --ref-text "..." --out-dir ./audio18 --speed 0.94 --mp3` (`voice_prompt.pt` 캐시 재사용해야 톤 유지). 예상 약 2시간 30분~3시간(CPU).
+  - **전환(렌더·청취 확인 후)**: `mv AIStory.html AIStory.v16.html; mv AIStory.v18.html AIStory.html; mv AIStory-slide.html AIStory-slide.v16.html; mv AIStory-slide.v18.html AIStory-slide.html; mv narration.json narration.v16.json; mv narration.v18.json narration.json` (페이지는 `audio18/` 를 계속 본다). 전환 뒤 README/CLAUDE.md 의 '15장·17개' 수치(README:8·17·65, CLAUDE.md:9·18·27·30, render_tts.py:8, samples/*)를 20클립/18장으로 갱신.
+  - **미해결·주의**: 이전 (a)안에서 바뀐 05·12·14·15-scene 4개 클립 재렌더 요청은 v18 렌더에 흡수됨(구 `audio/` 는 계속 낡은 문구를 읽음). 재발 방지를 위해 `render_tts.py` 의 건너뛰기 조건을 '파일 존재 + 텍스트 해시 일치'로 바꾸는 것을 권고(미구현). 슬라이드 연표 띠는 6→7장(2012→2010), 10→11장에서 첫 연도가 역행(서사 순서 유지 결정). 자막 동기화는 여전히 글자 수 비율 근사. `audio18/manifest.json` 이 생기기 전 타이머 기본 목표는 35분.
+  - 코드 변경(브랜치 `worktree-slide-page`, 로컬 커밋): `extract_narration.py` 엔딩 id 자동(`NN-ending`)·엔딩 문구를 HTML `#closing .quote` 에서 읽음, `build_slide.py` EXTRAS 병합·`END_QUOTE`·`--audio-dir`, `slide.template.html` 엔딩 id 동적·`END_QUOTE`.
+
+- **(2026-09-30, 후속) Codex·Opus 종합 평가 → 렌더링 전 필수(Tier 1) 수정 완료**
+  - **[Codex 리뷰]** 적대적 리뷰(Critical 0/Major 11/Minor 13, 실행 재현 8건). 핵심: 원본형 페이지 스크롤 끝 `current=NaN` 예외, wav 전용 오디오 첫 재생 시 브라우저 음성 전환, 재생 종료 후 타이머 미정지, `extract_narration` 큰따옴표 줄 무음 유실, `render_tts` 파일명 기준 건너뛰기, 노선도 `at` 누적. **원본형 페이지 런타임 결함 3건은 미수정(Tier 3, 선택)**.
+  - **Opus 종합 평가**: 사실 4·구조 3·낭독 3·윤리법적 2·운영 2 (Critical 2/Major 16). 조건부 판정 "본문 4건+운영 3건 수정 후 통독하고 렌더링".
+  - **반영한 것**: (1) 본문 51건 — 9장 비문·풀네임, 12장 이탈 연도(2020년 말 퇴사→이듬해 설립), 10장 인과 모순 삭제(머스크가 '막으려던 영리화'는 사료와 반대)와 OpenAI 측 자료 귀속·시효 판단 성격 명시·미검증 '자금 중단' 단정 제거, 16장 하사비스 퇴진(2026-08-05)·메타 반응 표현, 17장 xAI→스페이스XAI(2026-07-06 개명)·카파시·Anthropic–국방부 분쟁(3월 지정, 8월 1심 일부 위법 판단, 9월 25일 항소심 나머지 지정 유지; 전면 승패로 단순화하지 않음), 18장 Anthropic 도 엔비디아 GPU 사용, 통독 지적(첫 등장 이름·약어·귀로 들을 때 문제 등). (2) 운영 — `render_tts.py` 건너뛰기를 '파일 존재+manifest 문구 일치'로 변경(옛 `audio/`에 v18 dry-run 시 16개가 '생성(문구 변경)'으로 검출됨), 원자적 wav 쓰기, 재생성 클립의 옛 mp3 제거, tqdm 지연 import, manifest 에 `text_sha1`. (3) 루트 로컬 제외 규칙 추가.
+  - **사실 검증 결과(반영 근거)**: 카부쿠오글루=SVP(구글 공식 블로그 원문; "CEO"는 오보라는 결론), 하사비스=Chair+Alphabet Chief Scientist·Isomorphic 계속. 다리오 퇴사=2020년 말. 브라운·캐플런 퇴사 시점은 출처가 엇갈려 '2020년 말~이듬해'로 표기. AMI 르쿤 직함(executive chairman)은 여러 매체 일치하나 공식 원문 미열람 → 본문은 '회장'으로만 표기. xAI 개명·하사비스 2030년 50% 발언은 2차 보도 기준.
+  - **미반영(공개 전 필수, 오디오와 무관)**: 인물 사진 13장 CC BY/BY-SA 저작자·링크·라이선스 링크 표기, 맥락 사진 5장 출처 확인(불명은 제거), 제작 도구(Claude) 고지, ORG 카드(meta '인수'·정정된 오보, anthropic '비공개', xai 스페이스X 편입, openai S-1 6월 등), 인물 선정 편향 고지. 오프닝 문구(“…하나의 계보입니다”)가 1장의 외면받은 갈래 서술과 다소 어긋남(Minor; 바꾸면 `00-opening` 재사용 불가).
+  - **미실시**: 17장 시험 합성(영문·숫자 오독 확인) — 이 PC 렌더링 금지라 rhel-storage 에서 먼저 1클립만 돌려 볼 것. 예: `python render_tts.py --narration narration.v18.json --ref-audio ref/narrator.wav --ref-text "..." --out-dir ./audio18_test --speed 0.94` 후 `17-scene` 만 남기고 확인.
+  - **루트 스크립트 주의**: 루트 `extract_narration.py`·`render_tts.py` 는 옛 버전(브랜치 `worktree-slide-page` 에만 신버전). v18 렌더에는 **브랜치의 `render_tts.py`** 를 서버로 복사해 쓸 것(옛 것은 파일 존재만 봐서 `audio18/` 재렌더 시에도 안전하지만 문구 변경 감지가 없음). `narration.v18.json` 은 이미 신버전 추출기로 생성됨.
+
+- **(2026-09-30, 후속2) 오디오 외 산출물 마무리 — 코드 결함·카드 정정 완료, 사진 저작자 표기는 네트워크 제약으로 미확정**
+  - **사용자 방침**: 오디오는 나머지 산출물이 모두 끝난 뒤 마지막에 한 번에 생성한다.
+  - **반영(v18 페이지)**: 조직 카드 5건(OpenAI 상장 신청 6월, Anthropic 라운드 표현·기준일, 메타 '투자'+정정된 오보 삭제, xAI 스페이스X 흡수·스페이스XAI 개명) + 벤지오 LawZero, 브라운 퇴사 시점 폭 표기. 원본형 페이지 런타임 결함(Codex M-2~M-4): `#closing` 이 `current=NaN` 을 만들던 것 차단(코드 확인만 — 헤드리스 가상 시간에서는 재현 불가), 확장자 탐색(mp3→wav) 완료를 기다린 뒤 재생(wav 전용 시 브라우저 음성으로 새던 문제, 실측 확인), 다음 장 미리 로딩, 엔딩 뒤 타이머 정지, 음성 합성 실패·미지원 시 연쇄 재생 유지(cancel 로 인한 error 는 무시). 슬라이드: 인트로 떠 있는 동안 단축키 차단, Esc 로 대본 닫기, 화자 레인 이름 매칭 정밀화(같은 성이면 이름으로 구분: 다리오/다니엘라), 자막 `aria-live` 끔. `extract_narration.py`: 홑따옴표가 아닌 lines 줄·주석·엔딩 정규식 실패를 조용히 넘기지 않고 오류 종료(재현 3건으로 확인, 16장 원본은 바이트 동일).
+  - **미확정 — 사진 저작자 표기(TASL)**: 이 환경은 wikimedia 접속 불가(ECONNREFUSED)라 File 페이지를 열지 못했다. 조사 결과: altman=TechCrunch SF 2019 Steve Jennings CC BY 2.0(EXIF의 Getty 표기와 일치, **확신 높음이나 페이지 미대조**), shannon=Tekniska museet 43069 CC BY 2.0(**높음**), musk=Royal Society 크롭 CC BY-SA 3.0(중~높음), sutskever=TAU 크롭 CC BY-SA 4.0(중간), 그 외 인물(hinton·lecun·bengio·mccarthy·minsky·murati·hassabis·brockman·dario)은 확인불가. **dario.jpg 는 EXIF 가 '2023 Getty Images' 인데 CC 원본 미확인 → 라이선스 불명·사용 위험.** 맥락 사진: vintage-computer(MIT LISP 머신, 확신 높음·저작자 미확인), dartmouth(중간), gpu-alexnet·openai-hq·chatgpt-launch 는 출처 불명(chatgpt-launch 는 노트북 치는 여성의 일반 스톡 사진으로 캡션과 무관·초상권 우려 → 삭제 권고; openai-hq 는 현재가 아닌 옛 본사 Pioneer Building).
+  - **도구**: 루트 `credits_check.py`(브랜치에도 있음) — 네트워크 되는 PC 에서 `python credits_check.py` 실행 → Commons API 로 후보 File 페이지의 저작자·라이선스·크기를 로컬 사진과 대조한 `credits_report.md`·`credits.v18.json` 생성. 종횡비 일치는 필요조건일 뿐이므로 File 페이지 이미지를 눈으로 비교한 뒤 `--confirm 키,키` 로 확정. 확정 결과를 받으면 크레딧 블록(원본형 `#photo-credits`, 슬라이드 엔딩 `.pc`)을 TASL 형식으로 교체한다.
+  - **사용자 결정 대기**: ① credits_check 실행/결과 공유 ② 출처 불명 맥락 이미지 3장 교체·삭제(특히 chatgpt-launch 삭제 권고) ③ 제작 도구(Claude) 고지 문구 추가 여부 ④ 인물 선정 편향 고지 문구 ⑤ 오프닝 문구 조정 여부.
+
+- **(2026-09-30, 후속3) 사용자 결정 반영 — 출처 불명 이미지 제거 + 영화식 엔딩 크레딧**
+  - **결정(사용자)**: ① 출처 불명이면 삭제 ② 엔딩 크레딧은 영화처럼 자막이 위로 올라가는 형태, 위트 가미 ③ 인물 선정 편향 고지는 불필요 ④ 오프닝 문구는 유지(바꿀 이유가 필수적이지 않음 → `00-opening` 클립 재사용 가능).
+  - **이미지**: 출처 불명 3장(`gpu-alexnet.jpg`·`openai-hq.jpg`·`chatgpt-launch.jpg`)의 **사용처만** v18 SCENES 에서 제거(5·8·17장). 파일은 `context-images/` 에 그대로 있음(삭제 안 함). 남은 맥락 이미지: `dartmouth.jpg`(1장)·`vintage-computer.jpg`(3장)는 후보 출처는 있으나 **저작자 미확인** — `credits_check.py` 결과로 확정 못 하면 이 둘도 제거.
+  - **엔딩 크레딧**: 원본형은 `#roll` 섹션(스크롤로 진입하면 위로 올라가는 롤, 마우스를 올리면 일시정지, '크레딧 다시 보기' 버튼, OS 모션 축소 설정이면 정지 목록), 슬라이드형은 엔딩 다음 '크레딧' 화면(엔딩 낭독이 끝나면 자동 이동). 내용(위트 포함): 기획·총괄(계속 "진행해줘"라고 말한 분), 원고(Claude — **AI 작성·이해충돌 고지**), 팩트체크, 적대적 리뷰(Codex), 종합 평가(Claude Opus), 낭독(OmniVoice), 촬영 협조(사진 TASL), 편집 원칙, 면책, 끝. 생성기 `.agent/credits_roll.py` — **사진 저작자 표기는 `credits.v18.json` 에서 `verified=true` 인 항목만 TASL 로 출력**하고, 미확정 항목은 기존의 일반 표기(라이선스 종류만)로 남는다(빌드 시 경고 출력). 원본 페이지의 `.dim{opacity:.08}` 과 클래스명이 충돌해 `.rsub` 로 개명.
+  - **검증**: 슬라이드 20페이지(18장+엔딩+크레딧), 18장 모두 스크롤 0(1348×672·1902×984), 롤 애니메이션·가독성 스크린샷 확인(원본형은 이 PC 가 모션 축소 모드라 테스트 사본에서만 애니메이션 상태를 확인).
+  - **남은 것(오디오 제외)**: `credits_check.py` 실행 결과로 사진 표기 확정(altman·shannon 은 후보 확신 높음, dario 는 Getty EXIF 로 사용 위험) → 확정분을 크레딧에 반영. 그 뒤 오디오 렌더링.
+
+- **(2026-09-30, 후속4) 사진 저작자 표기 확정 — 사내 프록시 경유로 위키미디어 조회 성공**
+  - **원인/해결**: 이 PC의 브라우저는 PAC(`http://30.30.30.7/score.pac`)로 사내 프록시(30.30.30.28/29:9090)를 거쳐 나가는데, 파이썬(urllib)은 PAC 를 읽지 못해 직접 접속하다 막혔다(commons.wikimedia.org 가 103.102.166.224 로 풀려 시간초과). `HTTPS_PROXY=http://30.30.30.28:9090` 을 지정하면 조회가 된다. `credits_check.py` 는 요청 간격(1.2초)·429 재시도·위키백과 문서 이미지·Commons 카테고리 조회를 갖춘 버전으로 갱신.
+  - **결과(15장 모두 확정)**: 해시까지 동일(같은 파일) 8건 — mccarthy·bengio·sutskever·hassabis·musk·altman·brockman·murati; 이미지 유사도 0.999~1.000(크기만 다른 같은 사진) 7건 — minsky·shannon·hinton·lecun·dario·ctx_dartmouth·ctx_lisp. 라이선스는 **현재 크레딧 주장과 모두 일치**. **dario/altman 의 EXIF Getty 표기는 TechCrunch 가 Commons 에 CC BY 2.0 으로 공개한 사진**이라 문제 없음(저작자 표기 TechCrunch). 저작자: 매카시 null0, 민스키 Steamtalks, 섀넌 Tekniska museet(저작자 미상), 힌튼·하사비스 Arthur Petron, 르쿤 Ecole polytechnique, 벤지오 Jérémy Barande, 서츠케버 Eladkarmel, 머스크 Debbie Rowe, 올트먼·다리오 TechCrunch, 브록만 Simulation, 무라티 SWinxy, 다트머스 Kane5187(퍼블릭 도메인), LISP 머신 Jszigetvari(CC BY-SA 3.0).
+  - **반영**: `credits.v18.json`(루트) 15건 verified=true(`verified_by` 에 검증 방법 기록) → `.agent/credits_roll.py` 가 엔딩 크레딧에 저작자·File 페이지 링크·라이선스 링크·'크기 조정·잘라냄' 을 TASL 형식으로 출력. 일반 표기 잔존 0. 슬라이드 18장 스크롤 0.
+  - **권장**: 확정은 Claude 의 해시·이미지 대조에 근거하므로, 공개 전 `credits_report.md` 의 링크를 몇 개 열어 사람이 한 번 훑어볼 것. 오디오 제외 산출물은 이것으로 완료 → 다음은 rhel-storage 에서 20클립 렌더링.
+
+- **(2026-09-30, 후속5) Codex·Opus 시뮬레이션 리뷰 → 렌더링 전 코드·문서 정비(A 범위) 완료. 서버 작업(B)은 미실시**
+  - **[Codex 리뷰]** 스텁 렌더 루프·헤드리스 재생·전환 리허설: manifest 가 실행 끝에만 쓰여 중단·삭제 시 낡은 wav 가 최신으로 굳음(Critical), 전환 후 문서/`build_slide.py` 기본값이 옛 `audio/` 를 가리킴(Critical), 슬라이드 wav 전용 재생 불가, 엔진 라벨 거짓, 원본형 엔딩 후 크레딧 미이동, `--ref-audio` 없으면 캐시 무시. **[Opus 리뷰]** 서버 절차서 리허설·35분 부검·공개 부검(Critical 2/Major 26): No-Go 판정(절차 정비 후 Go).
+  - **반영(브랜치 `worktree-slide-page` 커밋 c2af279, e13d86c)**: `render_tts.py` — 클립별 `<id>.sha1` 사이드카(wav 완성 직후 기록), 문구 검증 근거(사이드카>manifest)가 없는 기존 wav 는 재생성(`--reuse ID` 로만 예외), 캐시(`voice_prompt.pt`)가 있으면 `--ref-audio` 없이도 반드시 사용, `--force` 는 클립만(캐시 미접촉) / 캐시 재인코딩은 `--refresh-prompt`(기존 캐시는 `.bak-날짜` 로 보존), `--mp3` 인데 mp3 가 빠지면 종료코드 2. 슬라이드 — `whenReady`·다음 장 미리 로딩·엔진 라벨 재생 기준·`onerror` 가드. 원본형 — 라벨 재생 기준, 엔딩 때 `#closing` 스크롤, 끝나면 `#roll` 이동. `build_slide.py` 기본 오디오 폴더 `audio18/`. 산출물 재생성 후 루트 `AIStory.v18.html`·`AIStory-slide.v18.html` 교체(`narration.v18.json` 불변, 20클립 12,788자).
+  - **검증(이 PC, 가짜 오디오·스텁)**: 스텁 렌더 6시나리오 통과(신규/재실행 0건/manifest 삭제+문구 변경 시 1개 재생성/사이드카 없는 복사본 재생성/`--reuse`/캐시 자동 사용/ffmpeg 없음 종료코드 2). 헤드리스 Chrome: wav 전용 — 두 페이지 모두 20클립 전부 파일 재생·브라우저 음성 0건·거부 0건, 슬라이드는 크레딧 화면에서 종료, 원본형은 엔딩 후 `#roll` top=0. 클립 4개 누락 — 16개 파일+4개 브라우저 음성, 라벨이 실제와 일치. **미검증: 실제 음질·실측 길이(가짜 클립), 실제 Safari/모바일.**
+  - **보호 조치**: 루트 `.git/info/exclude` 에 `AIStory.v16.html`·`AIStory-slide.v16.html`·`narration.v16.json`·`credits.v18.json`·`credits_report.md` 추가(원격이 PUBLIC). 백업: `C:/Users/user/Documents/AIStory-backup/AIStory-v18-20260930-1248.zip`(v18 3파일·credits·portraits·context-images·`.agent/`·브랜치 스크립트 80개, 검증 통과). `git worktree remove` 는 ignore 된 `.agent/` 를 조용히 지우므로 워크트리 삭제 전 반드시 이 백업을 확인.
+  - **서버 렌더 절차(개정 — 아래가 이전 기록의 명령보다 우선)**: Opus 가 SSH 읽기 전용으로 확인한 사실 기준. 이 세션에서는 SSH 연결이 끊겨 재확인하지 못했다 [미검증].
+    1. **소요 약 10시간**(09-15 실측 RTF≈16 기준; 이전 '2.5~3시간' 기록은 틀림). 밤에 시작할 것. 서버에 `tmux` 는 `/tmp` 권한 오류, `screen` 없음 → `nohup setsid`.
+    2. **목소리 보호(먼저)**: 서버 `voice_prompt.pt`(md5 `50cdda…`)가 유일한 원본(로컬 `melotts-test/voice_prompt.pt` 는 md5 가 달라 백업이 아님). `cp -p voice_prompt.pt voice_prompt.pt.bak-20260930; chmod a-w voice_prompt.pt*` 후 로컬로 회수해 md5 기록. **v18 렌더에 `--force`·`--refresh-prompt` 금지**(이 문서 하단 `--force` 명령은 v16 시절 것 — 복사 금지).
+    3. **참조 전사 확정**: `README.md:89` 와 이 문서의 옛 명령(“안녕하세요. 오늘은 …”)이 다르다. `ref/narrator.wav` 를 들어 정답을 정하고 `ref/narrator.txt` 로 고정(캐시가 있으면 전사는 쓰이지 않음 — 그래도 기록).
+    4. 준비: `cd /home/jjyoo/record && source venv/bin/activate && which python ffmpeg`(둘 다 venv 경로여야 함; 기본 `python` 은 omnivoice 없는 `~/.venv`, dry-run 은 이 상태에서도 통과하므로 착각 주의). 업로드: `narration.v18.json`, 브랜치 `render_tts.py`(서버의 구버전은 `render_tts.py.v16` 로 보존) → `md5sum` 대조. 서버에는 `audio/` 가 없고 `out/` 만 있다: `mkdir audio18 && cp out/00-opening.* audio18/`.
+    5. dry-run: `python render_tts.py --narration narration.v18.json --out-dir audio18 --reuse 00-opening --dry-run` → **19개 생성 + 00-opening 건너뜀**이어야 한다(`--reuse` 없으면 00-opening 도 재생성으로 나오므로 주의).
+    6. 시험 합성(약 15분, 본 렌더 전): 미시험 토큰만 모은 `narration.probe.json`(11장 큰 숫자 5개, 17장 스페이스X/XAI, 16장 AMI Labs·LawZero·Discovery Loop, 5·18장 CPU·CUDA·CVPR·TPU, GPT-1, Azure)으로 합성해 청취. 오독이 있으면 낭독용 표기(SPOKEN) 치환 계층 도입 여부를 결정한 **뒤** 본 렌더. 비용 없는 선행 점검: 옛 `audio/` 클립에서 OpenAI·xAI·SSI·AGI·“Attention Is All You Need”·9,650억 청취(목록은 `.agent/review/sim_opus.md` O2-07).
+    7. 본 렌더: `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 nohup setsid python render_tts.py --narration narration.v18.json --ref-audio ref/narrator.wav --ref-text "<확정 전사>" --out-dir audio18 --reuse 00-opening --device cpu --cpu-cores 10 --speed 0.94 --mp3 > render_v18.log 2>&1 &` — 캐시가 있으면 `--ref-audio/--ref-text` 는 로딩되지 않고 캐시가 쓰인다(로그의 “참조 음성 캐시 사용” 확인).
+    8. 회수·검증: wav·mp3 20쌍, `*.sha1` 20개, `manifest.json` 의 `text_sha1` 대조, ffprobe 전수, 종료코드 0(2 면 mp3 누락). 청취 우선: 00-opening→01 이음새, 11장, 17장.
+  - **전환 시 함께 할 것(같은 커밋)**: PROGRESS 의 `mv` 6줄 실행 + README/CLAUDE.md 의 `--out-dir ./audio`·`rm audio/06-scene.*`·podman `-v ./audio:/work/out`·‘15장·17개·16-ending’ 를 `audio18`·18장/20클립·`19-ending` 으로 갱신, 루트 `extract_narration.py`·`render_tts.py` 를 브랜치 신버전으로 교체(옛 추출기는 엔딩을 `17-ending`·옛 문구로 만들어 `narration.json` 을 덮음). 전환 뒤 `git add -A` 금지(v16 파일 유출 방어는 로컬 exclude 뿐).
+  - **남은 열린 항목**: 자막 하이라이트 어긋남(글자 수 비율 추정, 옛 오디오 실측 평균 2~6초·최악 8~14초 — 개선하려면 `--granularity line` 기반 타이밍), 재생 중 네트워크 오류 시 조용한 정지, 공개 방어(출처 목록·정정 연락처·AI 제작 고지 위치), 텍스트 최종 동결·통독(사용자), 한 달 뒤 수정 대비 원본 일원화(`.agent/` 를 저장소에 넣을지 결정 필요).
+
+- **(2026-09-30, 후속6) 오디오 무관 잔여 항목 처리 — 네트워크 가드·공개 방어·사실 재확인**
+  - **재생 중 정체·오류 가드**(`guardClip`, 두 페이지 모두): 재생 위치가 10초 넘게 멈추거나 `error` 가 나면 브라우저 음성으로 한 번만 넘긴다(`play()` 거부 경로와 폴백을 하나로 묶어 중복 재생 방지 — 첫 구현에서 폴백이 2회 실행돼 다음 장이 2번 시작되던 결함을 시험으로 발견·수정). 시험: 05장 mp3 를 40%만 보내고 멈추는 서버 → 11초 뒤 브라우저 음성 1회 → 이후 장 정상 진행·끝까지 재생(슬라이드·원본형).
+  - **공개 방어**: 시작 화면에 AI 제작 고지 한 줄(오프닝 문구는 불변). 크레딧에 ‘정정·문의’(`credits.v18.json` 의 `_contact`)와 ‘최신 사항의 출처’(`sources.v18.json` `[{label,url}]`) 섹션을 **데이터가 있을 때만** 생성 — 지금은 둘 다 없어 빌드 시 경고가 뜬다. **사용자 결정(2026-09-30): 연락 수단·출처 링크는 넣지 않는다** → 두 섹션은 선택 사항으로 두고 경고도 끈다. 대신 크레딧에 웃자고 넣은 항목(특수효과·삭제된 장면·제작 중 사고·협찬·출연 동물)을 채우고, 맨 끝 ‘최종 작성자’ 는 사용자 지정 문구 “삐꾸강아쥐 by 딸깍” 그대로 표기(이 한 줄만 사실 표기, 나머지 재미 항목의 소재는 이 작업에서 실제 있었던 일). 단, 페이지에 정정 창구가 없다는 점은 그대로다.
+  - **사실 재확인**(`.agent/review/facts_final.md`; 웹 검색 예산 소진·프록시 차단으로 1차 직접 열람은 anthropic.com Series H 뿐, 나머지는 검색 요약 경유): 르쿤=executive chairman·CEO 르브룅 확정, 하사비스 ‘2030년 50%’ 원 발언(Lex Fridman 2025-07, 2026-01 재발언) 확정, Anthropic 9,650억 달러(2026-05-28 post-money) 확정, OpenAI 8,520억(03-31) 확정(2차). **수정 1건**: 17장 국방부 소송 ‘1심→항소심’ → ‘8월 연방지법이 지정 하나를 위법 판단, 9월 연방항소법원이 다른 지정 유지’(병행 소송으로 보임). `narration.v18.json` 12,795자로 갱신(md5 는 동결 시점에 다시 기록). **여전히 미확정**: 톰 브라운·캐플런 등 창업자별 OpenAI 퇴사 시점(현 문장은 다리오만 ‘2020년 말’로 단정, 나머지는 ‘이듬해 함께 세웠다’), xAI 개명·스페이스X 흡수 일자(이전 라운드 검증분을 유지), 엔비디아–SSI 원문, 판결문 원문.
+  - **하지 않은 것**: 미사용 이미지 3개(`context-images/gpu-alexnet|openai-hq|chatgpt-launch.jpg`) 삭제 — 옛 `AIStory.html`·`AIStory-slide.html`(16장, 아직 운영 중이며 롤백 대상)이 참조하므로 **전환 후에** 삭제. 노선도 `at` 는 이미 누적(`computeState`)이라 구조 결함 없음(16장 `shazeer:'openai'` 는 본문과 일치). `.agent/` 저장소 편입은 콘텐츠 비공개 정책상 보류(백업 zip 으로 대체). README/CLAUDE.md 수치 갱신은 전환 시점에.
+
+- **(2026-09-30 오후) 외부 리뷰 반영 + v18 최종 전환 + 서버 렌더링 시작**
+  - **전환 완료**: 루트 `AIStory.html`/`AIStory-slide.html`/`narration.json`이 이제 18장(v18)이다. 16장 파일은 `archive/v16/`, 리뷰 반영 직전 백업은 `archive/pre-review-20260930/`(모두 로컬 전용·gitignore). README/CLAUDE.md/samples 수치는 18장·20클립·`audio18/`·`19-ending`으로 갱신.
+  - **리뷰 반영**(낭독 +약 280자, 총 약 13,100자): 5장 "머신 1,000대·CPU 코어 1만 6,000개", 17장 SSI 엔비디아 투자를 마일스톤 조건부로 정정 + 그로스 이탈·수츠케버 CEO 추가, 10장 머스크 소송 "배심 만장일치 시효 도과 평결·머스크 패소", 12장의 Anthropic 기업가치 문단을 17장으로 이동해 "Anthropic 발표 기준 Series H(post-money)"로 중립화(카드도 동일), 13장 시간 역행 표현 정정, 역전파·합성곱·GPT 다음 단어 예측 각 1문장 보강, "하나의 계보" 단정 완화(teaser·오프닝·엔딩). 오프닝 문구가 바뀌어 `00-opening`도 재합성 대상.
+  - **데이터·코드**: 술레이만 `구글 (2019.12)`, 힌튼 노선도(16장 indie 제거, 17장에서 토론토대로 이동), 톰 브라운 모노그램 '톰', 타이머 35분, `synth` 가드, 17장 stats `3 = OpenAI에서 갈라져 나온 회사`, 뉴웰·사이먼 카드, 인물 43명 전원 `why` 한 줄(카드·패널·계보도 하단, 슬라이드는 설명 앞 굵게).
+  - **초상화**: Commons 자유 라이선스 18명 추가(총 31장, `credits.v18.json` 33건 + 엔딩 크레딧 사진 행 33개). 사진 없음(폴백 유지): krizhevsky·vaswani·shazeer·daniela·schulman·leike·liang·lample·radford·brown·newell. 작은 원본(legg·leesedol·zuckerberg)·연단 캡처(karpathy)는 품질 주의. **라이선스는 에이전트가 File 페이지 wikitext로 확인 — 사람이 재확인 권장.**
+  - **서버 렌더링 시작 2026-09-30 15:58 (rhel-storage:/home/jjyoo/record)**: `voice_prompt.pt` 백업 `voice_prompt.pt.bak-20260930`(md5 `50cddafa…` 동일, 쓰기 금지), 구 스크립트 `render_tts.py.v16`, 로컬↔서버 md5 대조 완료(`narration.v18.json` `ee488763…`, `render_tts.py` `1bb02f02…`). `nohup setsid python render_tts.py --narration narration.v18.json --out-dir audio18 --device cpu --cpu-cores 10 --speed 0.94 --mp3`, 참조 음성 인자 없이 캐시만 사용(로그 "참조 음성 캐시 사용" 확인), 로그 `render_v18.log`. **20클립 전부 신규 합성, 예상 약 10시간(서버 부하 load≈10/16).** 사전 시험 합성·청취는 생략했으므로 큰 숫자·영문 고유명사(9,650억·SpaceX·LawZero·AMI Labs 등) 발음은 렌더 후 전수 청취로 확인해야 한다.
+  - **완료 후 절차**: ① 서버에서 `ls audio18 | wc -l`(wav 20 + mp3 20 + sha1 20 + manifest) 및 로그 종료코드 확인 ② `audio18/` 회수(SSH 다운로드) → 로컬 `audio18/` ③ ffprobe 전수·`manifest.json` `text_sha1` 대조 ④ 브라우저 확인(원본형·슬라이드형, 엔진 라벨 "고품질 음성") ⑤ 전수 청취(00→01 이음새, 11장, 17장 우선). 발음 문제 클립만 지우고 서버에서 증분 재렌더.
+  - **남은 것**: 텍스트 최종 동결·통독(사용자), 최신 사건 추가는 A단계에서 대부분 이미 본문에 있어 SSI 그로스·수츠케버만 추가(스페이스X–xAI 2026-02-02·OpenAI 구조개편 2025-10-28은 이번에 재검색 안 함 [unverified]), 자막 하이라이트 근사(`--granularity line` 미적용).
+
+- **(2026-10-01) v18 오디오 완성 · STT 검증 · 자막 보정 · 슬라이드 레이아웃/크레딧 수정**
+  - **렌더링 완료**: 1차 20클립은 rhel-storage(02:10), 이어서 낭독용 표기 치환으로 바뀐 8클립(06·08·09·11·14·15·16·17장)은 **이 PC에서 로컬 재렌더**(CPU 16코어, 32단계, 서버 원본과 md5 동일한 `voice_prompt.pt`, 모델 `melotts-test/omnivoice-local`, 클립당 약 27~52분, RTF 15~19). 총 20클립 **37.1분**, 드라이런 생성 대상 0, 오디오 정합성 시뮬레이션 문제 없음. 위 "서버 렌더링 시작" 항목은 이 결과로 대체됨. 백그라운드 작업은 **2시간 제한**에 두 번 걸려 중단됐다 이어서 실행(클립 단위로 보존되어 안전). 로컬 1차 렌더 백업: `archive/audio18-first-render/`.
+  - **STT 검증**(faster-whisper large-v3, 프롬프트 없음, `.agent/stt_check.py`): 평균 일치율 **98.2%**. 불일치 대부분은 연음·숫자 표기·끝부분 환각(길이 0 단어 제거 필터)이라 STT 쪽 현상. 실제 오독으로 확인된 것: 수츠케버, Thinking Machines Lab, AMI Labs, LawZero, Azure → 단독 시험 합성 17건으로 낭독용 표기 검증 후 `extract_narration.py`의 `SPOKEN` 치환 계층에 반영(화면 문구는 그대로, `display_text` 보존). 재렌더 후 교정 대상 불일치 **20 → 13건**: Thinking Machines·Azure·LawZero·Series H·Attention·Cohere 해결.
+  - **수츠케버 판정(해결, 2026-10-01)**: 두 모델이 힌트 없이는 "수축해 버"로 받아쓰는 현상이 남았으나(힌트 20/20 정답), 사용자가 `listen/` 구간을 직접 듣고 **괜찮다고 확인** → 재렌더 불필요, STT 언어 모델 편향으로 결론. AMI Labs·DNNresearch는 스크립트의 영문 약어 처리 오탐으로 판명(두 모델 모두 정확히 들음).
+  - **자막 싱크 보정**: STT 단어 시각으로 `audio18/sync.json`(클립별 [글자비율, 시각] 앵커, 공백 제외 글자 수 좌표)을 만들고 두 페이지가 있으면 사용·없으면 기존 비율 방식으로 폴백. 문단 단위 오표시 4.0% → 0%(앵커가 같은 STT 기반이라 독립 검증은 아님). **오디오를 다시 렌더하면 `tools/verify/stt_check.py`를 다시 돌려 `sync.json` 갱신 필요**(현재 파일은 8클립 재렌더 직후 STT 기준).
+  - **슬라이드 인물 칸 넘침 수정**(`slide.template.html`): 원인은 `why` 줄 추가·1장 6인 구성 후 크기 재검증 누락. 펼친/강조된 칸은 내용보다 작아지지 않게, 1~2인 장의 자동 펼침은 화면에 안 들어가면 `why` 한 줄로 축소(클릭 시 전체), 단계 글자는 `keep-all`. 전수 스캔(`tools/verify/scan_slides.mjs`) 1366×768 기준 107 → 2건(모두 사용자가 직접 펼친 상태), 1920×1080 0건. 낮은 화면(1280×720)에서 6인 장의 칸을 펼치면 목록 스크롤이 생김(겹침 없음).
+  - **엔딩 크레딧 자동 스크롤**: 이 PC 브라우저가 `prefers-reduced-motion: reduce`를 보고해 CSS 롤이 꺼져 멈춰 보였음. 해당 환경에서만 `scrollTop` 자동 진행 + 일시정지/계속 버튼(두 페이지). 설정이 꺼진 환경은 기존 CSS 방식. 슬라이드 끝화면의 사진 출처 문구는 "이어지는 크레딧 화면에 표기"로 교체(13명 하드코딩 제거).
+  - **검증 도구**(`tools/verify/`, 저장소에 편입됨 — 개인 경로 제거, 사용법은 README): `sim_audio.py`(오디오 정합성) · `sim_page.mjs`(Chrome 페이지 시뮬레이션) · `stt_check.py`/`cross_stt.py`(STT) · `scan_slides.mjs`(레이아웃 넘침) · `probe_roll.mjs`(크레딧 스크롤) · `shot.mjs`(스크린샷). STT 모델은 홈 폴더 `whisper-models/large-v3`, `large-v3-turbo`(프록시 경유 curl로 수신, Python 다운로더는 사내 인증서로 실패).
+  - **마무리 완료 상태(2026-10-01)**: 자막 앵커 `audio18/sync.json`을 최종 오디오 기준으로 재생성(20클립 정상), 최종 시뮬레이션 A(오디오 정합성)·B(Chrome 페이지) 문제 없음, 엔딩 크레딧 점검(사진 출처 33행 = 데이터 33건 일치, 이미지 전부 출처 있음, 낭독 문구 갱신). `CLAUDE.md`에 SPOKEN 치환 계층·`sync.json`·목소리 일관성(`voice_prompt.pt` md5 `50cddafa…`, num-step 32)을 기록. 작업은 브랜치 `worktree-slide-page`(main 병합·푸시 미실시).
+  - **사람이 해야 할 것**: ① 실제 오디오로 처음부터 끝까지 감상(발음·톤·자막 위치) ② 텍스트 최종 동결·통독 ③ 원본형 `AIStory.html` 1장 사진 프레임 확인("네모 상자" 지적의 대상 미확인) ④ main 병합·공개 여부 결정(콘텐츠 파일은 비공개 정책상 git 제외).
+
 ## 완료
 
 - 발표용 PPT 20장 (사람 계보 중심, S-Core 브랜드 아닌 자체 디자인) | `AI_족보학.pptx`
@@ -31,6 +143,8 @@
 - GPU 컨테이너 정의 | `Containerfile`
 - 참조 음성 기반 voice cloning으로 전체 17개 클립 렌더링 (RTF 12.4~22.5, 총 소요 약 72분) | `audio/`
 - 두 콘텐츠를 인물 중심 저널리즘 톤 단일 페이지로 병합·재작성, 30~40분 분량으로 확장, 적대적 리뷰 1회전 반영 | `AIStory.html`
+- 16장 신설 + 3라운드 팩트체크로 텍스트가 최종 확정된 뒤, 바뀐 6개 클립(05·09·13·14·15·16-scene) 재렌더링까지 완료 — **18개 클립 전량 구비, manifest.json 정합성 검증 완료** | `audio/`
+- 실브라우저(Claude 내장 브라우저) 종단 검증: 인트로→재생→카드클릭→장이동→계보도 SVG 전부 정상, 오디오 엔진 "고품질 음성" 확인
 
 검증한 것:
 - 추출 스크립트 재실행 성공(narration.json 내용 불변 확인), 렌더러 `--dry-run` 성공(Windows 콘솔 en-dash 크래시 수정 후)
@@ -46,22 +160,10 @@
 
 ## 다음 우선순위
 
-1. 발음·속도 튜닝
-   - Acceptance Criteria:
-     - 고유명사(오픈에이아이, 앤트로픽, 트랜스포머 등) 어색한 발음 없음 — 17개 클립 전수 청취 필요
-     - 장면 간 목소리 톤 일관
-     - 수정은 `AIStory.html` 원문 → `extract_narration.py` 재실행 경로로만 진행
-
-2. 웹페이지 브라우저 검증
-   - Acceptance Criteria:
-     - 15장 스크롤 내비게이션, 인물 카드 클릭/키보드 상호작용, 계보도 SVG 렌더링 정상 동작
-     - `audio/` 새 클립이 실제로 재생되는지(재생 바 "고품질 음성" 표시), 콘솔 에러 없음
-
-3. 영상 제작
-   - Acceptance Criteria:
-     - `manifest.json` 기준 장면 전환 타이밍 산출
-     - 웹페이지 화면 녹화 + 음성 합성
-     - 자막 필요 시 `--granularity line`으로 문장 단위 재렌더링
+1. **최종 감상·확정(사람)** — 원본형·슬라이드형 모두 오디오와 함께 끝까지 재생해 발음·톤·자막 위치 확인. 문구를 더 고치면: `AIStory.html`의 SCENES 수정 → `extract_narration.py` → `render_tts.py --dry-run`으로 재렌더 대상 확인 → 증분 렌더(서버 또는 이 PC, 목소리 캐시 원본 사용) → STT로 검증 → `sync.json` 갱신 순.
+2. **원본형 1장 사진 프레임 확인** — 사용자가 지적한 "인물을 지정하는 네모 상자가 인물보다 작다"는 슬라이드형 인물 칸으로 재현·수정했으나, 원본형 히어로 사진 프레임을 가리킨 것이었는지는 미확인.
+3. **병합·공개 결정** — 브랜치 `worktree-slide-page`를 `main`에 병합할지, PR을 만들지. 콘텐츠(HTML·대본·오디오·사진)는 비공개 정책상 git에 올라가지 않으므로 이 PC가 유일한 사본임(백업 필요: `archive/`, `audio18/`, `portraits/`, `AIStory*.html`, `narration.json`, `voice_prompt.pt`).
+4. (선택) 사진 없는 인물 11명 보강 — Commons에 적합한 자유 이미지가 없어 이니셜 폴백 유지 중. 영상 제작은 `audio18/manifest.json`·`sync.json` 기준으로 장면 전환 타이밍 산출 가능.
 
 ## 결정 사항
 
@@ -173,6 +275,11 @@
   - 위험: 텍스트 미세 수정(11장 문장 삭제, 5장 문구 1곳) — 재렌더링 대기 중인 음성과 또 다시 어긋남, 재렌더링 전 최종 diff 확인 권장
   - **사용자 확정**: 15개 장 전부가 메타-요약으로 끝나는 구조는 의도된 문체로 유지, 더 손대지 않음. 이 시점 텍스트를 최종본으로 확정 — 이후 재렌더링 대상
 
+- 결정(2026-09-16): **이 PC(Windows, GPU 없음)에서 TTS 렌더링 시도를 전면 금지** — 사용자 명시 지시("랜더링은 이 PC에서 실행되면 안 되")
+  - 이유: HF Xet CDN 우회(로컬 모델 사본 사용)까지 해봐도 `model.generate()` 단계에서 트레이스백 없는 네이티브 크래시가 재현성 있게 반복됨(원인 미확정 — OpenMP 중복 라이브러리 의심). 반면 `rhel-storage`는 기존에 검증된 CPU 렌더 이력이 있음
+  - 대안: 렌더링은 항상 `rhel-storage:/home/jjyoo/record`에서만 진행, 필요시 SSH(`mcp-ssh`, alias `rhel-storage`)로 결과물만 로컬로 동기화
+  - 위험: 없음 — 오히려 로컬 PC 자원 낭비·불필요한 크래시 디버깅 시간을 없앰
+
 ## Handoff
 
 - 핵심 컨텍스트:
@@ -185,11 +292,14 @@
 
 - 미결 사항:
   - 참조 음성(`ref/narrator.wav`)에 경미한 하울링 — 재녹음 여부는 선택 사항, 재녹음 시 전체 재렌더링 다시 필요
-  - 17개 클립 고유명사 발음 전수 청취 미완료
-  - 브라우저 실제 렌더링 미확인(스크롤/카드 클릭/계보도 상호작용) — Chrome 확장 미연결로 이번 세션에서 스킵됨
+  - 18개 클립(구 17 + 신규 16-scene) 고유명사 발음 전수 청취 미완료 (구조적 검증은 2026-09-16 완료)
+  - 인물 초상화 12명분 404 (선택, 위 "다음 우선순위" 3번 참고)
   - Notion 프로젝트 페이지 미생성(페이지 자체가 바뀌었으므로 기존 페이지 갱신 또는 새로 생성 필요)
+  - ~~브라우저 실제 렌더링 미확인~~ — **2026-09-16 완료** (Chrome 확장은 계속 미연결이라 Claude 데스크톱 앱 내장 브라우저로 대체 검증)
+  - ~~오디오 6클립(05·09·13·14·15·16-scene) 재렌더링~~ — **2026-09-16 완료 확인**(rhel-storage에서 09-15에 이미 렌더됐던 것을 SSH로 로컬 동기화). **이 PC(Windows, GPU 없음)에서는 렌더링 시도 금지** — 사용자 명시 지시, 네이티브 크래시로 3회 실패 이력 있음
 
-- 재개 시 첫 액션: 음성은 `audio/`에 새 저널리즘 톤 17클립(wav+mp3+manifest.json)으로 전량 교체 완료(2026-09-11). 브라우저에서 `python -m http.server`로 열어 스크롤/카드/계보도/오디오 재생을 확인하는 것이 다음 단계. 문구를 더 고치거나 참조 음성을 재녹음했다면 재렌더링(로컬 `melotts-test\omnivoice-local` 또는 `rhel-storage:/home/jjyoo/record`에서, `--cpu-cores`는 공유 서버에서만 지정):
+- 재개 시 첫 액션: 콘텐츠·오디오·페이지는 2026-10-01 기준 **완성 상태**(20클립 37.1분, 시뮬레이션 통과). 위 "다음 우선순위" 1~3은 사람의 확인·결정 사항이다. 문구를 고쳐 재렌더해야 하면 `CLAUDE.md`의 "낭독용 표기 치환"·"자막 앵커"·"목소리 일관성" 항목을 먼저 읽을 것.
+  > ⚠ 아래 명령은 v16 시절 것이다. 신 `render_tts.py` 에서 `--force` 는 클립만 다시 만든다(캐시는 유지). v18 렌더에는 위 “서버 렌더 절차(개정)”를 쓸 것.
   ```bash
   python render_tts.py --narration narration.json --out-dir ./out --device cpu \
     --ref-audio ref/narrator.wav \
@@ -243,3 +353,6 @@
 
 - Notion: `빛이 된 아이 - 2026-09-10` 페이지 생성 완료
   https://app.notion.com/p/3d7b44a2dd2e8172b748fda9a01f7e0e
+
+## 📎 Notion 기록 URL
+- [AIStory] - 2026-09-30: https://app.notion.com/p/3ebb44a2dd2e81388833d53560c461b5 (개발 이력 1건: v18 재구성·시뮬레이션 리뷰 반영, 이슈 트래커 1건)

@@ -27,18 +27,42 @@ OPENING = {
     "label": "오프닝",
     "lines": [
         "지금부터 인공지능을 만든 사람들의 이야기를 전해드립니다.",
-        "1956년 다트머스에서 시작해 지금까지 이어진, 70년에 걸친 하나의 계보입니다.",
+        "1956년 다트머스에서 시작해 지금까지 이어진, 70년에 걸친 이야기입니다. 오늘날 경쟁하는 연구소들의 상당수는 같은 몇 사람에게서 갈라져 나왔습니다.",
     ],
 }
 ENDING = {
-    "id": "17-ending",
+    "id": "ending",   # main() 이 장 수를 세어 NN-ending 으로 확정한다
     "label": "엔딩",
     "lines": [
-        "경쟁처럼 보이는 이 지형은, 실은 몇 사람에게서 갈라져 나온 하나의 계보였다.",
+        "경쟁처럼 보이는 이 지형의 중심에는, 몇 사람에게서 갈라져 나온 하나의 계보가 있었다.",
     ],
 }
 
 TAG = re.compile(r"<[^>]+>")
+
+# 낭독용 표기 치환 — TTS 에 넘기는 문구(narration.json)에만 적용하고 화면 문구(HTML)는 그대로 둔다.
+# STT(Whisper) 받아쓰기로 실제 오독이 확인된 것만 넣는다(2026-10-01 시험 합성 17건으로 검증).
+#   수츠케버 → "수츠케버"가 "수축해버"로 읽힘 / Thinking Machines Lab → "틴킹 메신 슬랩" / AMI Labs → "에이마이 랩스" /
+#   LawZero → "러지로" / Azure → "에지어". DNNresearch·Series H·Attention… 은 단독으론 맞았으나 문맥에서 빠진 적이 있어 포함.
+# 긴 패턴이 먼저 와야 한다.
+SPOKEN = [
+    ("Attention Is All You Need", "어텐션 이즈 올 유 니드"),
+    ("Thinking Machines Lab", "씽킹 머신스 랩"),
+    ("Thinking Machines", "씽킹 머신스"),
+    ("DNNresearch", "디엔엔 리서치"),
+    ("AMI Labs", "에이엠아이 랩스"),
+    ("Series H", "시리즈 에이치"),
+    ("LawZero", "로 제로"),
+    ("Azure", "애저"),
+    ("Cohere", "코히어"),
+    ("수츠케버", "수츠케 버"),
+]
+
+
+def to_spoken(s: str) -> str:
+    for a, b in SPOKEN:
+        s = s.replace(a, b)
+    return s
 
 
 def strip_tags(s: str) -> str:
@@ -63,6 +87,10 @@ def parse_scenes(html: str) -> list[dict]:
 
     scenes = []
     for i, (year, block) in enumerate(zip(years, line_blocks), start=1):
+        # lines 블록의 각 줄은 홑따옴표 문자열이어야 한다. 큰따옴표·백틱·주석이 섞이면 조용히 유실되므로 중단한다.
+        for bl in (x.strip() for x in block.splitlines()):
+            if bl and not re.fullmatch(r"'(?:[^'\\]|\\.)*',?", bl):
+                sys.exit(f"{i}장 lines 블록에 홑따옴표 문자열이 아닌 줄이 있습니다: {bl[:60]}")
         raw = re.findall(r"'((?:[^'\\]|\\.)*)'", block)
         lines = [strip_tags(x.replace("\\'", "'")) for x in raw]
         lines = [x for x in lines if x]
@@ -83,12 +111,24 @@ def main() -> None:
     args = ap.parse_args()
 
     html = pathlib.Path(args.html).read_text(encoding="utf-8")
-    items = [OPENING] + parse_scenes(html) + [ENDING]
+    scenes = parse_scenes(html)
+    m = re.search(r'<section id="closing"[^>]*>\s*<p class="quote">(.*?)</p>', html, flags=re.S)
+    if not m:
+        sys.exit("HTML 에서 #closing .quote 를 찾지 못했습니다(엔딩 문구의 원본).")
+    # HTML 이 엔딩 문구의 원본 — <br> 는 공백으로
+    quote = re.sub(r"\s+", " ", strip_tags(re.sub(r"<br\s*/?>", " ", m.group(1))))
+    ENDING["lines"] = [quote]
+    ENDING["id"] = f"{len(scenes) + 1:02d}-ending"   # 장 수에 맞춰 자동 결정(하드코딩 금지)
+    items = [OPENING] + scenes + [ENDING]
 
     for it in items:
         # OmniVoice 에 한 번에 넘길 문장. 줄 사이는 마침표 간격으로 자연스럽게 이어진다.
+        display = " ".join(it["lines"])
+        it["lines"] = [to_spoken(x) for x in it["lines"]]
         it["text"] = " ".join(it["lines"])
         it["chars"] = len(it["text"])
+        if it["text"] != display:
+            it["display_text"] = display   # 화면 문구 원문 — 자막 좌표(sync.json)는 이것을 기준으로 잡는다
 
     out = {
         "language": "ko",
