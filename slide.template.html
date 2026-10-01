@@ -117,8 +117,12 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .ln-why{display:block;font-weight:600;margin-bottom:.2rem}
 .ln-desc{display:none;margin-top:.6rem;font-size:max(14px,1.9vh);line-height:1.65;color:var(--ink-2)}
 .lane[aria-pressed=true] .ln-desc{display:block}
+.page.tight .lane[data-auto]:not(.speaking) .ln-d{display:none}
+.page.tight .lane[data-auto]:not(.speaking) .ln-why{margin-bottom:0}
+.dg-steps li{word-break:keep-all;overflow-wrap:break-word}   /* 단계 글자는 어절 단위로만 줄바꿈("박/사" 처럼 단어 중간에서 끊기지 않게) */
 .page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:.62}
-.lane.speaking{background:var(--s-blue-soft);border-color:var(--s-blue);box-shadow:0 0 0 3px rgba(1,86,252,.22)}
+.lane.speaking{background:var(--s-blue-soft);border-color:var(--s-blue);box-shadow:0 0 0 3px rgba(1,86,252,.22);
+  max-height:none;flex:0 1 auto}   /* 낭독 중 강조 칸도 펼친 칸처럼 내용만큼 커진다 — 밀집 모드의 max-height 에 묶이면 설명이 칸 밖으로 넘친다 */
 .lane.speaking .ln-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
 .lane[aria-pressed=true] .ln-desc{-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}
 .dg.many .lane{min-height:3.4rem;padding-top:.3rem;padding-bottom:.3rem}
@@ -126,6 +130,10 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .dg.many .dg-steps li{padding-top:.3rem;padding-bottom:.3rem;font-size:max(12px,1.7vh)}
 .dg.many .ln-desc{margin-top:.3rem;font-size:max(12px,1.6vh);line-height:1.5}
 .lane .hint{display:none}
+/* 펼친/강조된 칸은 자기 내용보다 작게 줄어들지 않는다(다른 칸이 먼저 줄어든다) — 줄어들면 설명이 아래 칸과 겹친다 */
+.page .dg .lane[aria-pressed=true],.page .dg .lane.speaking{min-height:max-content}
+/* 사용자가 칸을 직접 펼치면 낭독 강조 칸의 긴 설명은 접어 공간을 내준다 */
+.page:has(.lane[aria-pressed=true]:not([data-auto])) .lane.speaking:not([aria-pressed=true]) .ln-d{display:none}
 
 /* 통계 카드 */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:clamp(.5rem,1.2vw,.9rem)}
@@ -191,6 +199,9 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .page.roll .ph a{color:inherit;text-decoration:underline}
 .page.roll .rl-end{margin:4rem 0 2rem;font-size:1.4rem;font-weight:700;color:var(--ink)}
 .page.roll .rl-end small{display:block;margin-top:.5rem;font-size:.85rem;font-weight:400;color:var(--ink-3)}
+.page.roll .roll-ctl{flex:none;margin:.7rem 0 .9rem;padding:.45rem 1.2rem;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink-2);font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
+.page.roll .roll-ctl[hidden]{display:none}
+.page.roll .roll-ctl:hover{color:var(--ink);border-color:var(--s-blue)}
 @media (prefers-reduced-motion:reduce){ .page.roll.active .roll-track{animation:none} .page.roll .roll-view{overflow:auto;-webkit-mask-image:none;mask-image:none} .page.roll .roll-track{padding-top:0} }
 
 /* 엔딩 */
@@ -336,7 +347,7 @@ function laneHTML(k){
   return `<div class="lane" role="button" tabindex="0" aria-pressed="false" data-map="${k}" aria-label="${esc(d.n)} — 눌러서 알아보기">
     <div class="ln-id"><span class="por"><img class="por-img" src="${portraitURL(k)}" alt="" data-initial="${esc(d.m)}" data-id="${k}"></span>
       <div><b>${esc(d.n)}</b><i>${esc(d.e||'')}</i></div></div>
-    <div class="ln-body"><ol class="dg-steps">${steps}</ol><p class="ln-desc">${d.why?`<b class="ln-why">${esc(d.why)}</b> `:''}${esc(d.d||'')}</p></div></div>`;
+    <div class="ln-body"><ol class="dg-steps">${steps}</ol><p class="ln-desc">${d.why?`<b class="ln-why">${esc(d.why)}</b> `:''}<span class="ln-d">${esc(d.d||'')}</span></p></div></div>`;
 }
 
 SCENES.forEach((sc,i)=>{
@@ -348,7 +359,7 @@ SCENES.forEach((sc,i)=>{
   const stats=sc.stats?`<div class="stats${statsOnly?' only':''}">${sc.stats.map(x=>`<div class="stat"><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div>`).join('')}</div>`:'';
   const table=sc.table?`<table class="tb"><tr>${sc.table.h.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${sc.table.r.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`:'';
   let lanes=people.map(laneHTML).join('');
-  if(people.length<=2) lanes=lanes.replace(/aria-pressed="false"/g,'aria-pressed="true"');   /* 1~2인 장은 설명을 펼쳐 빈 공간을 채운다 */
+  if(people.length<=2) lanes=lanes.replace(/aria-pressed="false"/g,'aria-pressed="true" data-auto="1"');   /* 1~2인 장은 설명을 펼쳐 빈 공간을 채운다. data-auto = 자동 펼침(화면에 안 들어가면 fitLanes 가 한 줄로 줄인다) */
   const many=people.length>=4?' many':'';
   let main;
   if(table&&lanes&&!photo) main=`<div class="dg two${many}"><div class="dg-col">${lanes}</div><div class="dg-col">${stats}${table}</div></div>`;
@@ -382,12 +393,43 @@ const endPage=document.createElement('section');
 endPage.className='page end';endPage.id='closing';
 endPage.innerHTML=`<p class="quote">${END_QUOTE}</p>
   <p class="cred">인공지능을 만든 사람들 · 1956년 다트머스 회의부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
-  <p class="pc">인물 사진 출처(Wikimedia Commons, CC 라이선스): John McCarthy CC BY 2.0 · Marvin Minsky CC BY-SA 2.0 · Claude Shannon CC BY 2.0 · Geoffrey Hinton CC BY-SA 4.0 · Yann LeCun CC BY-SA 2.0 · Yoshua Bengio CC BY-SA 2.0 · Ilya Sutskever CC BY-SA 4.0 · Demis Hassabis CC BY-SA 4.0 · Elon Musk CC BY-SA 3.0 · Sam Altman CC BY 2.0 · Dario Amodei CC BY 2.0 · Greg Brockman CC BY 3.0 · Mira Murati CC BY 4.0. 나머지 인물은 사진 없이 이니셜로 표시됩니다.</p>`;
+  <p class="pc">인물 사진의 출처·저작자·라이선스(Wikimedia Commons, CC·퍼블릭 도메인)는 이어지는 크레딧 화면에 모두 표기했습니다. 사진이 없는 인물은 이니셜로 표시됩니다.</p>`;
 deck.appendChild(endPage);pages.push(endPage);
 if(typeof ROLL_HTML==='string'&&ROLL_HTML){       /* 엔딩 다음 화면: 영화식 크레딧 */
   const rp=document.createElement('section'); rp.className='page roll'; rp.id='credits';
-  rp.innerHTML=`<div class="roll-view"><div class="roll-track">${ROLL_HTML}</div></div>`;
+  rp.innerHTML=`<div class="roll-view"><div class="roll-track">${ROLL_HTML}</div></div><button type="button" class="roll-ctl" hidden>일시정지</button>`;
   deck.appendChild(rp); pages.push(rp);
+  /* 크레딧 자동 스크롤. 기본은 CSS 애니메이션(rollUp 95초). 시스템이 '동작 줄이기'(prefers-reduced-motion)를 켠 환경
+     (예: Windows '애니메이션 효과 표시' 끔)에서는 접근성 규칙에 따라 애니메이션이 꺼져 크레딧이 멈춰 보인다.
+     그 경우에만 같은 속도로 scrollTop 을 직접 올리고, 일시정지 버튼·마우스 올림·직접 스크롤로 멈출 수 있게 한다. */
+  (function(){
+    const view=rp.querySelector('.roll-view'), btn=rp.querySelector('.roll-ctl'), mq=matchMedia('(prefers-reduced-motion: reduce)'), DUR=95000;
+    let raf=0,last=0,pos=0,paused=false,hover=false;
+    const maxScroll=()=>Math.max(0,view.scrollHeight-view.clientHeight);
+    function frame(t){
+      if(!last) last=t;
+      const dt=t-last; last=t;
+      if(!paused&&!hover){
+        pos=Math.min(maxScroll(),pos+maxScroll()*dt/DUR);
+        view.scrollTop=pos;
+        if(pos>=maxScroll()-1){ raf=0; btn.hidden=true; return; }
+      }
+      raf=requestAnimationFrame(frame);
+    }
+    function start(){
+      cancelAnimationFrame(raf); raf=0; pos=0; last=0; paused=false; view.scrollTop=0;
+      if(!mq.matches){ btn.hidden=true; return; }
+      btn.hidden=false; btn.textContent='일시정지'; raf=requestAnimationFrame(frame);
+    }
+    function stop(){ cancelAnimationFrame(raf); raf=0; btn.hidden=true; view.scrollTop=0; }
+    btn.onclick=()=>{ paused=!paused; btn.textContent=paused?'계속':'일시정지'; if(!raf&&!paused){ last=0; raf=requestAnimationFrame(frame); } };
+    view.addEventListener('mouseenter',()=>{ hover=true; });
+    view.addEventListener('mouseleave',()=>{ hover=false; last=0; });
+    const manual=()=>{ if(raf&&!paused){ paused=true; btn.textContent='계속'; } };   /* 사용자가 직접 넘기면 자동 진행을 멈춘다 */
+    ['wheel','touchstart','keydown'].forEach(ev=>view.addEventListener(ev,manual,{passive:true}));
+    new MutationObserver(()=>{ rp.classList.contains('active')?start():stop(); }).observe(rp,{attributes:true,attributeFilter:['class']});
+    mq.addEventListener&&mq.addEventListener('change',()=>{ if(rp.classList.contains('active')) start(); });
+  })();
 }
 const N=SCENES.length, TOTAL=pages.length;
 
@@ -395,7 +437,7 @@ const N=SCENES.length, TOTAL=pages.length;
 function wireSlide(s,i){
   const toggleLane=t=>{
     const on=t.getAttribute('aria-pressed')!=='true';
-    s.querySelectorAll('.lane').forEach(n=>n.setAttribute('aria-pressed','false'));
+    s.querySelectorAll('.lane').forEach(n=>{ n.setAttribute('aria-pressed','false'); n.removeAttribute('data-auto'); });   /* 사용자가 직접 펼치면 전체 설명을 보여 준다 */
     t.setAttribute('aria-pressed',on?'true':'false');
   };
   s.addEventListener('click',e=>{
@@ -444,9 +486,19 @@ function syncUI(){
   $('bar').style.width=((current+1)/TOTAL*100)+'%';
   $('pos').textContent=current<N?`${current+1} / ${N}`:(current===N?'끝':'크레딧');
 }
+/* 자동 펼침 칸이 화면에 안 들어가면(통계 카드·표와 함께 있거나 낮은 화면) 설명을 why 한 줄로 줄인다.
+   칸이 내용을 담지 못해 글자가 상자 밖으로 흐르거나 스크롤이 생기는 것을 막는다. */
+function fitLanes(p){
+  if(!p||!p.querySelector('.lane[data-auto]')) return;
+  p.classList.remove('tight');
+  const over=()=>[...p.querySelectorAll('.vis,.dg,.dg-col')].some(e=>e.scrollHeight>e.clientHeight+2);
+  if(over()) p.classList.add('tight');
+}
+addEventListener('resize',()=>fitLanes(pages[current]));
 function go(i){
   current=Math.max(0,Math.min(TOTAL-1,i));
   syncUI();
+  fitLanes(pages[current]);
   if(current<N) setSent(current,0);
 }
 
