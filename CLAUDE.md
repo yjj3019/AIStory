@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 콘텐츠 프로젝트: **「인공지능을 만든 사람들」**. AI 역사(1956 다트머스~2026 현재)를 인물의 업적·회사 이력 중심 저널리즘 톤으로 서술하는 단일 인터랙티브 페이지와, 그 내레이션을 사전 렌더링하는 TTS 파이프라인이 있다. 통합 빌드/테스트 시스템 없음 — 스크립트를 직접 실행한다.
 
 - `AIStory.html` — 유일한 콘텐츠 산출물. 과거에는 동화형 서사(`빛이된아이.html`)와 신문 톤 팩트차트(`AI족보.html`) 두 파일로 나뉘어 있었으나 2026-09-11 하나로 병합됐다(사용자 요청 — 두 파일을 따로 유지할 이유가 없다고 판단). 스크롤 기반 18장 서사(`SCENES` 배열) + 클릭 가능한 SVG 인물 계보도(`P`/`ORG`/`E` 데이터, 옛 `AI족보.html`에서 이식) + 전 장에 적용된 클릭형 인물 카드(`data-map` + `wireMap()`, 옛 `빛이된아이.html` 13장 전용이던 패턴을 일반화)로 구성된다.
-- `AIStory-slide.html` — 발표용 슬라이드형 페이지. 직접 편집하지 않고 `python build_slide.py`가 `AIStory.html`에서 생성한다. 16장 시절 파일은 삭제하지 않고 `archive/v16/`(로컬 전용, gitignore)에 보관 중이다.
+- `AIStory-slide.html` — 발표용 슬라이드형 페이지. 직접 편집하지 않고 `python build_slide.py`가 `AIStory.html`에서 생성한다. 16장 시절 파일과 이전 백업은 2026-10-02에 정리(삭제)했으므로 롤백용 사본은 없다.
 - `extract_narration.py`, `render_tts.py`, `narration.json`, `Containerfile`은 모두 이 디렉터리 **루트**에 있다(`tts/` 하위 아님). Windows 콘솔(cp949)에서도 정상 출력되도록 두 파이썬 스크립트 모두 시작 부분에서 stdout/stderr를 UTF-8로 재설정한다 — 이 재설정을 제거하면 en-dash 등 특수 문자가 섞인 장면 라벨 출력 시 다시 크래시한다.
 
 ## Architecture — single source of truth 흐름
