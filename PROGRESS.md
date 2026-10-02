@@ -127,8 +127,15 @@
   - **슬라이드 인물 칸 넘침 수정**(`slide.template.html`): 원인은 `why` 줄 추가·1장 6인 구성 후 크기 재검증 누락. 펼친/강조된 칸은 내용보다 작아지지 않게, 1~2인 장의 자동 펼침은 화면에 안 들어가면 `why` 한 줄로 축소(클릭 시 전체), 단계 글자는 `keep-all`. 전수 스캔(`tools/verify/scan_slides.mjs`) 1366×768 기준 107 → 2건(모두 사용자가 직접 펼친 상태), 1920×1080 0건. 낮은 화면(1280×720)에서 6인 장의 칸을 펼치면 목록 스크롤이 생김(겹침 없음).
   - **엔딩 크레딧 자동 스크롤**: 이 PC 브라우저가 `prefers-reduced-motion: reduce`를 보고해 CSS 롤이 꺼져 멈춰 보였음. 해당 환경에서만 `scrollTop` 자동 진행 + 일시정지/계속 버튼(두 페이지). 설정이 꺼진 환경은 기존 CSS 방식. 슬라이드 끝화면의 사진 출처 문구는 "이어지는 크레딧 화면에 표기"로 교체(13명 하드코딩 제거).
   - **검증 도구**(`tools/verify/`, 저장소에 편입됨 — 개인 경로 제거, 사용법은 README): `sim_audio.py`(오디오 정합성) · `sim_page.mjs`(Chrome 페이지 시뮬레이션) · `stt_check.py`/`cross_stt.py`(STT) · `scan_slides.mjs`(레이아웃 넘침) · `probe_roll.mjs`(크레딧 스크롤) · `shot.mjs`(스크린샷). STT 모델은 홈 폴더 `whisper-models/large-v3`, `large-v3-turbo`(프록시 경유 curl로 수신, Python 다운로더는 사내 인증서로 실패).
-  - **마무리 완료 상태(2026-10-01)**: 자막 앵커 `audio18/sync.json`을 최종 오디오 기준으로 재생성(20클립 정상), 최종 시뮬레이션 A(오디오 정합성)·B(Chrome 페이지) 문제 없음, 엔딩 크레딧 점검(사진 출처 33행 = 데이터 33건 일치, 이미지 전부 출처 있음, 낭독 문구 갱신). `CLAUDE.md`에 SPOKEN 치환 계층·`sync.json`·목소리 일관성(`voice_prompt.pt` md5 `50cddafa…`, num-step 32)을 기록. 작업은 브랜치 `worktree-slide-page`(main 병합·푸시 미실시).
-  - **사람이 해야 할 것**: ① 실제 오디오로 처음부터 끝까지 감상(발음·톤·자막 위치) ② 텍스트 최종 동결·통독 ③ 원본형 `AIStory.html` 1장 사진 프레임 확인("네모 상자" 지적의 대상 미확인) ④ main 병합·공개 여부 결정(콘텐츠 파일은 비공개 정책상 git 제외).
+  - **마무리 완료 상태(2026-10-01)**: 자막 앵커 `audio18/sync.json`을 최종 오디오 기준으로 재생성(20클립 정상), 최종 시뮬레이션 A(오디오 정합성)·B(Chrome 페이지) 문제 없음, 엔딩 크레딧 점검(사진 출처 33행 = 데이터 33건 일치, 이미지 전부 출처 있음, 낭독 문구 갱신). `CLAUDE.md`에 SPOKEN 치환 계층·`sync.json`·목소리 일관성(`voice_prompt.pt` md5 `50cddafa…`, num-step 32)을 기록. 작업 브랜치 `worktree-slide-page`는 PR #2로 `main`에 병합됨(2026-10-01).
+  - **사람이 해야 할 것**: ① 실제 오디오로 처음부터 끝까지 감상(발음·톤·자막 위치) ② 텍스트 최종 동결·통독 ③ 원본형 `AIStory.html` 1장 사진 프레임 확인("네모 상자" 지적의 대상 미확인) ④ (병합은 완료) 공개 여부와 콘텐츠 백업 결정 — 콘텐츠 파일은 비공개 정책상 git 제외.
+
+- **(2026-10-02) 병합·정리 완료 상태 기록** (기록 시점의 사실만 적는다)
+  - **병합**: 작업 브랜치 `worktree-slide-page`를 PR #2로 `main`에 병합(`0c04481`). 원격·로컬 작업 브랜치와 worktree는 삭제했고, `main`과 같은 커밋을 가리키던 이전 세션의 로컬 브랜치 6개와 제가 만든 빈 worktree도 정리. 원격에는 `main`과 이번 작업과 무관한 `feat/education-22clips-shell`만 남음.
+  - **정리**: `archive/`(16장 원본·리뷰 직전 백업·1차 렌더 백업, 137MB) 삭제 — 롤백 수단이 없어졌다는 점을 안내받고 사용자가 요청. `listen/`(청취용 구간)·서버의 시험 파일(`audio_test/` 등)·임시 웹 서버·헤드리스 브라우저도 정리. 서버의 목소리 캐시(`voice_prompt.pt`, md5 `50cddafa…`)와 렌더 로그는 그대로. 이전 세션의 `.agent/`(제작 청사진·리뷰·핸드오프, 106개 파일)는 git 제외 상태로 이 PC에만 있음.
+  - **현재 콘텐츠**(모두 git 제외, 이 PC가 유일한 사본): `AIStory.html` 18장, `AIStory-slide.html`, `narration.json` 20클립, `audio18/` 20클립 37.1분(wav·mp3·sha1·manifest·sync), `portraits/` 31장, `credits.v18.json` 33건, `voice_prompt.pt`. 병합 후 새 `extract_narration.py` 재생성 결과가 `narration.json`과 바이트 동일, 렌더러 드라이런 생성 대상 0, 오디오 정합성 문제 없음.
+  - **별건 — BotStory 2페이지 "봇에게" 발음**(BotStory 프로젝트, 이 저장소 아님): 낭독 `02-scene`의 "사람은 봇에게 일을 맡기기 시작했죠"가 음성에서 "보에게"로 들림(STT 확률 0.65, 같은 문장의 "챗봇은"은 0.98 정확). 단독 합성으로 재현. 표기 변경 5가지("봇 에게", "봇한테", "AI 봇에게", "이제 봇에게")는 모두 효과 없음 → 해결하려면 문장 구조를 바꿔야 함. **BotStory 파일은 변경하지 않음.** 사용자가 `listen/BotStory_2page_bot-e-ge.mp3`(5초)를 들어 괜찮은지/어색한지 판정해야 함(한국어 "봇에게"의 표준 발음은 [보세게]라 사람 귀에는 자연스러울 수 있음).
+  - **환경 메모**: `EnterWorktree` 도구는 이 저장소에서 "git identity 확인 불가"로 계속 거부된다 — `git worktree add -b <브랜치> .claude/worktrees/<이름> origin/main`으로 직접 만들면 편집이 허용된다. 백그라운드 작업은 2시간 제한이 있고(클립 단위로 보존되므로 같은 명령으로 이어서 실행), 이 저장소에서 `git`/`du`가 큰 폴더(모델 사본) 때문에 느려 60~120초 제한에 자주 걸린다.
 
 ## 완료
 
@@ -162,7 +169,8 @@
 
 1. **최종 감상·확정(사람)** — 원본형·슬라이드형 모두 오디오와 함께 끝까지 재생해 발음·톤·자막 위치 확인. 문구를 더 고치면: `AIStory.html`의 SCENES 수정 → `extract_narration.py` → `render_tts.py --dry-run`으로 재렌더 대상 확인 → 증분 렌더(서버 또는 이 PC, 목소리 캐시 원본 사용) → STT로 검증 → `sync.json` 갱신 순.
 2. **원본형 1장 사진 프레임 확인** — 사용자가 지적한 "인물을 지정하는 네모 상자가 인물보다 작다"는 슬라이드형 인물 칸으로 재현·수정했으나, 원본형 히어로 사진 프레임을 가리킨 것이었는지는 미확인.
-3. **병합·공개 결정** — 브랜치 `worktree-slide-page`를 `main`에 병합할지, PR을 만들지. 콘텐츠(HTML·대본·오디오·사진)는 비공개 정책상 git에 올라가지 않으므로 이 PC가 유일한 사본임(백업 필요: `archive/`, `audio18/`, `portraits/`, `AIStory*.html`, `narration.json`, `voice_prompt.pt`).
+3. **공개·백업 결정** — 병합(PR #2)은 완료. 콘텐츠(HTML·대본·오디오·사진·`voice_prompt.pt`)는 비공개 정책상 git에 올라가지 않아 **이 PC가 유일한 사본**이다(롤백용 `archive/`는 2026-10-02 삭제). 백업 대상: `audio18/`, `portraits/`, `AIStory*.html`, `narration.json`, `credits.v18.json`, `voice_prompt.pt`, `.agent/`.
+3-1. **BotStory 2페이지 "봇에게" 발음 판정**(별 프로젝트) — 위 기록 참고. 사용자가 구간을 듣고 판정한 뒤에만 BotStory 대본 수정·`02-scene` 재렌더 여부를 정한다.
 4. (선택) 사진 없는 인물 11명 보강 — Commons에 적합한 자유 이미지가 없어 이니셜 폴백 유지 중. 영상 제작은 `audio18/manifest.json`·`sync.json` 기준으로 장면 전환 타이밍 산출 가능.
 
 ## 결정 사항
