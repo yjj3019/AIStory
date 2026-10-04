@@ -3,27 +3,32 @@
   {
    "id": "00-opening",
    "file": "00-opening.mp3",
-   "seconds": 50.4
+   "seconds": 48.9
+  },
+  {
+   "id": "part1",
+   "file": "part1.mp3",
+   "seconds": 8.6
   },
   {
    "id": "01-scene",
    "file": "01-scene.mp3",
-   "seconds": 122.3
+   "seconds": 113.0
   },
   {
    "id": "02-scene",
    "file": "02-scene.mp3",
-   "seconds": 182.7
+   "seconds": 115.6
   },
   {
    "id": "03-scene",
    "file": "03-scene.mp3",
-   "seconds": 98.1
+   "seconds": 96.7
   },
   {
    "id": "04-scene",
    "file": "04-scene.mp3",
-   "seconds": 102.6
+   "seconds": 124.5
   },
   {
    "id": "05-scene",
@@ -33,71 +38,81 @@
   {
    "id": "06-scene",
    "file": "06-scene.mp3",
-   "seconds": 178.2
+   "seconds": 98.0
   },
   {
    "id": "07-scene",
    "file": "07-scene.mp3",
-   "seconds": 93.9
+   "seconds": 104.7
   },
   {
    "id": "08-scene",
    "file": "08-scene.mp3",
-   "seconds": 105.3
+   "seconds": 89.4
   },
   {
    "id": "09-scene",
    "file": "09-scene.mp3",
-   "seconds": 98.7
+   "seconds": 115.7
   },
   {
    "id": "10-scene",
    "file": "10-scene.mp3",
-   "seconds": 90.1
+   "seconds": 114.2
+  },
+  {
+   "id": "part2",
+   "file": "part2.mp3",
+   "seconds": 10.2
   },
   {
    "id": "11-scene",
    "file": "11-scene.mp3",
-   "seconds": 104.5
+   "seconds": 61.3
   },
   {
    "id": "12-scene",
    "file": "12-scene.mp3",
-   "seconds": 90.5
+   "seconds": 95.3
   },
   {
    "id": "13-scene",
    "file": "13-scene.mp3",
-   "seconds": 165.7
+   "seconds": 93.6
   },
   {
    "id": "14-scene",
    "file": "14-scene.mp3",
-   "seconds": 162.1
+   "seconds": 103.0
   },
   {
    "id": "15-scene",
    "file": "15-scene.mp3",
-   "seconds": 85.4
+   "seconds": 85.5
   },
   {
    "id": "16-scene",
    "file": "16-scene.mp3",
-   "seconds": 90.6
+   "seconds": 87.1
   },
   {
    "id": "17-scene",
    "file": "17-scene.mp3",
-   "seconds": 122.0
+   "seconds": 93.7
   },
   {
    "id": "18-scene",
    "file": "18-scene.mp3",
-   "seconds": 89.9
+   "seconds": 110.1
   },
   {
-   "id": "19-ending",
-   "file": "19-ending.mp3",
+   "id": "19-scene",
+   "file": "19-scene.mp3",
+   "seconds": 91.2
+  },
+  {
+   "id": "20-ending",
+   "file": "20-ending.mp3",
    "seconds": 38.5
   }
  ]
