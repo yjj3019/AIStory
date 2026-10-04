@@ -243,20 +243,88 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .rise{opacity:1}.in-art .ln{stroke-dashoffset:0}
-}
+}/* ===== 장표 품질 개선 — 2026-10-04 내부 브라우저 18장 전수 검토 반영 ===== */
+/* 이름: 단어 중간 줄바꿈 금지, 칸 확장 */
+.lane{grid-template-columns:minmax(11rem,14rem) minmax(0,1fr)}
+.ln-id b{white-space:nowrap;word-break:keep-all;letter-spacing:-.02em;font-size:max(15px,2.05vh)}
+.ln-id i{word-break:keep-all;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+/* 아바타 이니셜: 길이에 따라 JS가 크기를 줄인다. 잘림 방지 */
+.por{letter-spacing:-.04em;padding:0 .15rem;white-space:nowrap}
+/* 높이 채우기: 인물 카드가 남은 높이를 나눠 갖는다 (적은 장의 공백·많은 장의 넘침 동시 해결) */
+.dg{justify-content:stretch;height:100%}
+.dg .lane{max-height:none}
+.dg.cnt2 .por{width:4.6rem;height:4.6rem}
+.dg.cnt2 .ln-id b{font-size:1.22rem}
+.dg.cnt2 .dg-steps li{padding-top:.85rem;padding-bottom:.85rem;font-size:1.02rem}
+.dg.cnt2 .stat b{font-size:3.4rem}
+.dg.cnt3 .por{width:4.2rem;height:4.2rem}
+.dg.cnt3 .ln-id b{font-size:1.12rem}
+.dg.cnt3 .dg-steps li{padding-top:.7rem;padding-bottom:.7rem}
+.dg.cnt6 .lane,.dg.cnt7 .lane{min-height:0;padding-top:.28rem;padding-bottom:.28rem}
+.dg.cnt6 .stat,.dg.cnt7 .stat{padding:.45rem .8rem}
+.dg.cnt6 .stat b,.dg.cnt7 .stat b{font-size:1.8rem}
+.dg.cnt6 .stat span,.dg.cnt7 .stat span{font-size:.8rem;margin-top:.1rem}
+.dg.cnt7 .por{width:2.6rem;height:2.6rem}
+/* 이 장 한눈에 + 용어 풀이 */
+.hook{flex:none;display:flex;gap:.6rem;align-items:baseline;background:var(--s-blue-soft);border-left:5px solid var(--s-blue);border-radius:10px;padding:.55rem 1rem;font-weight:700;font-size:max(15px,2vh);color:var(--ink)}
+.hook::before{content:"이 장 한눈에";flex:none;font-size:.72rem;font-weight:800;color:var(--s-blue)}
+.terms{flex:none;display:flex;flex-wrap:wrap;gap:.4rem}
+.term{background:#F6F9FF;border:1px solid var(--line);border-radius:999px;padding:.28rem .75rem;font-size:.82rem;color:var(--ink-2)}
+.term b{color:var(--s-blue-deep);margin-right:.35rem}
+.dg.cnt6 .hook,.dg.cnt7 .hook{font-size:.92rem;padding:.4rem .8rem}
+.dg.cnt6 .term,.dg.cnt7 .term{font-size:.76rem;padding:.2rem .6rem}
+/* 2열 장: 오른쪽 열(통계·표·용어)이 빈 채로 남지 않게 */
+.dg.two{align-items:stretch}
+.dg.two .dg-col{display:flex;flex-direction:column;justify-content:center;gap:clamp(.6rem,1.4vh,1rem);min-height:0}
+.dg.two .lane{flex:1 1 0}
+
+/* ===== 2차 개선 — 적은 장의 속 빈 카드·오른쪽 열 공백 (재검토 반영) ===== */
+/* 본문 행이 화면 높이를 채워야 카드가 늘어난다 */
+.vis{grid-template-rows:minmax(0,1fr)}
+.dg{height:auto;min-height:0}
+/* 펼쳐진 카드(aria-pressed)도 적은 장에서는 늘어나게 — flex:0 1 auto 가 성장을 막고 있었다 */
+.dg.cnt2 .lane[aria-pressed=true],.dg.cnt3 .lane[aria-pressed=true]{flex:1 1 0}
+/* 오른쪽 열 2개 항목 장(18장) 중간 공백: 균등 배치 */
+.dg.two .dg-col:last-child{justify-content:space-evenly}
+/* 스크롤이 필요하면 바를 얇게 표시한다 */
+.vis{scrollbar-width:thin;scrollbar-color:#b9c8ee transparent}
+.vis::-webkit-scrollbar{width:6px;height:6px}
+.vis::-webkit-scrollbar-thumb{background:#b9c8ee;border-radius:3px}
+.vis::-webkit-scrollbar-track{background:transparent}
+/* 3인 이하: 펼쳐진 설명을 크고 여유 있게 */
+.dg.cnt2 .ln-desc,.dg.cnt3 .ln-desc{font-size:1.02rem;line-height:1.75;margin-top:1rem}
+.dg.cnt2 .ln-why,.dg.cnt3 .ln-why{font-size:1.05rem}
+.dg.cnt3 .stat b{font-size:2.6rem}
+/* 오른쪽 열: 통계·표·용어를 열 높이에 나눠 배치하고 표를 키운다 (배분 방식은 위 2차 개선 규칙) */
+.dg.two .tb td{padding:.7rem .8rem}
+.dg.two .tb th{padding:.65rem .8rem}
+.dg.two .stat{flex:1 1 0;display:flex;flex-direction:column;justify-content:center}
+.dg.two .stats{flex:1 1 0}
+.dg.two .terms{align-self:flex-start}
+
+/* ===== 3차 개편 — 부 구분 화면·장별 출처 ===== */
+.page.part{align-items:center;justify-content:center;text-align:center;gap:1rem}
+.part-no{font-size:.95rem;font-weight:800;letter-spacing:.35em;color:var(--s-blue)}
+.part-name{font-size:2.6rem;font-weight:900;color:var(--ink);margin:0}
+.part-desc{font-size:1.1rem;color:var(--ink-2);margin:0}
+.part-list{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;max-width:62rem;margin-top:1.2rem}
+.part-list span{background:#F6F9FF;border:1px solid var(--line);border-radius:999px;padding:.3rem .8rem;font-size:.85rem;color:var(--ink-2)}
+.src{flex:none;font-size:.78rem;color:var(--ink-2);text-align:right;margin:0}
+.src a{color:var(--s-blue-deep)}
+
 </style>
 </head>
 <body>
 
 <div id="intro">
-  <div class="in-top"><span><b>AI</b> STORY</span><span>1956 — 2026</span></div>
+  <div class="in-top"><span><b>AI</b> STORY</span><span>1950 — 2026</span></div>
   <div class="in-main">
     <div>
-      <p class="kicker rise" style="--i:0">70년의 계보</p>
+      <p class="kicker rise" style="--i:0">70여 년의 계보</p>
       <h1 class="rise" style="--i:1">인공지능을<br><em>만든 사람들</em></h1>
       <p class="teaser rise" style="--i:2">경쟁하는 연구소들처럼 보이지만, 실은 몇 사람에게서 갈라져 나온 하나의 계보다.</p>
       <div class="in-btns rise" style="--i:3"><button id="introStart">들으며 시작</button><button id="introManual">직접 넘기기</button></div>
-      <p class="aiNote rise" style="--i:4">이 이야기의 원고는 AI(Claude)가 썼고, 사실 관계는 AI 여러 개와 웹 검색으로 점검했습니다. 낭독 음성도 AI로 합성했습니다.</p>
+      <p class="aiNote rise" style="--i:4">이 이야기의 원고는 AI(Claude)가 썼고, 사실 관계는 AI 여러 개와 웹 검색으로 교차 점검한 뒤 사람이 최종 검토했습니다. 낭독 음성도 AI로 합성했습니다.</p>
     </div>
     <div class="in-art rise" style="--i:2" aria-hidden="true">
       <svg viewBox="0 0 400 300">
@@ -264,7 +332,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
         <circle class="nd root" cx="200" cy="40" r="14"/>
         <circle class="nd" cx="90" cy="150" r="10"/><circle class="nd" cx="200" cy="150" r="10"/><circle class="nd" cx="310" cy="150" r="10"/>
         <circle class="nd" cx="60" cy="260" r="7"/><circle class="nd" cx="130" cy="260" r="7"/><circle class="nd" cx="280" cy="260" r="7"/><circle class="nd" cx="350" cy="260" r="7"/>
-        <text class="lb" x="222" y="36">1956</text>
+        <text class="lb" x="222" y="36">1950</text>
       </svg>
     </div>
   </div>
@@ -283,33 +351,21 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   <span class="sep"></span>
   <span id="timer" title="재생 경과 시간 / 예상 전체 길이">0:00 / 40:00</span>
   <span class="sep"></span>
-  <span id="engine" title="audio/ 폴더에 렌더링된 음성이 있으면 자동으로 사용합니다">브라우저 음성</span>
+  <span id="engine" title="audio18/ 폴더에 렌더링된 음성이 있으면 자동으로 사용합니다">브라우저 음성</span>
 </div>
 
 <script>
 /*DATA*/
 
-const portraitURL=k=>`portraits/${k}.jpg`;
 const $=id=>document.getElementById(id);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-/* 사진이 없는 인물은 이름 해시로 고정된 2톤 그라디언트 + 이니셜 */
+/* 인물 사진은 쓰지 않는다 — 이름 해시로 고정된 2톤 그라디언트 + 이니셜만 표시 */
 function initialColor(seed){
   let h=0; for(let i=0;i<seed.length;i++) h=(h*31+seed.charCodeAt(i))>>>0;
   const hue=205+(h%30);   /* 205~235 블루 계열만 — 브랜드 색 사이에서 튀지 않게 */
   return `linear-gradient(135deg,hsl(${hue},55%,42%),hsl(${hue+8},60%,26%))`;
-}
-function attachPortraitFallback(root){
-  root.querySelectorAll('img.por-img').forEach(img=>{
-    img.addEventListener('error',()=>{
-      const b=img.parentNode;
-      img.remove();
-      b.textContent=img.dataset.initial;
-      b.classList.add('mono');
-      b.style.background=initialColor(img.dataset.id||img.alt||img.dataset.initial||'?');
-    });
-  });
 }
 
 /* 나레이션 문장 분해 — 자막은 한 번에 한 문장만 보여준다. 문구는 SCENES 그대로이며 새로 쓰지 않는다. */
@@ -331,26 +387,38 @@ const who1=k=>P[k]||RIVALS[k];
 const pages=[];
 const cur=SCENES.map(()=>0);
 
-const ERA0=1956, ERA1=2026;
-const eraPct=y=>Math.max(0,Math.min(100,(y-ERA0)/(ERA1-ERA0)*100));
-function eraHTML(year){
+const ERAS={1:[1950,2026],2:[2015,2026]};   /* 부가 바뀌면 연표도 그 부의 범위에서 다시 시작한다 */
+const eraPct=(y,part)=>{ const [e0,e1]=ERAS[part]||ERAS[1]; return Math.max(0,Math.min(100,(y-e0)/(e1-e0)*100)); };
+function eraHTML(year,part){
+  part=part||1; const [ERA0,ERA1]=ERAS[part];
   const ys=(year.match(/(?:19|20)\d\d/g)||[]).map(Number); if(!ys.length) return '';
   const a=ys[0], b=ys.length>1&&ys[1]>a?ys[1]:a;
-  const dots=SCENES.map(sc=>{const m=sc.year.match(/(?:19|20)\d\d/); return m?`<i class="pt" style="left:${eraPct(+m[0]).toFixed(1)}%"></i>`:'';}).join('');
-  const w=b>a?`calc(${(eraPct(b)-eraPct(a)).toFixed(1)}% + 16px)`:'16px';
-  return `<div class="era" aria-hidden="true"><i class="axis"></i>${dots}<i class="cur" style="left:${eraPct(a).toFixed(1)}%;width:${w}"></i><span class="cy" style="left:${eraPct((a+b)/2).toFixed(1)}%">${a}${b>a?'–'+b:''}</span><span class="yr l">${ERA0}</span><span class="yr r">${ERA1}</span></div>`;
+  const dots=SCENES.filter(sc=>(sc.part||1)===part).map(sc=>{const m=sc.year.match(/(?:19|20)\d\d/); return m?`<i class="pt" style="left:${eraPct(+m[0],part).toFixed(1)}%"></i>`:'';}).join('');
+  const w=b>a?`calc(${(eraPct(b,part)-eraPct(a,part)).toFixed(1)}% + 16px)`:'16px';
+  return `<div class="era" aria-hidden="true"><i class="axis"></i>${dots}<i class="cur" style="left:${eraPct(a,part).toFixed(1)}%;width:${w}"></i><span class="cy" style="left:${eraPct((a+b)/2,part).toFixed(1)}%">${a}${b>a?'–'+b:''}</span><span class="yr l">${ERA0}</span><span class="yr r">${ERA1}</span></div>`;
 }
 function laneHTML(k){
   const d=who1(k), n=(d.t||[]).length;
   const steps=(d.t||[]).map((x,j)=>{const[label,flag]=x.split('|');
     return `<li class="${flag==='out'?'out':''}" style="--p:${n>1?(j/(n-1)).toFixed(2):1}">${esc(label)}</li>`;}).join('');
   return `<div class="lane" role="button" tabindex="0" aria-pressed="false" data-map="${k}" aria-label="${esc(d.n)} — 눌러서 알아보기">
-    <div class="ln-id"><span class="por"><img class="por-img" src="${portraitURL(k)}" alt="" data-initial="${esc(d.m)}" data-id="${k}"></span>
+    <div class="ln-id"><span class="por mono" style="background:${initialColor(k)};font-size:${(d.m||'').length>4?'0.58rem':(d.m||'').length>3?'0.68rem':'0.8rem'}">${esc(d.m)}</span>
       <div><b>${esc(d.n)}</b><i>${esc(d.e||'')}</i></div></div>
     <div class="ln-body"><ol class="dg-steps">${steps}</ol><p class="ln-desc">${d.why?`<b class="ln-why">${esc(d.why)}</b> `:''}<span class="ln-d">${esc(d.d||'')}</span></p></div></div>`;
 }
 
+/* 부 구분 화면 — 부가 바뀔 때 한 번씩 끼운다. 장 번호·연표는 부 안에서 이어진다 */
+const scenePageEls=[], pageKind=[];
+function partDivider(part){
+  const d=document.createElement('section');
+  d.className='page part'; d.id='part'+part;
+  const list=SCENES.map((sc,i)=>[sc,i]).filter(([sc])=>(sc.part||1)===part).map(([sc,i])=>`<span>${i+1}장 ${esc(sc.title)}</span>`).join('');
+  d.innerHTML=`<p class="part-no">PART ${part}</p><h2 class="part-name">${esc(PARTS[part].name)}</h2><p class="part-desc">${esc(PARTS[part].desc)}</p><div class="part-list">${list}</div>`;
+  deck.appendChild(d); pages.push(d); pageKind.push({t:'part',part});
+}
+
 SCENES.forEach((sc,i)=>{
+  if(i===0||(SCENES[i-1].part||1)!==(sc.part||1)) partDivider(sc.part||1);
   const s=document.createElement('section');
   s.className='page';s.id='s'+i;
   const people=(sc.who||[]).filter(who1);
@@ -359,18 +427,22 @@ SCENES.forEach((sc,i)=>{
   const stats=sc.stats?`<div class="stats${statsOnly?' only':''}">${sc.stats.map(x=>`<div class="stat"><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div>`).join('')}</div>`:'';
   const table=sc.table?`<table class="tb"><tr>${sc.table.h.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${sc.table.r.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`:'';
   let lanes=people.map(laneHTML).join('');
-  if(people.length<=2) lanes=lanes.replace(/aria-pressed="false"/g,'aria-pressed="true" data-auto="1"');   /* 1~2인 장은 설명을 펼쳐 빈 공간을 채운다. data-auto = 자동 펼침(화면에 안 들어가면 fitLanes 가 한 줄로 줄인다) */
+  if(people.length<=3) lanes=lanes.replace(/aria-pressed="false"/g,'aria-pressed="true" data-auto="1"');   /* 3인 이하 장은 설명을 펼쳐 빈 공간을 채운다. data-auto = 자동 펼침(화면에 안 들어가면 fitLanes 가 한 줄로 줄인다) */
   const many=people.length>=4?' many':'';
+  const cnt=' cnt'+people.length;
+  const hook=sc.hook?`<p class="hook">${esc(sc.hook)}</p>`:'';
+  const terms=sc.terms?`<div class="terms">${sc.terms.map(t=>`<span class="term"><b>${esc(t[0])}</b>${esc(t[1])}</span>`).join('')}</div>`:'';
+  const src=sc.src?`<p class="src">확인: ${esc(sc.src[0])} · <a href="${esc(sc.src[2])}" target="_blank" rel="noopener">${esc(sc.src[1])}</a></p>`:'';
   let main;
-  if(table&&lanes&&!photo) main=`<div class="dg two${many}"><div class="dg-col">${lanes}</div><div class="dg-col">${stats}${table}</div></div>`;
-  else if(table&&lanes) main=`<div class="dg dense${many}">${stats}${lanes}${table}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
-  else main=`<div class="dg${many}">${stats&&!statsOnly?stats:''}${lanes}${table}${statsOnly?stats:''}</div>`;
+  if(table&&lanes&&!photo) main=`<div class="dg two${many}${cnt}"><div class="dg-col">${hook}${lanes}</div><div class="dg-col">${stats}${table}${terms}</div></div>`;
+  else if(table&&lanes) main=`<div class="dg dense${many}${cnt}">${stats}${hook}${lanes}${table}${terms}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
+  else main=`<div class="dg${many}${cnt}">${stats&&!statsOnly?stats:''}${hook}${lanes}${terms}${table}${statsOnly?stats:''}</div>`;
   const segs=SENTS[i].map((_,k)=>`<i class="seg${k===0?' active':''}" data-k="${k}"></i>`).join('');
   const script=sc.lines.map((l,li)=>`<li data-li="${li}">${esc(l)}</li>`).join('');
   s.innerHTML=`
-    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2>${esc(sc.title)}</h2></div>${eraHTML(sc.year)}</div>
+    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2>${esc(sc.title)}</h2></div>${eraHTML(sc.year, sc.part||1)}</div>
     <div class="sl-body">
-      <div class="vis${photo?' has-photo':''}">${photo}${main}</div>
+      <div class="vis${photo?' has-photo':''}">${photo}${main}${src}</div>
       <aside class="script" aria-label="전체 대본"><div class="script-head"><span>전체 대본</span><button class="cn" data-act="close" aria-label="대본 닫기">×</button></div><ol>${script}</ol></aside>
     </div>
     <footer class="cap">
@@ -382,8 +454,7 @@ SCENES.forEach((sc,i)=>{
         <button class="btn-script" data-act="script" aria-expanded="false">대본</button>
       </div>
     </footer>`;
-  deck.appendChild(s);pages.push(s);
-  attachPortraitFallback(s);
+  deck.appendChild(s);pages.push(s);pageKind.push({t:'scene',i});scenePageEls.push(s);
   wireSlide(s,i);
   setSent(i,0);
 });
@@ -392,13 +463,13 @@ SCENES.forEach((sc,i)=>{
 const endPage=document.createElement('section');
 endPage.className='page end';endPage.id='closing';
 endPage.innerHTML=`<p class="quote">${END_QUOTE}</p>
-  <p class="cred">인공지능을 만든 사람들 · 1956년 다트머스 회의부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
-  <p class="pc">인물 사진의 출처·저작자·라이선스(Wikimedia Commons, CC·퍼블릭 도메인)는 이어지는 크레딧 화면에 모두 표기했습니다. 사진이 없는 인물은 이니셜로 표시됩니다.</p>`;
-deck.appendChild(endPage);pages.push(endPage);
+  <p class="cred">인공지능을 만든 사람들 · 1950년 튜링의 질문부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
+  <p class="pc">인물 사진은 사용하지 않았어요. 모든 인물은 이니셜로 표시됩니다.</p>`;
+deck.appendChild(endPage);pages.push(endPage);pageKind.push({t:'end'});
 if(typeof ROLL_HTML==='string'&&ROLL_HTML){       /* 엔딩 다음 화면: 영화식 크레딧 */
   const rp=document.createElement('section'); rp.className='page roll'; rp.id='credits';
   rp.innerHTML=`<div class="roll-view"><div class="roll-track">${ROLL_HTML}</div></div><button type="button" class="roll-ctl" hidden>일시정지</button>`;
-  deck.appendChild(rp); pages.push(rp);
+  deck.appendChild(rp); pages.push(rp); pageKind.push({t:'credits'});
   /* 크레딧 자동 스크롤. 기본은 CSS 애니메이션(rollUp 95초). 시스템이 '동작 줄이기'(prefers-reduced-motion)를 켠 환경
      (예: Windows '애니메이션 효과 표시' 끔)에서는 접근성 규칙에 따라 애니메이션이 꺼져 크레딧이 멈춰 보인다.
      그 경우에만 같은 속도로 scrollTop 을 직접 올리고, 일시정지 버튼·마우스 올림·직접 스크롤로 멈출 수 있게 한다. */
@@ -465,7 +536,7 @@ function wireSlide(s,i){
 let current=0;
 function setSent(i,k){
   const list=SENTS[i]; k=Math.max(0,Math.min(list.length-1,k)); cur[i]=k;
-  const p=pages[i];
+  const p=scenePageEls[i];
   const t=p.querySelector('.cap-text span'); t.textContent=list[k].t;
   t.style.animation='none'; void t.offsetWidth; t.style.animation='';
   p.querySelectorAll('.seg').forEach((el,n)=>{ el.classList.toggle('active',n===k); el.classList.toggle('done',n<k); });
@@ -481,10 +552,13 @@ function setSent(i,k){
   else if(k===0) p.classList.remove('has-speaker');
   const on=p.querySelector('.script li.on'); if(on&&p.querySelector('.script').classList.contains('open')) on.scrollIntoView({block:'nearest'});
 }
+const pageOfScene=i=>pageKind.findIndex(k=>k.t==='scene'&&k.i===i);
+const pageOfPart=pt=>pageKind.findIndex(k=>k.t==='part'&&k.part===pt);
 function syncUI(){
   pages.forEach((p,n)=>p.classList.toggle('active',n===current));
   $('bar').style.width=((current+1)/TOTAL*100)+'%';
-  $('pos').textContent=current<N?`${current+1} / ${N}`:(current===N?'끝':'크레딧');
+  const k=pageKind[current];
+  $('pos').textContent=!k?'':k.t==='scene'?`${k.i+1} / ${N}`:k.t==='part'?`PART ${k.part}`:k.t==='end'?'끝':'크레딧';
 }
 /* 자동 펼침 칸이 화면에 안 들어가면(통계 카드·표와 함께 있거나 낮은 화면) 설명을 why 한 줄로 줄인다.
    칸이 내용을 담지 못해 글자가 상자 밖으로 흐르거나 스크롤이 생기는 것을 막는다. */
@@ -499,13 +573,14 @@ function go(i){
   current=Math.max(0,Math.min(TOTAL-1,i));
   syncUI();
   fitLanes(pages[current]);
-  if(current<N) setSent(current,0);
+  const k=pageKind[current];
+  if(k&&k.t==='scene') setSent(k.i,0);
 }
 
-/* ---------- 음성: audio/<id>.{mp3,wav} 우선, 없으면 브라우저 TTS ---------- */
+/* ---------- 음성: audio18/<id>.{mp3,wav} 우선, 없으면 브라우저 TTS ---------- */
 const AUDIO_DIR='audio/', AUDIO_EXT=['mp3','wav'];
 const clips={}; let engine='browser';
-/* 실측 자막 앵커(audio/sync.json — stt_check.py 가 STT 단어 시각으로 만든다): {클립id:[[글자비율,시각(초)],...]}.
+/* 실측 자막 앵커(audio18/sync.json — stt_check.py 가 STT 단어 시각으로 만든다): {클립id:[[글자비율,시각(초)],...]}.
    있으면 글자 수 비율 대신 앵커 사이를 보간해 현재 위치(글자 비율)를 구한다. 없거나 깨져 있으면 t/dur 로 폴백. */
 let SYNC=null;
 fetch(AUDIO_DIR+'sync.json').then(r=>r.ok?r.json():null).then(j=>{SYNC=j;}).catch(()=>{});
@@ -524,7 +599,7 @@ function fracAt(id,t,dur){
 const clipName=i=>String(i+1).padStart(2,'0')+'-scene';
 const endingId=()=>String(SCENES.length+1).padStart(2,'0')+'-ending';   /* extract_narration.py 와 같은 규칙 */
 /* extract_narration.py 의 OPENING 과 같은 문구를 유지한다. 엔딩은 DOM 에서 읽어 중복을 피한다. */
-const OPENING_TEXT='지금부터 인공지능을 만든 사람들의 이야기를 전해드립니다. 1956년 다트머스에서 시작해 지금까지 이어진, 70년에 걸친 하나의 계보입니다.';
+const OPENING_TEXT='안녕하세요. 오늘은 인공지능의 발명품 이름을 늘어놓지 않으려고 해요. 지금 우리가 매일 쓰는 에이아이가 어떤 사람들 덕분에 여기까지 왔는지, 그 질문 하나만 따라가 볼게요. 계보라는 말은 이 이야기에서 쓰는 비유예요. 사람들이 만나고 갈라지며 이어진 길이라는 뜻이에요. 출발점은 천구백오십년, 기계가 생각할 수 있느냐는 질문이에요. 이야기는 두 부분으로 나뉘어요. 앞부분은 기술을 만든 사람들, 뒷부분은 회사를 세우고 갈라진 사람들의 이야기예요. 날짜와 숫자는 확인된 범위에서만 말씀드려요. 사람 이름을 외우기보다, 그 사람이 무엇을 배울 수 있게 만들었는지를 봐 주세요.';
 const ENDING_TEXT=(endPage.querySelector('.quote').textContent||'').replace(/\s+/g,' ').trim();
 
 function getClip(id){
@@ -587,8 +662,24 @@ function speakText(id,text,onend){
 }
 function afterScene(i){
   if(!playing) return;
-  if(i<N-1){ setTimeout(()=>{ if(!playing) return; go(i+1); speak(i+1); },900); }
-  else { go(N); speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); if(pages.length>N+1) go(N+1); }); }
+  if(i<N-1){
+    const nxt=i+1;
+    setTimeout(()=>{ if(!playing) return;
+      if((SCENES[nxt].part||1)!==(SCENES[i].part||1)){
+        const pt=SCENES[nxt].part||1;
+        go(pageOfPart(pt));
+        speakText('part'+pt,PART_TEXT[pt],()=>{ if(!playing) return; go(pageOfScene(nxt)); speak(nxt); });
+      } else { go(pageOfScene(nxt)); speak(nxt); }
+    },900);
+  }
+  else { go(pageKind.findIndex(k=>k.t==='end')); speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); const cp=pageKind.findIndex(k=>k.t==='credits'); if(cp>=0) go(cp); }); }
+}
+/* 현재 화면 기준으로 재생 — 구분 화면이면 그 부의 첫 장으로 이어진다 */
+function playPage(){
+  const k=pageKind[current]; if(!k) return;
+  if(k.t==='scene') speak(k.i);
+  else if(k.t==='part'){ const pt=k.part; speakText('part'+pt,PART_TEXT[pt],()=>{ if(!playing) return; const fi=SCENES.findIndex(sc=>(sc.part||1)===pt); go(pageOfScene(fi)); speak(fi); }); }
+  else if(k.t==='end'){ speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
 }
 /* 자막 동기화(근사): 클립이 장 전체 1개 파일이라 문장별 타이밍이 없다.
    문장 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정한다 — 몇 초 어긋날 수 있다.
@@ -637,13 +728,14 @@ renderTimer();
 let openingDone=false;
 function start(){
   playing=true; $('play').textContent='멈추기';
-  if(current>=N) go(0);
+  const k0=pageKind[current];
+  if(!k0||k0.t==='credits') go(0);
   if(!openingDone&&current===0){ elapsedSec=0; renderTimer(); }
   timerStart();
   if(!openingDone&&current===0){
     openingDone=true;
-    speakText('00-opening',OPENING_TEXT,()=>{ if(playing) speak(current); });
-  } else speak(current);
+    speakText('00-opening',OPENING_TEXT,()=>{ if(playing) playPage(); });
+  } else playPage();
 }
 function stop(){ playing=false; $('play').textContent='들려주기'; silence(); timerStop(); }
 $('play').onclick=()=>playing?stop():start();
