@@ -279,6 +279,11 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .dg.two .lane{flex:1 1 0}
 
 /* ===== 2차 개선 — 적은 장의 속 빈 카드·오른쪽 열 공백 (재검토 반영) ===== */
+/* 본문 행이 화면 높이를 채워야 카드가 늘어난다 */
+.vis{grid-template-rows:minmax(0,1fr)}
+.dg{height:auto;min-height:0}
+/* 오른쪽 열 2개 항목 장(18장) 중간 공백: 균등 배치 */
+.dg.two .dg-col:last-child{justify-content:space-evenly}
 /* 스크롤은 되더라도 바는 숨긴다 (9장 미세 넘침) */
 .vis{scrollbar-width:none}
 .vis::-webkit-scrollbar{display:none}
@@ -286,8 +291,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .dg.cnt2 .ln-desc,.dg.cnt3 .ln-desc{font-size:1.02rem;line-height:1.75;margin-top:1rem}
 .dg.cnt2 .ln-why,.dg.cnt3 .ln-why{font-size:1.05rem}
 .dg.cnt3 .stat b{font-size:2.6rem}
-/* 오른쪽 열: 통계·표·용어를 열 높이에 나눠 배치하고 표를 키운다 */
-.dg.two .dg-col:last-child{justify-content:space-between}
+/* 오른쪽 열: 통계·표·용어를 열 높이에 나눠 배치하고 표를 키운다 (배분 방식은 위 2차 개선 규칙) */
 .dg.two .tb td{padding:.7rem .8rem}
 .dg.two .tb th{padding:.65rem .8rem}
 .dg.two .stat{flex:1 1 0;display:flex;flex-direction:column;justify-content:center}
