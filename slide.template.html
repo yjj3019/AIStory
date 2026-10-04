@@ -312,6 +312,10 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .src{flex:none;font-size:.78rem;color:var(--ink-2);text-align:right;margin:0}
 .src a{color:var(--s-blue-deep)}
 
+
+/* ===== 3차 개선 — 2열 장 열 높이 확정 (19장 하단 공백·9장 넘침, 전수 재검토 반영) ===== */
+.dg.two{grid-template-rows:minmax(0,1fr)}
+.dg.two .dg-col{height:100%}
 </style>
 </head>
 <body>
@@ -432,7 +436,8 @@ SCENES.forEach((sc,i)=>{
   const cnt=' cnt'+people.length;
   const hook=sc.hook?`<p class="hook">${esc(sc.hook)}</p>`:'';
   const terms=sc.terms?`<div class="terms">${sc.terms.map(t=>`<span class="term"><b>${esc(t[0])}</b>${esc(t[1])}</span>`).join('')}</div>`:'';
-  const src=sc.src?`<p class="src">확인: ${esc(sc.src[0])} · <a href="${esc(sc.src[2])}" target="_blank" rel="noopener">${esc(sc.src[1])}</a></p>`:'';
+  const srcList=sc.src?(Array.isArray(sc.src[0])?sc.src:[sc.src]):[];
+  const src=srcList.map(x=>`<p class="src">확인: ${esc(x[0])} · <a href="${esc(x[2])}" target="_blank" rel="noopener">${esc(x[1])}</a></p>`).join('');
   let main;
   if(table&&lanes&&!photo) main=`<div class="dg two${many}${cnt}"><div class="dg-col">${hook}${lanes}</div><div class="dg-col">${stats}${table}${terms}</div></div>`;
   else if(table&&lanes) main=`<div class="dg dense${many}${cnt}">${stats}${hook}${lanes}${table}${terms}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */

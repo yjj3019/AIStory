@@ -83,6 +83,7 @@ SPOKEN = [
 _DIG = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"]
 _COUNT = {1: "한", 2: "두", 3: "세", 4: "네", 5: "다섯", 6: "여섯", 7: "일곱", 8: "여덟", 9: "아홉", 10: "열"}
 _MONTH = {1: "일월", 2: "이월", 3: "삼월", 4: "사월", 5: "오월", 6: "유월", 7: "칠월", 8: "팔월", 9: "구월", 10: "시월", 11: "십일월", 12: "십이월"}
+_DAY = {1: "하루", 2: "이틀", 3: "사흘", 4: "나흘", 5: "닷새", 6: "엿새", 7: "이레", 8: "여드레", 9: "아흐레", 10: "열흘"}
 
 
 def _kor_small(n: int) -> str:
@@ -110,9 +111,12 @@ def numbers_to_spoken(s: str) -> str:
     s = re.sub(r"(\d{4})년", lambda m: kor_num(int(m.group(1))) + "년", s)
     s = re.sub(r"(\d+)년", lambda m: kor_num(int(m.group(1))) + "년", s)
     s = re.sub(r"(\d{1,2})월", lambda m: _MONTH.get(int(m.group(1)), m.group(0)), s)
+    # 기간으로 읽는 일(닷새 만에·5일 동안)은 날짜(11월 5일)와 읽기가 다르다 — 구분해 먼저 바꾼다.
+    s = re.sub(r"(\d{1,2})일(?= 만에| 동안|째|의)", lambda m: _DAY.get(int(m.group(1)), kor_num(int(m.group(1))) + "일"), s)
     s = re.sub(r"(\d{1,2})일", lambda m: kor_num(int(m.group(1))) + "일", s)
     s = re.sub(r"(\d+)명", lambda m: _COUNT.get(int(m.group(1)), kor_num(int(m.group(1)))) + "명", s)
-    s = re.sub(r"(\d+)개", lambda m: _COUNT.get(int(m.group(1)), kor_num(int(m.group(1)))) + "개", s)
+    s = re.sub(r"(\d+)개", lambda m: _COUNT.get(int(m.group(1)), kor_num(int(m.group(1)))) + " 개", s)
+    s = re.sub(r"(\d+)건", lambda m: _COUNT.get(int(m.group(1)), kor_num(int(m.group(1)))) + " 건", s)
     return s
 
 

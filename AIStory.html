@@ -312,6 +312,10 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .src{flex:none;font-size:.78rem;color:var(--ink-2);text-align:right;margin:0}
 .src a{color:var(--s-blue-deep)}
 
+
+/* ===== 3차 개선 — 2열 장 열 높이 확정 (19장 하단 공백·9장 넘침, 전수 재검토 반영) ===== */
+.dg.two{grid-template-rows:minmax(0,1fr)}
+.dg.two .dg-col{height:100%}
 </style>
 </head>
 <body>
@@ -601,7 +605,7 @@ const P = {
   "e": "오픈에이아이 대표",
   "t": [
    "2015 오픈에이아이 공동 창립",
-   "2023 해임·닷새 만에 복귀"
+   "2023 해임·5일 만에 복귀"
   ],
   "why": "규모의 시대를 회사로 이끈 사람이에요"
  },
@@ -963,13 +967,13 @@ const SCENES = [
     who:['krizhevsky','sutskever','hinton'],
     lines:[
       '2012년, 사진을 보고 무엇인지 맞히는 ImageNet 대회가 열렸어요. 여러 팀이 같은 사진 문제를 두고 겨루며, 누가 앞섰는지 숫자로 가리는 자리예요. 알렉스 크리제프스키와 일리야 수츠케버, 제프리 힌튼이 함께 나왔어요. 이들이 만든 것이 알렉스넷이었고, 겨울을 버텼던 신경망 방식이 이 무대의 답이 될 차례였어요.',
-      '알렉스넷은 그래픽 칩 두 개가 나눠 계산하며 학습한 결과였어요. 오류를 크게 낮추며 대회에서 우승을 차지했어요. 배우는 방식이 다른 방식들을 앞지른 순간이었어요. 칩으로 배우는 방식이 통한다는 걸 보인 거예요. 결과는 누가 봐도 분명했어요. 이날 이후, 이 분야를 보는 시선이 달라졌어요.',
+      '알렉스넷은 그래픽 칩 2개가 나눠 계산하며 학습한 결과였어요. 오류를 크게 낮추며 대회에서 우승을 차지했어요. 배우는 방식이 다른 방식들을 앞지른 순간이었어요. 칩으로 배우는 방식이 통한다는 걸 보인 거예요. 결과는 누가 봐도 분명했어요. 이날 이후, 이 분야를 보는 시선이 달라졌어요.',
       '준비는 앞 장에서 끝났고, 이 대회가 확인 자리였던 거예요. ImageNet이라는 큰 데이터가 있었어요. CUDA로 계산하는 그래픽 칩과 역전파로 배우는 신경망도 준비돼 있었어요. 재료와 도구와 방법이 같은 해에 겹친 거예요. 하나만 있었으면 일어나지 않았을 일이에요.',
       '이후 딥러닝이라는 말이 빠르게 퍼지며, 연구실의 믿음이 산업의 방향이 된 거예요. 이 승리가 딥러닝 시대의 방아쇠가 됐어요. 겨울이 끝나고, 배우는 기계의 시대가 본격적으로 열렸어요. 여기서 한 가지만 기억해 주세요. 새 알고리즘만이 아니에요. 데이터와 칩이 한날한시에 만난 거예요.',
   ],
     stats:[["2012", "알렉스넷 우승"], ["GPU 2개", "학습에 사용"]],
     hook:"큰 대회에서 배우는 방식이 다른 방식을 앞지른 해",
-    terms:[["알렉스넷", "그래픽 칩 두 개로 학습한 신경망"], ["딥러닝", "층이 깊은 신경망을 학습시키는 방식"]]
+    terms:[["알렉스넷", "그래픽 칩 2개로 학습한 신경망"], ["딥러닝", "층이 깊은 신경망을 학습시키는 방식"]]
   },
   {
     year:'2010–2024년 · 게임에서 과학으로',
@@ -984,7 +988,8 @@ const SCENES = [
   ],
     stats:[["2010", "딥마인드 설립"], ["2024", "노벨 화학상"]],
     hook:"게임에서 이긴 기계가 과학의 정답을 맞히기까지",
-    terms:[["알파폴드", "단백질이 접히는 모양을 예측하는 모델"]]
+    terms:[["알파폴드", "단백질이 접히는 모양을 예측하는 모델"]],
+    src:[["2026-10-04", "Reuters, 구글 딥마인드 개편", "https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/"], ["2026-10-04", "TechCrunch, 점퍼 앤트로픽 합류", "https://techcrunch.com/2026/06/20/nobel-laureate-john-jumper-is-leaving-deepmind-for-rival-anthropic/"]]
   },
   {
     year:'2016–2024년 · 강화학습과 알파고',
@@ -999,7 +1004,8 @@ const SCENES = [
   ],
     stats:[["2016", "알파고 4승 1패"], ["2024", "서튼·바르토 튜링상"]],
     hook:"해 보며 배우는 법이 사람의 승부를 이긴 날",
-    terms:[["강화학습", "직접 해 보고 결과를 따라 고치는 배움"], ["비터 레슨", "계산이 싸지면 스스로 배우는 방법이 이긴다는 글"]]
+    terms:[["강화학습", "직접 해 보고 결과를 따라 고치는 배움"], ["비터 레슨", "계산이 싸지면 스스로 배우는 방법이 이긴다는 글"]],
+    src:[["2026-10-04", "Reuters, 구글 딥마인드 개편", "https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/"]]
   },
   {
     year:'1997–2017년 · 어텐션',
@@ -1015,7 +1021,8 @@ const SCENES = [
     stats:[["1997", "LSTM"], ["2017", "트랜스포머, 저자 8인"]],
     table:{"h": ["구조", "방식", "한계"], "r": [["LSTM (1997)", "순서대로 읽으며 기억", "긴 문장에서 앞부분이 흐려짐"], ["트랜스포머 (2017)", "문장 전체를 한 번에 봄", "계산량이 크게 듦"]]},
     hook:"순서대로 외우는 일에서, 관계를 보는 일로",
-    terms:[["어텐션", "번역할 때 중요한 단어에 주목하는 방법"], ["트랜스포머", "문장 전체를 한 번에 펼쳐 보는 구조"]]
+    terms:[["어텐션", "번역할 때 중요한 단어에 주목하는 방법"], ["트랜스포머", "문장 전체를 한 번에 펼쳐 보는 구조"]],
+    src:[["2026-10-04", "TechCrunch, 셰이저 오픈AI 합류", "https://techcrunch.com/2026/06/18/openai-is-bringing-on-some-big-guns-in-the-lead-up-to-its-ipo/"], ["2026-10-04", "더바이오, 오르텟 출범", "https://www.thebionews.net/news/articleView.html?idxno=28595"]]
   },
   {
     year:'2014–2020년 · 크게, 그리고 만들게',
@@ -1094,18 +1101,18 @@ const SCENES = [
     terms:[["ChatGPT", "묻고 답하는 대화 화면으로 쓰는 서비스"], ["RLHF", "사람의 평가를 학습에 되먹여 답을 다듬는 방법"]]
   },
   {
-    year:'2023년 · 닷새의 소동',
+    year:'2023년 · 5일의 소동',
     title:'해임과 복귀',
     part:2,
     who:['altman','nadella','sutskever'],
     lines:[
       'ChatGPT가 세상을 바꾼 지 일 년쯤 지난 때예요. 2023년 11월, 오픈에이아이 이사회가 움직였어요. 이사회의 선택은 샘 올트먼의 해임이었어요. 발표는 갑작스러웠고, 이유는 또렷하게 설명되지 않았어요. 밖에서 보던 사람들은 그저 놀랄 수밖에 없었어요.',
-      '회사 안쪽의 반응은 더 빨랐어요. 직원들이 잇따라 목소리를 냈어요. 올트먼이 돌아오지 않으면 함께 나가겠다는 뜻을 밝혔어요. 투자자들도 가만히 있지 않았어요. 만든 사람들이 만든 회사를 떠날 수도 있는 상황이었어요. 해임 닷새 동안 회사의 운명이 오간 거예요.',
-      '그때 마이크로소프트의 사티아 나델라가 움직였어요. 나델라는 올트먼을 받아들일 자리를 마련해 뒀어요. 결국 이사회가 한발 물러섰어요. 닷새 만에 올트먼이 대표 자리로 돌아왔어요.',
-      '이 소동에는 일리야 수츠케버의 그림자도 있어요. 수츠케버는 이사로서 해임 쪽에 섰던 사람이에요. 그런데 며칠 사이에 입장을 바꿨어요. 후회한다는 뜻을 밖으로 밝히기까지 했어요. 닷새 만에 돌아온 건 한 사람만이 아니에요. 그 회사에 건 돈과 신뢰가 같이 돌아온 거예요.',
+      '회사 안쪽의 반응은 더 빨랐어요. 직원들이 잇따라 목소리를 냈어요. 올트먼이 돌아오지 않으면 함께 나가겠다는 뜻을 밝혔어요. 투자자들도 가만히 있지 않았어요. 만든 사람들이 만든 회사를 떠날 수도 있는 상황이었어요. 해임 5일 동안 회사의 운명이 오간 거예요.',
+      '그때 마이크로소프트의 사티아 나델라가 움직였어요. 나델라는 올트먼을 받아들일 자리를 마련해 뒀어요. 결국 이사회가 한발 물러섰어요. 5일 만에 올트먼이 대표 자리로 돌아왔어요.',
+      '이 소동에는 일리야 수츠케버의 그림자도 있어요. 수츠케버는 이사로서 해임 쪽에 섰던 사람이에요. 그런데 며칠 사이에 입장을 바꿨어요. 후회한다는 뜻을 밖으로 밝히기까지 했어요. 5일 만에 돌아온 건 한 사람만이 아니에요. 그 회사에 건 돈과 신뢰가 같이 돌아온 거예요.',
   ],
     stats:[["2023", "해임 소동"], ["5일", "복귀까지"]],
-    hook:"해임에서 복귀까지, 닷새 동안 오간 회사의 운명",
+    hook:"해임에서 복귀까지, 5일 동안 오간 회사의 운명",
     terms:[["이사회", "회사의 큰 결정을 내리는 사람들의 모임"]]
   },
   {
@@ -1114,7 +1121,7 @@ const SCENES = [
     part:2,
     who:['sutskever','gross','murati','karpathy'],
     lines:[
-      '닷새의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 2024년, 수츠케버가 오픈에이아이를 떠났어요. 그가 세운 회사가 SSI예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요.',
+      '5일의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 2024년, 수츠케버가 오픈에이아이를 떠났어요. 그가 세운 회사가 SSI예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요.',
       'SSI의 처음 대표는 다니엘 그로스였어요. 그런데 2025년 여름, 그로스가 메타로 옮겼어요. 그때부터 수츠케버가 직접 대표를 맡았어요. 2026년 7월에는 엔비디아와 장기 협력이 발표됐어요. 50억 달러라는 규모는 언론 보도 기준이에요. 회사 공식 공시는 아니에요.',
       '무라티도 같은 시기에 떠났어요. 2024년 9월, 기술 책임자였던 무라티가 회사를 나왔어요. 이듬해에는 Thinking Machines Lab을 세웠어요. ChatGPT 시대를 안쪽에서 이끌던 사람이, 이제 자기 이름의 회사를 연 거예요.',
       '오픈에이아이 창립 멤버였던 안드레이 카파시도 자리를 옮긴 사람 중 하나예요. 2026년 5월, 카파시가 앤트로픽에 합류했어요. 떠난 사람들이 경쟁 회사로 가거나, 새 회사를 세운 거예요. 사람은 나가도, 배운 건 남아요. 나간 사람들이 각자 회사를 세우면서 계보는 더 넓어졌어요.',
@@ -1179,7 +1186,7 @@ Object.assign(RIVALS, EXTRAS);
 const PARTS = {"1": {"name": "기술의 계보", "desc": "질문이 태어나고, 겨울을 지나, 배우는 기계가 돌아오기까지"}, "2": {"name": "회사와 사람의 시대", "desc": "나눠 갖겠다는 약속이 규모와 부딪히고, 사람들이 갈라져 나가기까지"}};
 const PART_TEXT = {"1": "기술의 계보, 첫 번째 부분이에요. 질문이 태어나고 겨울을 지나, 배우는 기계가 돌아오기까지의 이야기예요.", "2": "회사와 사람의 시대, 두 번째 부분이에요. 기술을 나누겠다는 약속이 규모와 부딪히고, 사람들이 갈라져 나가는 이야기예요."};
 const END_QUOTE = "오늘은 왜 지금의 에이아이가 있는지, 그 질문 하나만 따라왔어요. 겨울을 버틴 사람들과 도구를 먼저 만든 사람들, 그리고 가르친 사람들을 봤죠. 처음 질문으로 돌아가 볼까요? 답은 한 사람의 천재성보다, 이어진 사람들의 선택에 있었어요. 계보는 비유일 뿐이에요. 다만 그 길을 따라가면, 지금 손에 든 도구가 공짜로 생기지 않았다는 건 분명해져요. 새 에이아이를 만날 때마다 물어보세요. 이건 누가, 무엇을 배울 수 있게 만든 결과인가요. 끝까지 함께해 주셔서 감사합니다.";
-const ROLL_HTML = "<div class=\"rl-title\">인공지능을 만든 사람들<small>엔딩 크레딧 · AIStory · 2026.10.04</small></div>\n<div class=\"rl-sec\"><h3>결론</h3><p>답은 한 사람의 천재성보다, 이어진 사람들의 선택에 있었어요</p></div>\n<div class=\"rl-sec\"><h3>기획 · 총괄 · 최종 승인</h3><p>계속 “진행해줘”라고 말한 분</p></div>\n<div class=\"rl-sec\"><h3>원고 작성</h3><p>Claude<br><span class=\"rsub\">AI가 쓴, AI를 만든 사람들의 이야기입니다.<br>이해충돌은 미리 고지합니다 — 사실관계는 AI 여러 개와 웹 검색으로 교차 점검했고, 사람이 최종 검토했습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>팩트체크</h3><p>또 다른 Claude 여러 명과 웹 검색<br><span class=\"rsub\">시점이 틀리기 쉬운 2026년 사항은 원문 보도와 대조했고, 확인되지 않은 것은 쓰지 않았습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>검토</h3><p>사실검증 · 구성 · 스타일, 세 관점의 병렬 검토<br><span class=\"rsub\">빠진 사람과 틀린 시점부터 찾으라고 요구받았고, 정정 세 건과 보강 일곱 건을 가져왔습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>낭독</h3><p>AI 합성 음성<br><span class=\"rsub\">사람 목소리가 아니라 AI가 합성한 음성입니다. 전체 길이는 실측 33분 23초예요.</span></p></div>\n<div class=\"rl-sec\"><h3>이 자료의 구성</h3><p>1부 기술의 계보 (1–10장) · 2부 회사와 사람의 시대 (11–19장)</p></div>\n<div class=\"rl-sec\"><h3>촬영 협조 · 사진</h3><p class=\"ph\">인물 사진은 사용하지 않았습니다. 모든 인물은 이니셜로 표시됩니다.</p></div>\n<div class=\"rl-sec\"><h3>편집 원칙</h3><p>확인하지 못한 것은 쓰지 않는다<br><span class=\"rsub\">근거가 없으면 ‘확인 불가’라고 적었습니다.<br>(그래도 나레이션은 여러 번 고쳐 쓰였습니다)</span></p></div>\n<div class=\"rl-sec\"><h3>면책</h3><p>이 자료는 공개된 발표와 보도를 바탕으로 재구성했습니다.<br><span class=\"rsub\">날짜와 기업가치는 2026-10-04 기준이며 바뀔 수 있습니다.<br>우리말 이름과 독음은 이 자료의 표기이며 공식 명칭이 아닙니다.</span></p></div>\n<div class=\"rl-sec\"><h3>최신 사항의 출처</h3><p class=\"ph rsub\">변동이 잦은 2026년 사항은 아래 자료로 확인했습니다.</p><p class=\"ph\"><a href=\"https://waltercounsel.com/musk-openai-verdict-shows-value-of-early-stage-governance/\" target=\"_blank\" rel=\"noopener\">머스크 소송 평결 정리</a></p><p class=\"ph\"><a href=\"https://www.engadget.com/2209300/xai-now-officially-spacexai/\" target=\"_blank\" rel=\"noopener\">Engadget, SpaceXAI 개명</a></p><p class=\"ph\"><a href=\"https://openai.com/our-structure/\" target=\"_blank\" rel=\"noopener\">OpenAI, 회사 구조</a></p><p class=\"ph\"><a href=\"https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/\" target=\"_blank\" rel=\"noopener\">TechCrunch, 카파시 합류</a></p><p class=\"ph\"><a href=\"https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/\" target=\"_blank\" rel=\"noopener\">Reuters, 구글 딥마인드 개편</a></p><p class=\"ph\"><a href=\"https://lawzero.org/en/news/yoshua-bengio-launches-lawzero-new-nonprofit-advancing-safe-design-ai\" target=\"_blank\" rel=\"noopener\">LawZero, 설립 발표</a></p></div>\n<div class=\"rl-sec\"><h3>음악</h3><p>없음<br><span class=\"rsub\">크레딧은 조용히 올라갑니다</span></p></div>\n<div class=\"rl-sec\"><h3>특수효과</h3><p>없음<br><span class=\"rsub\">페이지 넘김과 자막이 전부입니다</span></p></div>\n<div class=\"rl-sec\"><h3>삭제된 장면</h3><p>없던 본문 파일<br><span class=\"rsub\">찾아 헤맨 끝에, 처음부터 새로 쓰기로 했습니다</span></p></div>\n<div class=\"rl-sec\"><h3>제작 중 사고</h3><p>검증기가 기준 본문까지 미달로 판정한 첫 실행<br><span class=\"rsub\">어미 분류 규칙이 좁았던 것이 원인이었습니다. 고쳐서 다시 통과시켰습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>출연 동물</h3><p>없음<br><span class=\"rsub\">다만 제작자는 강아지로 알려져 있습니다</span></p></div>\n<div class=\"rl-sec\"><h3>최종 작성자</h3><p>삐꾸강아쥐 by 딸깍</p></div>\n<div class=\"rl-end\">— 끝 —<small>다음 이야기는 아직 쓰이지 않았습니다</small></div>";
+const ROLL_HTML = "<div class=\"rl-title\">인공지능을 만든 사람들<small>엔딩 크레딧 · AIStory · 2026.10.04</small></div>\n<div class=\"rl-sec\"><h3>결론</h3><p>답은 한 사람의 천재성보다, 이어진 사람들의 선택에 있었어요</p></div>\n<div class=\"rl-sec\"><h3>기획 · 총괄 · 최종 승인</h3><p>계속 “진행해줘”라고 말한 분</p></div>\n<div class=\"rl-sec\"><h3>원고 작성</h3><p>Claude<br><span class=\"rsub\">AI가 쓴, AI를 만든 사람들의 이야기입니다.<br>이해충돌은 미리 고지합니다 — 사실관계는 AI 여러 개와 웹 검색으로 교차 점검했고, 사람이 최종 검토했습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>팩트체크</h3><p>또 다른 Claude 여러 명과 웹 검색<br><span class=\"rsub\">시점이 틀리기 쉬운 2026년 사항은 원문 보도와 대조했고, 확인되지 않은 것은 쓰지 않았습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>검토</h3><p>사실검증 · 구성 · 스타일, 세 관점의 병렬 검토<br><span class=\"rsub\">빠진 사람과 틀린 시점부터 찾으라고 요구받았고, 정정 3건과 보강 7건을 가져왔습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>낭독</h3><p>AI 합성 음성<br><span class=\"rsub\">사람 목소리가 아니라 AI가 합성한 음성입니다. 전체 길이는 실측 33분 23초예요.</span></p></div>\n<div class=\"rl-sec\"><h3>이 자료의 구성</h3><p>1부 기술의 계보 (1–10장) · 2부 회사와 사람의 시대 (11–19장)</p></div>\n<div class=\"rl-sec\"><h3>인물 표시</h3><p class=\"ph\">인물 사진은 사용하지 않았습니다. 모든 인물은 이니셜로 표시됩니다.</p></div>\n<div class=\"rl-sec\"><h3>편집 원칙</h3><p>확인하지 못한 것은 쓰지 않는다<br><span class=\"rsub\">근거가 없으면 ‘확인 불가’라고 적었습니다.<br>(그래도 나레이션은 여러 번 고쳐 쓰였습니다)</span></p></div>\n<div class=\"rl-sec\"><h3>면책</h3><p>이 자료는 공개된 발표와 보도를 바탕으로 재구성했습니다.<br><span class=\"rsub\">날짜와 기업가치는 2026-10-04 기준이며 바뀔 수 있습니다.<br>우리말 이름과 독음은 이 자료의 표기이며 공식 명칭이 아닙니다.</span></p></div>\n<div class=\"rl-sec\"><h3>최신 사항의 출처</h3><p class=\"ph rsub\">변동이 잦은 2026년 사항은 아래 자료로 확인했습니다.</p><p class=\"ph\"><a href=\"https://waltercounsel.com/musk-openai-verdict-shows-value-of-early-stage-governance/\" target=\"_blank\" rel=\"noopener\">머스크 소송 평결 정리</a></p><p class=\"ph\"><a href=\"https://www.engadget.com/2209300/xai-now-officially-spacexai/\" target=\"_blank\" rel=\"noopener\">Engadget, SpaceXAI 개명</a></p><p class=\"ph\"><a href=\"https://openai.com/our-structure/\" target=\"_blank\" rel=\"noopener\">OpenAI, 회사 구조</a></p><p class=\"ph\"><a href=\"https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/\" target=\"_blank\" rel=\"noopener\">TechCrunch, 카파시 합류</a></p><p class=\"ph\"><a href=\"https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/\" target=\"_blank\" rel=\"noopener\">Reuters, 구글 딥마인드 개편</a></p><p class=\"ph\"><a href=\"https://lawzero.org/en/news/yoshua-bengio-launches-lawzero-new-nonprofit-advancing-safe-design-ai\" target=\"_blank\" rel=\"noopener\">LawZero, 설립 발표</a></p></div>\n<div class=\"rl-sec\"><h3>음악</h3><p>없음<br><span class=\"rsub\">크레딧은 조용히 올라갑니다</span></p></div>\n<div class=\"rl-sec\"><h3>특수효과</h3><p>없음<br><span class=\"rsub\">페이지 넘김과 자막이 전부입니다</span></p></div>\n<div class=\"rl-sec\"><h3>삭제된 장면</h3><p>없던 본문 파일<br><span class=\"rsub\">찾아 헤맨 끝에, 처음부터 새로 쓰기로 했습니다</span></p></div>\n<div class=\"rl-sec\"><h3>제작 중 사고</h3><p>검증기가 기준 본문까지 미달로 판정한 첫 실행<br><span class=\"rsub\">어미 분류 규칙이 좁았던 것이 원인이었습니다. 고쳐서 다시 통과시켰습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>출연 동물</h3><p>없음<br><span class=\"rsub\">다만 제작자는 강아지로 알려져 있습니다</span></p></div>\n<div class=\"rl-sec\"><h3>최종 작성자</h3><p>삐꾸강아쥐 by 딸깍</p></div>\n<div class=\"rl-end\">— 끝 —<small>다음 이야기는 아직 쓰이지 않았습니다</small></div>";
 
 const $=id=>document.getElementById(id);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1256,7 +1263,8 @@ SCENES.forEach((sc,i)=>{
   const cnt=' cnt'+people.length;
   const hook=sc.hook?`<p class="hook">${esc(sc.hook)}</p>`:'';
   const terms=sc.terms?`<div class="terms">${sc.terms.map(t=>`<span class="term"><b>${esc(t[0])}</b>${esc(t[1])}</span>`).join('')}</div>`:'';
-  const src=sc.src?`<p class="src">확인: ${esc(sc.src[0])} · <a href="${esc(sc.src[2])}" target="_blank" rel="noopener">${esc(sc.src[1])}</a></p>`:'';
+  const srcList=sc.src?(Array.isArray(sc.src[0])?sc.src:[sc.src]):[];
+  const src=srcList.map(x=>`<p class="src">확인: ${esc(x[0])} · <a href="${esc(x[2])}" target="_blank" rel="noopener">${esc(x[1])}</a></p>`).join('');
   let main;
   if(table&&lanes&&!photo) main=`<div class="dg two${many}${cnt}"><div class="dg-col">${hook}${lanes}</div><div class="dg-col">${stats}${table}${terms}</div></div>`;
   else if(table&&lanes) main=`<div class="dg dense${many}${cnt}">${stats}${hook}${lanes}${table}${terms}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
