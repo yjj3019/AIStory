@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "canonical_source": "build_aistory.py",
+  "generated_by": "python tools/export_narration.py",
+  "audio_rendered_by_export": false,
+  "clip_count": 23,
+  "spoken_character_count": 14240,
+  "pending_clip_count": 23,
+  "verified_clip_count": 0,
+  "current_script_rendered_total_seconds": null,
+  "input_sha256": {
+    "build_aistory.py": "4a122296301a71310297b3fc49dcdbc48c663a84ab7990c2b665db81a9101d52",
+    "extract_narration.py": "11ed8262c43b3a406c3e857c4d7623a94f0ffd4fc93f35104ba509d8ae49eae3",
+    "tools/export_narration.py": "a08f8b0d25f0b43b136da7959c78ed6e42894f9f7d7731ca4ad27c2c77049781",
+    "slide.template.html": "835c04064c52afdc00c4c7c1bcbfb9794454e99f7d0f3e5b6b6926a7ff0df803",
+    "render_tts.py": "bb6b39905c36f56671a8634ed63a7da2c50cab2949ec033f17b71001754e75f4",
+    "audio18/manifest.json": "7bf0492df4c433bdee69bf53e24ff03f4e87d615dbe83d151a82f4a9218837c6"
+  }
+}

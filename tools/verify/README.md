@@ -1,34 +1,25 @@
-# tools/verify — 렌더 결과 검증 도구
+# 검증 도구 안내
 
-콘텐츠(대본·오디오·사진)는 저장소에 없고, 이 폴더의 스크립트는 **콘텐츠를 포함하지 않는다.** 오디오를 다시 렌더한 뒤 품질을 확인할 때 쓴다.
-프로젝트 루트(`AIStory.html`, `narration.json`, `audio18/`가 있는 곳)에서 실행한다.
+현재 개정본의 자동 검사는 저장소 루트에서 `python tools/check_project.py`로 실행합니다. Python 원고·해시·내보내기 검사와 Node 플레이어 회귀 검사를 묶습니다. 음성은 렌더링하지 않습니다.
 
-| 스크립트 | 용도 |
+## 현재 사용할 검사
+
+- `tests/test_narration_pipeline.py`: 원고의 단일 정본, 숫자 독음, HTML 정합성, 내보내기 재현성, 음성 해시·승인 기록
+- `tests/test_content_contract.py`: 19장 구성, 확인 질문·출처·인물, 생성 JavaScript 문법, 별칭 빌드
+- `tests/test_slide_player.mjs`: 실제 템플릿의 재생 제어 코드를 실행하는 단위·DOM 대역 검사. 실제 브라우저 렌더링을 검증하지 않음
+
+## 이전 도구의 범위
+
+이 폴더의 기존 도구는 과거 오디오·화면 구조를 대상으로 작성됐습니다. 보존하되 현재 버전에서 통과했다고 주장하지 않습니다.
+
+| 도구 | 제한 |
 |---|---|
-| `sim_audio.py` | `audio18/` 정합성: 파일 세트, 문구 해시, wav·mp3·manifest 길이, 속도 이상치, 무음·클리핑 |
-| `sim_page.mjs` | 실제 Chrome(헤드리스)으로 두 페이지를 띄워 클립 id·길이·타이머·재생·콘솔 오류 확인 |
-| `stt_check.py` | faster-whisper로 낭독을 받아써 대본과 비교(`stt_report.md`), 자막 앵커 `audio_sync.json`(→ `audio18/sync.json`)과 청취 목록 생성 |
-| `cross_stt.py` | 의심 구간을 모델 2종 x (힌트 없음/있음)으로 교차 확인 |
-| `scan_slides.mjs` | 슬라이드 인물 칸이 내용 때문에 넘치는지 전수 측정(해상도 3종) |
-| `probe_roll.mjs` | 엔딩 크레딧 자동 스크롤 동작 측정(동작 줄이기 켬/끔) |
-| `shot.mjs` | 페이지 스크린샷 + 레이아웃 수치 |
+| `sim_page.mjs`, `scan_slides.mjs`, `probe_roll.mjs`, `shot.mjs` | Chrome 경로·페이지 API·화면 번호가 이전 버전 기준. 실행 환경과 현재 덱에 맞게 수정한 뒤 별도로 검증해야 함 |
+| `sim_audio.py` | 추후 렌더링 결과 검사에 참고. 현재 기존 MP3의 원고 연결을 증명하지 못함 |
+| `stt_check.py`, `cross_stt.py` | 별도로 승인된 음성 생성 후 청취 보조에 사용. 이번 작업에서는 실행하지 않음 |
 
-## 준비
-- `ffmpeg`/`ffprobe`, Chrome, Node 22+ (내장 `WebSocket` 사용), Python 3.10+.
-- STT: `pip install faster-whisper jiwer` 후 모델을 `~/whisper-models/large-v3`(필요하면 `large-v3-turbo`)에 둔다.
-  사내 프록시 환경에서는 Python 다운로더가 인증서로 실패할 수 있어 `curl -x <프록시>`로 `model.bin` 등을 받는다.
-- 웹 서버: 프로젝트 루트에서 `python -m http.server <빈 포트>`를 띄우고 `sim_page.mjs`/`scan_slides.mjs`/`shot.mjs`에 URL을 준다.
+실브라우저 검수는 데스크톱과 모바일의 전체 23화면, 인물 카드, 대본·출처 열고 닫기, 키보드·초점 이동, 동작 줄이기, 반복 재생과 중단을 포함합니다. 브라우저 실행 제한을 우회하거나 단위 검사를 화면 검수로 대체하지 않습니다.
 
-## 예
-```bash
-python tools/verify/sim_audio.py --root . --audio audio18 --narration narration.json
-python tools/verify/stt_check.py --root . --audio audio18 --narration narration.json --ext wav --out <결과폴더>
-cp <결과폴더>/audio_sync.json audio18/sync.json        # 오디오를 다시 렌더했다면 반드시 갱신
-node tools/verify/sim_page.mjs http://localhost:8000
-node tools/verify/scan_slides.mjs http://localhost:8000/AIStory-slide.html
-```
+## 2026-10-05 실제 브라우저 결과
 
-## 해석 시 주의
-- STT는 프롬프트 없이 돌린다(철자를 알려 주면 오독도 맞게 받아써 검증이 무의미해진다).
-- 불일치 대부분은 연음·숫자 표기·끝부분 환각이다. 고유명사 불일치는 **STT 한계일 수 있으니 사람이 직접 들어 판정**한다.
-- Windows에서 `prefers-reduced-motion`이 켜진 환경이면 `sim_page`/`probe_roll`의 기본 실행이 그 모드로 동작한다.
+`77b6ba52`의 정의된 화면·상호작용 범위는 별도 테스트 브라우저에서 통과했습니다. [최종 검토 보고서](../../review/2026-10-05-qa-report.md)에 뷰포트·화면별 결과·이전 후보 증빙의 재사용 범위와 미실행 항목을 기록했습니다. 기존 도구의 위 제한은 그대로이며, 이 폴더의 과거 스크립트를 모두 재실행했다는 뜻은 아닙니다. 실제 오디오 재생과 운영체제 동작 줄이기 설정 전환은 미실행입니다.

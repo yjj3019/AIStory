@@ -8,15 +8,15 @@
 <style>
 :root{
   --s-blue:#0156FC; --s-blue-deep:#003BB8; --s-blue-soft:#E8F0FF;
-  --ink:#0F172A; --ink-2:#334155; --ink-3:#64748B; --line:#D6E0F5; --paper:#FFFFFF; --bg:#F3F6FD;
-  --risk:#E03131; --risk-bg:#FDECEC; --human:#0B7285; --pending:#B7791F; --pending-bg:#FFF6E0;
+  --ink:#0F172A; --ink-2:#334155; --ink-3:#475569; --line:#D6E0F5; --paper:#FFFFFF; --bg:#F3F6FD;
+  --risk:#B91C1C; --risk-bg:#FDECEC; --human:#0B6375; --pending:#854D0E; --pending-bg:#FFF6E0;
   --font:Pretendard,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:var(--font);color:var(--ink);background:var(--bg);overflow:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
-button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue);outline-offset:2px}
+button:focus-visible,[role=button]:focus-visible,a:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--s-blue);outline-offset:2px}
 
 /* ---------- 오프닝 ---------- */
 #intro{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:2rem;
@@ -29,7 +29,8 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .in-main{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;max-width:76rem;width:100%}
 .in-top{position:absolute;top:clamp(1rem,3vh,2rem);left:clamp(1.2rem,4vw,3rem);right:clamp(1.2rem,4vw,3rem);display:flex;justify-content:space-between;
   font-size:.85rem;font-weight:700;color:var(--ink-3);letter-spacing:.04em}
-.in-top b{color:var(--s-blue)}
+.in-top b{color:var(--s-blue-deep)}
+#intro .kicker{color:var(--s-blue-deep)}
 .kicker{font-size:clamp(.85rem,1.6vh,1.05rem);font-weight:700;color:var(--s-blue);letter-spacing:.08em}
 #intro h1{font-size:clamp(2rem,min(4.5vw,9vh),6.4rem);line-height:1.12;font-weight:800;letter-spacing:-.02em;margin:.5em 0 .4em}
 #intro h1 em{font-style:normal;color:var(--s-blue)}
@@ -60,17 +61,17 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .page.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
 .sl-head{flex:none;display:flex;align-items:center;gap:clamp(.8rem,2vw,1.6rem);padding:clamp(.7rem,2vh,1.3rem) clamp(1rem,2.5vw,2rem);
   background:var(--s-blue);color:#fff}
-.ch-no{flex:none;min-width:2.6em;height:2.6em;padding:0 .7em;border-radius:999px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:800;font-size:clamp(.85rem,1.9vh,1.1rem)}
+.ch-no{flex:none;min-width:2.6em;height:2.6em;padding:0 .7em;border-radius:999px;background:var(--s-blue-deep);display:grid;place-items:center;font-weight:800;font-size:clamp(.85rem,1.9vh,1.1rem)}
 .sl-head .tt{min-width:0;flex:1}
 /* 1956–2026 연표 띠 — 지금 장이 70년 중 어디인지, 장 순서가 시간순인지 보여 준다 */
 .era{flex:none;position:relative;width:clamp(11rem,28vw,24rem);height:2.6rem;margin-left:auto}
 .era .axis{position:absolute;left:0;right:0;top:1.05rem;height:2px;background:rgba(255,255,255,.35)}
-.era .yr{position:absolute;bottom:0;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.75)}
+.era .yr{position:absolute;bottom:0;font-size:.7rem;font-weight:700;color:#fff}
 .era .yr.l{left:0}.era .yr.r{right:0}
 .era .pt{position:absolute;top:calc(1.05rem - 3px);width:8px;height:8px;margin-left:-4px;border-radius:50%;background:rgba(255,255,255,.5)}
 .era .cur{position:absolute;top:calc(1.05rem - 7px);height:16px;margin-left:-8px;border-radius:8px;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.28)}
 .era .cy{position:absolute;top:-.7rem;transform:translateX(-50%);font-size:.78rem;font-weight:800;white-space:nowrap}
-.year{font-size:clamp(.78rem,1.7vh,1rem);font-weight:700;opacity:.82;letter-spacing:.04em}
+.year{font-size:clamp(.78rem,1.7vh,1rem);font-weight:700;opacity:1;letter-spacing:.04em}
 .sl-head h2{font-size:clamp(1.15rem,min(2.6vw,4.8vh),2.6rem);line-height:1.22;font-weight:800;letter-spacing:-.01em}
 
 /* ---------- 본문: 도해 ---------- */
@@ -104,6 +105,8 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .por img{width:100%;height:100%;object-fit:cover;display:block}
 .ln-id b{display:block;font-size:max(16px,2.3vh);font-weight:800;line-height:1.2}
 .ln-id i{display:block;font-style:normal;font-size:.78rem;color:var(--ink-3)}
+/* Small role labels keep normal-text contrast on highlighted card backgrounds. */
+.lane.speaking .ln-id i,.lane[aria-pressed=true] .ln-id i{color:var(--ink-2)}
 .ln-body{min-width:0}
 .dg-steps{list-style:none;display:flex;gap:.25rem}
 .dg-steps li{--tip:.9rem;flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;text-align:center;
@@ -120,7 +123,8 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 .page.tight .lane[data-auto]:not(.speaking) .ln-d{display:none}
 .page.tight .lane[data-auto]:not(.speaking) .ln-why{margin-bottom:0}
 .dg-steps li{word-break:keep-all;overflow-wrap:break-word}   /* 단계 글자는 어절 단위로만 줄바꿈("박/사" 처럼 단어 중간에서 끊기지 않게) */
-.page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:.62}
+/* Emphasis changes decoration only; text contrast must remain unchanged. */
+.page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:1}
 .lane.speaking{background:var(--s-blue-soft);border-color:var(--s-blue);box-shadow:0 0 0 3px rgba(1,86,252,.22);
   max-height:none;flex:0 1 auto}   /* 낭독 중 강조 칸도 펼친 칸처럼 내용만큼 커진다 — 밀집 모드의 max-height 에 묶이면 설명이 칸 밖으로 넘친다 */
 .lane.speaking .ln-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
@@ -153,7 +157,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 /* ---------- 요약 띠 = 자막 ---------- */
 .cap{flex:none;padding:.55rem clamp(.8rem,1.6vw,1.4rem) clamp(.6rem,1.6vh,1rem);border-top:1px solid var(--line);background:linear-gradient(180deg,#F6F9FF,var(--paper))}
 .segs{display:flex;gap:3px;height:6px;margin-bottom:.55rem}
-.seg{flex:1 1 0;min-width:2px;border-radius:3px;background:var(--line);cursor:pointer;transition:background .3s,transform .2s}
+.seg{flex:1 1 0;min-width:2px;border-radius:3px;background:var(--line);transition:background .3s,transform .2s}
 .seg.done{background:color-mix(in srgb,var(--s-blue) 55%,var(--line))}
 .seg.active{background:var(--s-blue);transform:scaleY(1.7)}
 .cap-row{display:flex;align-items:center;gap:.6rem}
@@ -171,7 +175,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   transform:translateY(102%);transition:transform .4s ease;visibility:hidden}
 .script.open{transform:none;visibility:visible}
 .script-head{flex:none;display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.4rem;border-bottom:1px solid var(--line);font-weight:800;color:var(--s-blue-deep)}
-.script ol{list-style:none;overflow:auto;padding:1rem clamp(1rem,3vw,2.4rem) 2rem;display:flex;flex-direction:column;gap:.5rem;counter-reset:s}
+.script ol{list-style:none;overflow:auto;flex:1;min-height:0;padding:1rem clamp(1rem,3vw,2.4rem) 2rem;display:flex;flex-direction:column;gap:.5rem;counter-reset:s}
 .script li{counter-increment:s;position:relative;padding:.8rem 1rem .8rem 3.2rem;border-radius:12px;line-height:1.75;font-size:max(15px,2vh);color:var(--ink-3);cursor:pointer;border:1px solid transparent}
 .script li::before{content:counter(s,decimal-leading-zero);position:absolute;left:.9rem;top:.85rem;width:1.8rem;height:1.8rem;border-radius:50%;display:grid;place-items:center;
   font-size:.7rem;font-weight:800;border:2px solid var(--line);background:var(--paper);color:var(--ink-3)}
@@ -183,7 +187,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 /* 엔딩 크레딧(롤) */
 .page.roll{align-items:center;padding:0;background:radial-gradient(ellipse at 50% 0,var(--s-blue-soft),transparent 60%),var(--paper)}
 .page.roll .roll-view{--rv:64vh;position:relative;flex:1;min-height:0;width:min(44rem,92%);overflow:hidden;
-  -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+  -webkit-mask-image:none;mask-image:none}
 .page.roll .roll-track{padding-top:var(--rv);text-align:center;line-height:1.9;color:var(--ink-3)}
 .page.roll.active .roll-track{animation:rollUp 95s linear forwards}
 .page.roll .roll-view:hover .roll-track{animation-play-state:paused}
@@ -239,7 +243,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
   #timer,#timer+.sep{display:none}
 }
 @media (max-height:700px){ .segs{margin-bottom:.35rem} .stat{padding:.4rem .8rem} .stat b{font-size:1.5rem} .lane{padding-top:.3rem;padding-bottom:.3rem} .ln-desc{margin-top:.3rem;line-height:1.5} .split-photo figcaption{padding-top:1rem} }
-@media (max-height:640px){ #engine,#engine ~ .sep{display:none} }
+@media (max-height:640px){ #timer{display:none} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .rise{opacity:1}.in-art .ln{stroke-dashoffset:0}
@@ -323,19 +327,106 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 /* 6~7인 2열 장의 일반 카드는 내용 높이까지 줄어들 수 있게 (강조·펼침 카드는 기존 보호 유지) */
 .dg.two.cnt6 .lane:not(.speaking):not([aria-pressed=true]),
 .dg.two.cnt7 .lane:not(.speaking):not([aria-pressed=true]){min-height:0}
+/* 읽기 모드: 출처는 도해 그리드 밖, 작은 화면에서는 본문을 자연스럽게 스크롤한다. */
+button:disabled{cursor:not-allowed;opacity:1;box-shadow:none!important}
+#intro[hidden]{display:none}
+#intro{overflow:auto}
+#intro .audio-note{margin-top:.8rem;color:var(--pending);font-size:.9rem;font-weight:700}
+.page:focus{outline:none}
+.src-list{flex:none;max-height:7rem;overflow:auto;padding:.35rem clamp(.8rem,1.6vw,1.4rem);border-top:1px solid var(--line);background:#F6F9FF}
+.src-list summary{cursor:pointer;color:var(--s-blue-deep);font-size:.78rem;font-weight:700}
+.src-list .src{text-align:left;overflow-wrap:anywhere;padding-top:.25rem}
+.script-head{gap:1rem}
+.learning-check{flex:none;max-height:40%;overflow:auto;margin:.5rem 1rem 1rem;padding:.7rem 1rem;border:1px solid var(--line);border-radius:10px;line-height:1.65}
+.learning-check summary{cursor:pointer;font-weight:700;color:var(--s-blue-deep)}
+.learning-check p{margin-top:.5rem}
+.script li{cursor:default}
+.script .line-select{display:block;width:100%;text-align:left;line-height:inherit}
+.page.part{justify-content:safe center;padding:clamp(1rem,4vw,3rem);overflow:auto}
+.part-name{font-size:clamp(1.8rem,5vw,2.6rem)}
+.page.end{justify-content:safe center;overflow:auto}
+.page.roll .roll-view:focus-within .roll-track{animation-play-state:paused}
+.page.roll .roll-track.is-paused{animation-play-state:paused}
+#player{max-width:calc(100vw - 1rem)}
+#engine{max-width:15rem;overflow:hidden;text-overflow:ellipsis}
+#timer{font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .lane{grid-template-columns:minmax(0,1fr);flex:0 0 auto!important;min-height:max-content!important}
+  .dg,.dg.two,.dg-col,.dg.two .dg-col{height:auto;min-height:0}
+  .vis{grid-template-rows:auto;align-content:start}
+  .dg.two{grid-template-rows:auto}
+  .dg.two .dg-col:last-child{justify-content:flex-start}
+  .ln-id b{white-space:normal;overflow-wrap:anywhere}
+  .hook{flex-wrap:wrap;gap:.2rem}
+  .cap-text{font-size:1rem;line-height:1.45;min-height:0}
+  .cap-row{gap:.4rem}
+  .cap-text{flex-basis:calc(100% - 6rem);order:0}
+  .btn-script{margin-left:auto}
+  .src-list{max-height:6rem}
+  .in-top{position:static;margin-bottom:1rem}
+  #intro{display:block;padding:1.3rem}
+  .in-main{max-width:42rem;margin:auto}
+  .in-art{height:20vh}
+  #intro h1{font-size:clamp(2rem,8vw,4rem)}
+  .teaser{font-size:1rem}
+  .page{bottom:7.2rem}
+  #player{flex-wrap:wrap;justify-content:center;gap:.3rem;border-radius:16px;bottom:.6rem;width:max-content}
+  #player #engine{flex-basis:100%;text-align:center;max-width:none;display:block;font-size:.74rem}
+  #player .sep{display:none}
+}
+@media (max-width:480px){
+  .page{inset:.4rem .4rem 7.2rem;border-radius:12px}
+  .sl-head{gap:.55rem;padding:.6rem .7rem}
+  .sl-head h2{font-size:1.05rem}
+  .sl-body{padding:.5rem}
+  .cap{padding:.45rem .55rem}
+  .in-art{display:none}
+  .dg-steps{flex-wrap:wrap;gap:.25rem}
+  .dg-steps li,.dg-steps li:not(:first-child),.dg-steps li:last-child{clip-path:none;margin:0;padding:.5rem;flex-basis:45%;border-radius:6px}
+  .tb{font-size:.8rem;table-layout:fixed;overflow-wrap:anywhere}
+  .tb th,.tb td,.dg.two .tb th,.dg.two .tb td{padding:.4rem}
+}
+
+/* PC QA regression fixes: content sets card height; the visual region owns scrolling. */
+/* LAYOUT_GUARDS_START */
+.page:not(.part):not(.end):not(.roll){overflow:clip}
+.page .vis{display:block;overflow:auto;overscroll-behavior:contain;overflow-anchor:none}
+.page .vis > .dg{height:auto;min-height:100%;justify-content:flex-start}
+.page .dg .lane,
+.page .dg .lane[aria-pressed=true],
+.page .dg .lane.speaking{flex:0 0 auto;min-height:max-content;max-height:none}
+.page .dg.two{grid-template-rows:auto;align-items:start}
+.page .dg.two .dg-col{height:auto;min-height:0;justify-content:flex-start}
+.page .dg.two .stats,.page .dg.two .stat{flex:0 0 auto}
+@media (max-width:900px){
+  .page .vis > .dg{min-height:0}
+  .page .dg.two{display:flex;flex-direction:column;align-items:stretch}
+  .page .dg.two .dg-col{flex:0 0 auto;height:auto;min-height:0;width:100%;justify-content:flex-start}
+}
+/* MOBILE_STATS_GUARDS_START */
+@media (max-width:900px){
+  .page .dg .stats{grid-template-columns:minmax(0,1fr);min-width:0}
+  .page .dg .stats .stat{min-width:0;max-width:100%;padding:.65rem .8rem}
+  .page .dg .stats .stat b{font-size:clamp(1.35rem,6vw,1.8rem);line-height:1.2;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+  .page .dg .stats .stat span{font-size:.9rem;line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+}
+/* MOBILE_STATS_GUARDS_END */
+/* LAYOUT_GUARDS_END */
+
 </style>
 </head>
 <body>
 
-<div id="intro">
+<div id="intro" role="region" aria-label="이야기 시작">
   <div class="in-top"><span><b>AI</b> STORY</span><span>1950 — 2026</span></div>
   <div class="in-main">
     <div>
       <p class="kicker rise" style="--i:0">70여 년의 계보</p>
       <h1 class="rise" style="--i:1">인공지능을<br><em>만든 사람들</em></h1>
-      <p class="teaser rise" style="--i:2">경쟁하는 연구소들처럼 보이지만, 실은 몇 사람에게서 갈라져 나온 하나의 계보다.</p>
-      <div class="in-btns rise" style="--i:3"><button id="introStart">들으며 시작</button><button id="introManual">직접 넘기기</button></div>
-      <p class="aiNote rise" style="--i:4">이 이야기의 원고는 AI(Claude)가 썼고, 사실 관계는 AI 여러 개와 웹 검색으로 교차 점검한 뒤 사람이 최종 검토했습니다. 낭독 음성도 AI로 합성했습니다.</p>
+      <p class="teaser rise" style="--i:2">아이디어와 사람이 연구실과 회사를 오가며 오늘의 AI를 만든 과정을 살펴봐요.</p>
+      <div class="in-btns rise" style="--i:3"><button id="introStart" disabled aria-describedby="audioNote">들으며 시작</button><button id="introManual">직접 넘기기</button></div>
+      <p id="audioNote" class="audio-note" role="status">음성 재렌더링 대기 · 직접 넘기며 읽을 수 있어요.</p>
+      <p class="aiNote rise" style="--i:4">AI의 도움으로 작성·검토한 학습 자료예요. 근거는 장별 출처에서 확인할 수 있어요. 개정 원고의 음성은 아직 렌더링하지 않았어요.</p>
     </div>
     <div class="in-art rise" style="--i:2" aria-hidden="true">
       <svg viewBox="0 0 400 300">
@@ -351,21 +442,745 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--s-blue)
 </div>
 
 <div id="bar"></div>
-<main id="deck"></main>
+<main id="deck" inert aria-hidden="true"></main>
 
-<div id="player" role="group" aria-label="이야기 재생">
+<div id="player" role="group" aria-label="이야기 재생" inert aria-hidden="true">
   <button id="prev" aria-label="이전 장">‹</button>
-  <button id="play">들려주기</button>
+  <button id="play" disabled aria-describedby="engine">들려주기</button>
   <button id="next" aria-label="다음 장">›</button>
   <span class="sep"></span>
   <span id="pos">– / –</span>
   <span class="sep"></span>
-  <span id="timer" title="재생 경과 시간 / 예상 전체 길이">0:00 / 40:00</span>
+  <span id="timer" title="현재 음성의 실제 재생 위치와 길이">길이 확인 대기</span>
   <span class="sep"></span>
-  <span id="engine" title="audio18/ 폴더에 렌더링된 음성이 있으면 자동으로 사용합니다">브라우저 음성</span>
+  <span id="engine" role="status">음성 재렌더링 대기</span>
 </div>
 
 <script>
+const NARRATION = {
+  "language": "ko",
+  "title": "인공지능을 만든 사람들",
+  "items": [
+    {
+      "id": "00-opening",
+      "label": "오프닝",
+      "display_lines": [
+        "안녕하세요. 지금 우리가 쓰는 인공지능은 어떤 사람들의 연구와 협력으로 만들어졌을까요? 이 이야기에서는 사람의 이름과 함께, 그 사람이 풀려던 문제와 연구의 한계를 살펴볼 거예요.",
+        "계보라는 말은 사람들이 만나고 아이디어가 이어지는 길을 보여 주는 비유예요. 하나의 가계도에 모든 연구를 담을 수는 없어요. 널리 알려진 인물뿐 아니라 함께 일한 연구팀, 데이터를 만든 사람과 지식을 가르친 사람도 기억해 주세요.",
+        "앞부분은 기술을 발전시킨 연구자들, 뒷부분은 회사를 세우고 다른 조직으로 옮긴 사람들의 이야기예요. 발표와 실제 성과, 확인된 사실과 해석을 구분해 볼게요. 각 장의 대본에는 생각해 볼 질문과 답이 있어요. 이름을 외우는 것보다 왜 중요한 기여였는지 자기 말로 설명해 보세요."
+      ],
+      "lines": [
+        "안녕하세요. 지금 우리가 쓰는 인공지능은 어떤 사람들의 연구와 협력으로 만들어졌을까요? 이 이야기에서는 사람의 이름과 함께, 그 사람이 풀려던 문제와 연구의 한계를 살펴볼 거예요.",
+        "계보라는 말은 사람들이 만나고 아이디어가 이어지는 길을 보여 주는 비유예요. 하나의 가계도에 모든 연구를 담을 수는 없어요. 널리 알려진 인물뿐 아니라 함께 일한 연구팀, 데이터를 만든 사람과 지식을 가르친 사람도 기억해 주세요.",
+        "앞부분은 기술을 발전시킨 연구자들, 뒷부분은 회사를 세우고 다른 조직으로 옮긴 사람들의 이야기예요. 발표와 실제 성과, 확인된 사실과 해석을 구분해 볼게요. 각 장의 대본에는 생각해 볼 질문과 답이 있어요. 이름을 외우는 것보다 왜 중요한 기여였는지 자기 말로 설명해 보세요."
+      ],
+      "text": "안녕하세요. 지금 우리가 쓰는 인공지능은 어떤 사람들의 연구와 협력으로 만들어졌을까요? 이 이야기에서는 사람의 이름과 함께, 그 사람이 풀려던 문제와 연구의 한계를 살펴볼 거예요. 계보라는 말은 사람들이 만나고 아이디어가 이어지는 길을 보여 주는 비유예요. 하나의 가계도에 모든 연구를 담을 수는 없어요. 널리 알려진 인물뿐 아니라 함께 일한 연구팀, 데이터를 만든 사람과 지식을 가르친 사람도 기억해 주세요. 앞부분은 기술을 발전시킨 연구자들, 뒷부분은 회사를 세우고 다른 조직으로 옮긴 사람들의 이야기예요. 발표와 실제 성과, 확인된 사실과 해석을 구분해 볼게요. 각 장의 대본에는 생각해 볼 질문과 답이 있어요. 이름을 외우는 것보다 왜 중요한 기여였는지 자기 말로 설명해 보세요.",
+      "chars": 384,
+      "display_text": "안녕하세요. 지금 우리가 쓰는 인공지능은 어떤 사람들의 연구와 협력으로 만들어졌을까요? 이 이야기에서는 사람의 이름과 함께, 그 사람이 풀려던 문제와 연구의 한계를 살펴볼 거예요. 계보라는 말은 사람들이 만나고 아이디어가 이어지는 길을 보여 주는 비유예요. 하나의 가계도에 모든 연구를 담을 수는 없어요. 널리 알려진 인물뿐 아니라 함께 일한 연구팀, 데이터를 만든 사람과 지식을 가르친 사람도 기억해 주세요. 앞부분은 기술을 발전시킨 연구자들, 뒷부분은 회사를 세우고 다른 조직으로 옮긴 사람들의 이야기예요. 발표와 실제 성과, 확인된 사실과 해석을 구분해 볼게요. 각 장의 대본에는 생각해 볼 질문과 답이 있어요. 이름을 외우는 것보다 왜 중요한 기여였는지 자기 말로 설명해 보세요.",
+      "text_sha256": "7776d54b2319b7bdc239013ae58e97bff3d9539b399eee1074a887c496fea006"
+    },
+    {
+      "id": "part1",
+      "label": "1부 · 기술의 계보",
+      "display_lines": [
+        "첫 번째 부분은 기술의 계보예요. 질문과 학습 방법, 데이터와 계산 도구가 만나 발전한 연구를 살펴볼게요."
+      ],
+      "lines": [
+        "첫 번째 부분은 기술의 계보예요. 질문과 학습 방법, 데이터와 계산 도구가 만나 발전한 연구를 살펴볼게요."
+      ],
+      "text": "첫 번째 부분은 기술의 계보예요. 질문과 학습 방법, 데이터와 계산 도구가 만나 발전한 연구를 살펴볼게요.",
+      "chars": 59,
+      "display_text": "첫 번째 부분은 기술의 계보예요. 질문과 학습 방법, 데이터와 계산 도구가 만나 발전한 연구를 살펴볼게요.",
+      "text_sha256": "eee4d7464ae5269137688c697f12ac6269bb80ed4c2f36a631003d48a4d92739"
+    },
+    {
+      "id": "01-scene",
+      "label": "1장 · 1950–1956년 · 질문과 선언",
+      "display_lines": [
+        "1950년, 앨런 튜링은 기계가 생각할 수 있는가라는 질문을 던졌어요. 생각이라는 말의 뜻만 다투는 대신, 대화에서 드러나는 행동을 비교하자고 제안했어요. 사람이 글로만 대화하며 상대가 사람인지 기계인지 가려 보는 모방 게임이에요. 나중에 튜링 테스트라고 불리게 됐어요. 이 시험을 잘 치른다고 의식이나 이해가 증명되는 것은 아니에요. 무엇을 지능의 증거로 볼지 묻는 출발점이에요.",
+        "그보다 두 해 먼저, 1948년에 클로드 섀넌은 정보를 수학적으로 다루는 이론을 발표했어요. 정보량은 메시지의 뜻이나 진실보다, 얼마나 뜻밖의 선택인지를 재요. 비트라는 말은 존 튜키가 제안한 용어를 썼어요. 존 폰 노이만은 1945년 에드박 보고서에서 프로그램을 메모리에 두는 구조를 정리했어요. 동료들의 설계와 토론이 함께 만든 성과여서 한 사람만의 발명이라고 하기는 어려워요.",
+        "1956년 여름, 미국 다트머스에서 인공지능 연구 모임이 열렸어요. 전해인 1955년, 존 매카시와 마빈 민스키, 너새니얼 로체스터, 클로드 섀넌이 제안서를 함께 썼어요. 매카시가 제안한 인공지능이라는 이름이 그 문서에 들어 있었어요. 앨런 뉴웰과 허버트 사이먼도 참여해 기호로 문제를 푸는 연구를 소개했어요. 모두가 두 달 내내 함께 있었던 회의로 생각할 필요는 없어요.",
+        "기계 지능 연구가 그 모임에서 처음 시작된 것은 아니에요. 튜링의 질문, 정보이론, 계산기 설계가 이미 있었어요. 다트머스는 이런 문제들을 하나의 연구 분야로 묶는 계기가 됐어요. 이제 학습하는 기계를 만들려던 연구자들이 어떤 성과와 한계를 만났는지 볼게요."
+      ],
+      "lines": [
+        "천구백오십년, 앨런 튜링은 기계가 생각할 수 있는가라는 질문을 던졌어요. 생각이라는 말의 뜻만 다투는 대신, 대화에서 드러나는 행동을 비교하자고 제안했어요. 사람이 글로만 대화하며 상대가 사람인지 기계인지 가려 보는 모방 게임이에요. 나중에 튜링 테스트라고 불리게 됐어요. 이 시험을 잘 치른다고 의식이나 이해가 증명되는 것은 아니에요. 무엇을 지능의 증거로 볼지 묻는 출발점이에요.",
+        "그보다 두 해 먼저, 천구백사십팔년에 클로드 섀넌은 정보를 수학적으로 다루는 이론을 발표했어요. 정보량은 메시지의 뜻이나 진실보다, 얼마나 뜻밖의 선택인지를 재요. 비트라는 말은 존 튜키가 제안한 용어를 썼어요. 존 폰 노이만은 천구백사십오년 에드박 보고서에서 프로그램을 메모리에 두는 구조를 정리했어요. 동료들의 설계와 토론이 함께 만든 성과여서 한 사람만의 발명이라고 하기는 어려워요.",
+        "천구백오십육년 여름, 미국 다트머스에서 인공지능 연구 모임이 열렸어요. 전해인 천구백오십오년, 존 매카시와 마빈 민스키, 너새니얼 로체스터, 클로드 섀넌이 제안서를 함께 썼어요. 매카시가 제안한 인공지능이라는 이름이 그 문서에 들어 있었어요. 앨런 뉴웰과 허버트 사이먼도 참여해 기호로 문제를 푸는 연구를 소개했어요. 모두가 두 달 내내 함께 있었던 회의로 생각할 필요는 없어요.",
+        "기계 지능 연구가 그 모임에서 처음 시작된 것은 아니에요. 튜링의 질문, 정보이론, 계산기 설계가 이미 있었어요. 다트머스는 이런 문제들을 하나의 연구 분야로 묶는 계기가 됐어요. 이제 학습하는 기계를 만들려던 연구자들이 어떤 성과와 한계를 만났는지 볼게요."
+      ],
+      "text": "천구백오십년, 앨런 튜링은 기계가 생각할 수 있는가라는 질문을 던졌어요. 생각이라는 말의 뜻만 다투는 대신, 대화에서 드러나는 행동을 비교하자고 제안했어요. 사람이 글로만 대화하며 상대가 사람인지 기계인지 가려 보는 모방 게임이에요. 나중에 튜링 테스트라고 불리게 됐어요. 이 시험을 잘 치른다고 의식이나 이해가 증명되는 것은 아니에요. 무엇을 지능의 증거로 볼지 묻는 출발점이에요. 그보다 두 해 먼저, 천구백사십팔년에 클로드 섀넌은 정보를 수학적으로 다루는 이론을 발표했어요. 정보량은 메시지의 뜻이나 진실보다, 얼마나 뜻밖의 선택인지를 재요. 비트라는 말은 존 튜키가 제안한 용어를 썼어요. 존 폰 노이만은 천구백사십오년 에드박 보고서에서 프로그램을 메모리에 두는 구조를 정리했어요. 동료들의 설계와 토론이 함께 만든 성과여서 한 사람만의 발명이라고 하기는 어려워요. 천구백오십육년 여름, 미국 다트머스에서 인공지능 연구 모임이 열렸어요. 전해인 천구백오십오년, 존 매카시와 마빈 민스키, 너새니얼 로체스터, 클로드 섀넌이 제안서를 함께 썼어요. 매카시가 제안한 인공지능이라는 이름이 그 문서에 들어 있었어요. 앨런 뉴웰과 허버트 사이먼도 참여해 기호로 문제를 푸는 연구를 소개했어요. 모두가 두 달 내내 함께 있었던 회의로 생각할 필요는 없어요. 기계 지능 연구가 그 모임에서 처음 시작된 것은 아니에요. 튜링의 질문, 정보이론, 계산기 설계가 이미 있었어요. 다트머스는 이런 문제들을 하나의 연구 분야로 묶는 계기가 됐어요. 이제 학습하는 기계를 만들려던 연구자들이 어떤 성과와 한계를 만났는지 볼게요.",
+      "chars": 790,
+      "display_text": "1950년, 앨런 튜링은 기계가 생각할 수 있는가라는 질문을 던졌어요. 생각이라는 말의 뜻만 다투는 대신, 대화에서 드러나는 행동을 비교하자고 제안했어요. 사람이 글로만 대화하며 상대가 사람인지 기계인지 가려 보는 모방 게임이에요. 나중에 튜링 테스트라고 불리게 됐어요. 이 시험을 잘 치른다고 의식이나 이해가 증명되는 것은 아니에요. 무엇을 지능의 증거로 볼지 묻는 출발점이에요. 그보다 두 해 먼저, 1948년에 클로드 섀넌은 정보를 수학적으로 다루는 이론을 발표했어요. 정보량은 메시지의 뜻이나 진실보다, 얼마나 뜻밖의 선택인지를 재요. 비트라는 말은 존 튜키가 제안한 용어를 썼어요. 존 폰 노이만은 1945년 에드박 보고서에서 프로그램을 메모리에 두는 구조를 정리했어요. 동료들의 설계와 토론이 함께 만든 성과여서 한 사람만의 발명이라고 하기는 어려워요. 1956년 여름, 미국 다트머스에서 인공지능 연구 모임이 열렸어요. 전해인 1955년, 존 매카시와 마빈 민스키, 너새니얼 로체스터, 클로드 섀넌이 제안서를 함께 썼어요. 매카시가 제안한 인공지능이라는 이름이 그 문서에 들어 있었어요. 앨런 뉴웰과 허버트 사이먼도 참여해 기호로 문제를 푸는 연구를 소개했어요. 모두가 두 달 내내 함께 있었던 회의로 생각할 필요는 없어요. 기계 지능 연구가 그 모임에서 처음 시작된 것은 아니에요. 튜링의 질문, 정보이론, 계산기 설계가 이미 있었어요. 다트머스는 이런 문제들을 하나의 연구 분야로 묶는 계기가 됐어요. 이제 학습하는 기계를 만들려던 연구자들이 어떤 성과와 한계를 만났는지 볼게요.",
+      "text_sha256": "b4f2bac64ee8804e56a5c2e13220ae927bba25c5be2cb2099ec6b40d6e5e3ce8"
+    },
+    {
+      "id": "02-scene",
+      "label": "2장 · 1958–1973년 · 퍼셉트론과 겨울",
+      "display_lines": [
+        "1958년, 프랭크 로젠블랫은 퍼셉트론의 학습 이론을 발표했어요. 입력마다 가중치를 두고, 예측이 틀리면 그 값을 바꾸는 방식이에요. 예를 들어 점들을 두 무리로 나누는 경계를 조금씩 고쳐 가는 거예요. 기계 학습의 시작을 이 한 해로 단정할 수는 없지만, 데이터에서 배우는 초기 신경망의 중요한 이정표였어요.",
+        "배우는 기계가 알려지자 기대도 커졌어요. 하지만 기대와 성능 사이에는 거리가 있었어요. 1966년 미국의 자동 언어처리 자문위원회 보고서는 당시 기계번역의 비용과 품질을 비판했어요. 보고서는 기계번역 지원의 축소에 영향을 줬지만, 언어학과 번역 보조 도구 연구까지 모두 중단하라고 한 것은 아니었어요. 한 보고서가 모든 인공지능 연구비를 끊었다고 보면 역사를 너무 단순하게 읽게 돼요.",
+        "1969년, 마빈 민스키와 시모어 페퍼트는 『퍼셉트론』에서 특정 퍼셉트론 구조의 수학적 한계를 분석했어요. 그 비판을 모든 신경망이 불가능하다는 증명으로 받아들이면 안 돼요. 1973년 영국의 라이트힐 보고서도 당시 연구의 성과와 확장 가능성을 비판했어요. 과도한 기대, 계산 자원의 부족, 정책과 투자 변화가 겹치며 지원이 위축됐어요.",
+        "이런 시기를 인공지능의 겨울이라고 불러요. 분야마다 시작과 영향이 달랐고, 연구 전체가 한날한시에 멈춘 것은 아니에요. 통계적 방법과 기호 처리, 신경망 연구는 서로 다른 곳에서 이어졌어요. 겨울이라는 비유는 관심과 지원의 변화를 설명해요. 실패한 가설을 고치고 새로운 방법을 찾는 일까지 사라졌다는 뜻은 아니에요."
+      ],
+      "lines": [
+        "천구백오십팔년, 프랭크 로젠블랫은 퍼셉트론의 학습 이론을 발표했어요. 입력마다 가중치를 두고, 예측이 틀리면 그 값을 바꾸는 방식이에요. 예를 들어 점들을 두 무리로 나누는 경계를 조금씩 고쳐 가는 거예요. 기계 학습의 시작을 이 한 해로 단정할 수는 없지만, 데이터에서 배우는 초기 신경망의 중요한 이정표였어요.",
+        "배우는 기계가 알려지자 기대도 커졌어요. 하지만 기대와 성능 사이에는 거리가 있었어요. 천구백육십육년 미국의 자동 언어처리 자문위원회 보고서는 당시 기계번역의 비용과 품질을 비판했어요. 보고서는 기계번역 지원의 축소에 영향을 줬지만, 언어학과 번역 보조 도구 연구까지 모두 중단하라고 한 것은 아니었어요. 한 보고서가 모든 인공지능 연구비를 끊었다고 보면 역사를 너무 단순하게 읽게 돼요.",
+        "천구백육십구년, 마빈 민스키와 시모어 페퍼트는 『퍼셉트론』에서 특정 퍼셉트론 구조의 수학적 한계를 분석했어요. 그 비판을 모든 신경망이 불가능하다는 증명으로 받아들이면 안 돼요. 천구백칠십삼년 영국의 라이트힐 보고서도 당시 연구의 성과와 확장 가능성을 비판했어요. 과도한 기대, 계산 자원의 부족, 정책과 투자 변화가 겹치며 지원이 위축됐어요.",
+        "이런 시기를 인공지능의 겨울이라고 불러요. 분야마다 시작과 영향이 달랐고, 연구 전체가 한날한시에 멈춘 것은 아니에요. 통계적 방법과 기호 처리, 신경망 연구는 서로 다른 곳에서 이어졌어요. 겨울이라는 비유는 관심과 지원의 변화를 설명해요. 실패한 가설을 고치고 새로운 방법을 찾는 일까지 사라졌다는 뜻은 아니에요."
+      ],
+      "text": "천구백오십팔년, 프랭크 로젠블랫은 퍼셉트론의 학습 이론을 발표했어요. 입력마다 가중치를 두고, 예측이 틀리면 그 값을 바꾸는 방식이에요. 예를 들어 점들을 두 무리로 나누는 경계를 조금씩 고쳐 가는 거예요. 기계 학습의 시작을 이 한 해로 단정할 수는 없지만, 데이터에서 배우는 초기 신경망의 중요한 이정표였어요. 배우는 기계가 알려지자 기대도 커졌어요. 하지만 기대와 성능 사이에는 거리가 있었어요. 천구백육십육년 미국의 자동 언어처리 자문위원회 보고서는 당시 기계번역의 비용과 품질을 비판했어요. 보고서는 기계번역 지원의 축소에 영향을 줬지만, 언어학과 번역 보조 도구 연구까지 모두 중단하라고 한 것은 아니었어요. 한 보고서가 모든 인공지능 연구비를 끊었다고 보면 역사를 너무 단순하게 읽게 돼요. 천구백육십구년, 마빈 민스키와 시모어 페퍼트는 『퍼셉트론』에서 특정 퍼셉트론 구조의 수학적 한계를 분석했어요. 그 비판을 모든 신경망이 불가능하다는 증명으로 받아들이면 안 돼요. 천구백칠십삼년 영국의 라이트힐 보고서도 당시 연구의 성과와 확장 가능성을 비판했어요. 과도한 기대, 계산 자원의 부족, 정책과 투자 변화가 겹치며 지원이 위축됐어요. 이런 시기를 인공지능의 겨울이라고 불러요. 분야마다 시작과 영향이 달랐고, 연구 전체가 한날한시에 멈춘 것은 아니에요. 통계적 방법과 기호 처리, 신경망 연구는 서로 다른 곳에서 이어졌어요. 겨울이라는 비유는 관심과 지원의 변화를 설명해요. 실패한 가설을 고치고 새로운 방법을 찾는 일까지 사라졌다는 뜻은 아니에요.",
+      "chars": 763,
+      "display_text": "1958년, 프랭크 로젠블랫은 퍼셉트론의 학습 이론을 발표했어요. 입력마다 가중치를 두고, 예측이 틀리면 그 값을 바꾸는 방식이에요. 예를 들어 점들을 두 무리로 나누는 경계를 조금씩 고쳐 가는 거예요. 기계 학습의 시작을 이 한 해로 단정할 수는 없지만, 데이터에서 배우는 초기 신경망의 중요한 이정표였어요. 배우는 기계가 알려지자 기대도 커졌어요. 하지만 기대와 성능 사이에는 거리가 있었어요. 1966년 미국의 자동 언어처리 자문위원회 보고서는 당시 기계번역의 비용과 품질을 비판했어요. 보고서는 기계번역 지원의 축소에 영향을 줬지만, 언어학과 번역 보조 도구 연구까지 모두 중단하라고 한 것은 아니었어요. 한 보고서가 모든 인공지능 연구비를 끊었다고 보면 역사를 너무 단순하게 읽게 돼요. 1969년, 마빈 민스키와 시모어 페퍼트는 『퍼셉트론』에서 특정 퍼셉트론 구조의 수학적 한계를 분석했어요. 그 비판을 모든 신경망이 불가능하다는 증명으로 받아들이면 안 돼요. 1973년 영국의 라이트힐 보고서도 당시 연구의 성과와 확장 가능성을 비판했어요. 과도한 기대, 계산 자원의 부족, 정책과 투자 변화가 겹치며 지원이 위축됐어요. 이런 시기를 인공지능의 겨울이라고 불러요. 분야마다 시작과 영향이 달랐고, 연구 전체가 한날한시에 멈춘 것은 아니에요. 통계적 방법과 기호 처리, 신경망 연구는 서로 다른 곳에서 이어졌어요. 겨울이라는 비유는 관심과 지원의 변화를 설명해요. 실패한 가설을 고치고 새로운 방법을 찾는 일까지 사라졌다는 뜻은 아니에요.",
+      "text_sha256": "948f45f6a0785b77f3b81009cf15f3d25b788879bba678270bc5a5057a589064"
+    },
+    {
+      "id": "03-scene",
+      "label": "3장 · 1974–1986년 · 배우는 법",
+      "display_lines": [
+        "당시 중요한 흐름 중 하나는 기호주의였어요. 지식을 기호와 관계로 표현하고, 규칙이나 탐색으로 문제를 풀었어요. 전문가가 적은 규칙을 쓰는 방법도 있지만, 기호주의 전체가 규칙을 손으로 입력하는 방식만을 뜻하지는 않아요. 지식을 얼마나 잘 표현하고 큰 문제를 얼마나 효율적으로 푸느냐가 어려운 과제였어요.",
+        "1974년, 폴 베르보스는 박사 논문에서 신경망 학습에 오차의 미분을 거꾸로 전달하는 방법을 활용하는 생각을 제시했어요. 관련 미분 계산법에는 더 이른 연구도 있어요. 한 사람이 아무 배경 없이 발명했다기보다, 계산 방법과 학습 문제를 연결해 온 역사예요. 오늘의 모델도 답이 얼마나 틀렸는지 계산하고, 그 오차를 줄이는 쪽으로 매개변수를 바꿔요.",
+        "1986년, 데이비드 루멜하트와 제프리 힌튼, 로널드 윌리엄스는 여러 층의 신경망을 역전파로 학습시키는 결과를 널리 알렸어요. 마지막 층의 오차가 각 연결에 얼마나 영향을 받았는지 거꾸로 계산해요. 그 값을 이용해 연결의 가중치를 조금씩 바꿔요. 이 논문이 깊은 신경망의 모든 문제를 해결한 것은 아니지만, 내부 표현을 학습하는 방법의 가능성을 보여 줬어요.",
+        "규칙을 쓰는 방법과 데이터에서 배우는 방법은 서로 밀어내기만 한 관계가 아니에요. 오늘도 두 방법을 함께 쓰는 시스템이 있어요. 역전파는 신경망이 스스로 목적을 정한다는 뜻도 아니에요. 사람이 정한 학습 목표를 수치로 계산해 가중치를 고치는 도구예요. 이제 그 도구로 실제 문제를 풀던 사람들을 볼게요."
+      ],
+      "lines": [
+        "당시 중요한 흐름 중 하나는 기호주의였어요. 지식을 기호와 관계로 표현하고, 규칙이나 탐색으로 문제를 풀었어요. 전문가가 적은 규칙을 쓰는 방법도 있지만, 기호주의 전체가 규칙을 손으로 입력하는 방식만을 뜻하지는 않아요. 지식을 얼마나 잘 표현하고 큰 문제를 얼마나 효율적으로 푸느냐가 어려운 과제였어요.",
+        "천구백칠십사년, 폴 베르보스는 박사 논문에서 신경망 학습에 오차의 미분을 거꾸로 전달하는 방법을 활용하는 생각을 제시했어요. 관련 미분 계산법에는 더 이른 연구도 있어요. 한 사람이 아무 배경 없이 발명했다기보다, 계산 방법과 학습 문제를 연결해 온 역사예요. 오늘의 모델도 답이 얼마나 틀렸는지 계산하고, 그 오차를 줄이는 쪽으로 매개변수를 바꿔요.",
+        "천구백팔십육년, 데이비드 루멜하트와 제프리 힌튼, 로널드 윌리엄스는 여러 층의 신경망을 역전파로 학습시키는 결과를 널리 알렸어요. 마지막 층의 오차가 각 연결에 얼마나 영향을 받았는지 거꾸로 계산해요. 그 값을 이용해 연결의 가중치를 조금씩 바꿔요. 이 논문이 깊은 신경망의 모든 문제를 해결한 것은 아니지만, 내부 표현을 학습하는 방법의 가능성을 보여 줬어요.",
+        "규칙을 쓰는 방법과 데이터에서 배우는 방법은 서로 밀어내기만 한 관계가 아니에요. 오늘도 두 방법을 함께 쓰는 시스템이 있어요. 역전파는 신경망이 스스로 목적을 정한다는 뜻도 아니에요. 사람이 정한 학습 목표를 수치로 계산해 가중치를 고치는 도구예요. 이제 그 도구로 실제 문제를 풀던 사람들을 볼게요."
+      ],
+      "text": "당시 중요한 흐름 중 하나는 기호주의였어요. 지식을 기호와 관계로 표현하고, 규칙이나 탐색으로 문제를 풀었어요. 전문가가 적은 규칙을 쓰는 방법도 있지만, 기호주의 전체가 규칙을 손으로 입력하는 방식만을 뜻하지는 않아요. 지식을 얼마나 잘 표현하고 큰 문제를 얼마나 효율적으로 푸느냐가 어려운 과제였어요. 천구백칠십사년, 폴 베르보스는 박사 논문에서 신경망 학습에 오차의 미분을 거꾸로 전달하는 방법을 활용하는 생각을 제시했어요. 관련 미분 계산법에는 더 이른 연구도 있어요. 한 사람이 아무 배경 없이 발명했다기보다, 계산 방법과 학습 문제를 연결해 온 역사예요. 오늘의 모델도 답이 얼마나 틀렸는지 계산하고, 그 오차를 줄이는 쪽으로 매개변수를 바꿔요. 천구백팔십육년, 데이비드 루멜하트와 제프리 힌튼, 로널드 윌리엄스는 여러 층의 신경망을 역전파로 학습시키는 결과를 널리 알렸어요. 마지막 층의 오차가 각 연결에 얼마나 영향을 받았는지 거꾸로 계산해요. 그 값을 이용해 연결의 가중치를 조금씩 바꿔요. 이 논문이 깊은 신경망의 모든 문제를 해결한 것은 아니지만, 내부 표현을 학습하는 방법의 가능성을 보여 줬어요. 규칙을 쓰는 방법과 데이터에서 배우는 방법은 서로 밀어내기만 한 관계가 아니에요. 오늘도 두 방법을 함께 쓰는 시스템이 있어요. 역전파는 신경망이 스스로 목적을 정한다는 뜻도 아니에요. 사람이 정한 학습 목표를 수치로 계산해 가중치를 고치는 도구예요. 이제 그 도구로 실제 문제를 풀던 사람들을 볼게요.",
+      "chars": 740,
+      "display_text": "당시 중요한 흐름 중 하나는 기호주의였어요. 지식을 기호와 관계로 표현하고, 규칙이나 탐색으로 문제를 풀었어요. 전문가가 적은 규칙을 쓰는 방법도 있지만, 기호주의 전체가 규칙을 손으로 입력하는 방식만을 뜻하지는 않아요. 지식을 얼마나 잘 표현하고 큰 문제를 얼마나 효율적으로 푸느냐가 어려운 과제였어요. 1974년, 폴 베르보스는 박사 논문에서 신경망 학습에 오차의 미분을 거꾸로 전달하는 방법을 활용하는 생각을 제시했어요. 관련 미분 계산법에는 더 이른 연구도 있어요. 한 사람이 아무 배경 없이 발명했다기보다, 계산 방법과 학습 문제를 연결해 온 역사예요. 오늘의 모델도 답이 얼마나 틀렸는지 계산하고, 그 오차를 줄이는 쪽으로 매개변수를 바꿔요. 1986년, 데이비드 루멜하트와 제프리 힌튼, 로널드 윌리엄스는 여러 층의 신경망을 역전파로 학습시키는 결과를 널리 알렸어요. 마지막 층의 오차가 각 연결에 얼마나 영향을 받았는지 거꾸로 계산해요. 그 값을 이용해 연결의 가중치를 조금씩 바꿔요. 이 논문이 깊은 신경망의 모든 문제를 해결한 것은 아니지만, 내부 표현을 학습하는 방법의 가능성을 보여 줬어요. 규칙을 쓰는 방법과 데이터에서 배우는 방법은 서로 밀어내기만 한 관계가 아니에요. 오늘도 두 방법을 함께 쓰는 시스템이 있어요. 역전파는 신경망이 스스로 목적을 정한다는 뜻도 아니에요. 사람이 정한 학습 목표를 수치로 계산해 가중치를 고치는 도구예요. 이제 그 도구로 실제 문제를 풀던 사람들을 볼게요.",
+      "text_sha256": "d9a5ff1c656c6ff966ca57f4d3233fa96790c66d10d35fb33bedbf4c792a366e"
+    },
+    {
+      "id": "04-scene",
+      "label": "4장 · 1980–2000년대 · 겨울을 버틴 사람들",
+      "display_lines": [
+        "1980년대에는 전문가 시스템이 붐이었어요. 전문가의 규칙을 기계 안에 그대로 쌓는 방식이에요. 에드워드 파이겐바움 같은 사람들이 이 흐름을 이끌었어요. 병원과 공장의 문제를 풀며 기대를 모았지만, 규칙을 쌓고 유지하는 비용이 감당이 안 됐어요. 1980년대 후반, 두 번째 겨울이 왔어요.",
+        "신경망의 인기가 약해졌던 시기에도 연구는 이어졌어요. 제프리 힌튼은 신경망의 내부 표현을 학습하는 방법을 연구했어요. 얀 르쿤과 요슈아 벤지오를 비롯한 여러 연구자는 서로 다른 곳에서 방법을 발전시켰어요. 세 사람만 고립되어 버틴 이야기로 줄이면, 함께 일한 학생과 동료, 다른 연구 흐름을 놓치게 돼요.",
+        "얀 르쿤과 동료들은 1989년 손으로 쓴 우편번호를 읽는 신경망 연구를 발표했어요. 앞서 후쿠시마 구니히코의 네오코그니트론처럼 시각 패턴의 특징을 단계적으로 처리하는 연구도 있었어요. 르쿤 연구팀은 역전파를 적용해 인식 성능을 학습으로 개선했어요. 혼자 새로 시작했다기보다 선행 아이디어를 구체적인 학습과 응용으로 발전시킨 사례예요.",
+        "요슈아 벤지오는 몬트리올에서 신경망과 언어 모델을 연구했어요. 단어를 단순한 번호 대신 학습한 수치 표현으로 다루는 연구도 발전시켰어요. 힌튼, 르쿤, 벤지오의 작업은 서로 연결돼 있지만, 각자의 연구팀과 다른 학자들의 성과가 함께 쌓인 결과예요.",
+        "세 사람은 딥러닝의 개념적·공학적 발전에 기여한 공로로 2018년 튜링상 수상자로 선정됐어요. 발표는 이듬해인 2019년에 이뤄졌어요. 힌튼은 2024년 존 홉필드와 노벨 물리학상을 공동 수상했어요. 상은 연구의 의미를 보여 주지만, 수상자 명단이 기술에 기여한 사람의 전체 명단은 아니에요."
+      ],
+      "lines": [
+        "천구백팔십년대에는 전문가 시스템이 붐이었어요. 전문가의 규칙을 기계 안에 그대로 쌓는 방식이에요. 에드워드 파이겐바움 같은 사람들이 이 흐름을 이끌었어요. 병원과 공장의 문제를 풀며 기대를 모았지만, 규칙을 쌓고 유지하는 비용이 감당이 안 됐어요. 천구백팔십년대 후반, 두 번째 겨울이 왔어요.",
+        "신경망의 인기가 약해졌던 시기에도 연구는 이어졌어요. 제프리 힌튼은 신경망의 내부 표현을 학습하는 방법을 연구했어요. 얀 르쿤과 요슈아 벤지오를 비롯한 여러 연구자는 서로 다른 곳에서 방법을 발전시켰어요. 세 사람만 고립되어 버틴 이야기로 줄이면, 함께 일한 학생과 동료, 다른 연구 흐름을 놓치게 돼요.",
+        "얀 르쿤과 동료들은 천구백팔십구년 손으로 쓴 우편번호를 읽는 신경망 연구를 발표했어요. 앞서 후쿠시마 구니히코의 네오코그니트론처럼 시각 패턴의 특징을 단계적으로 처리하는 연구도 있었어요. 르쿤 연구팀은 역전파를 적용해 인식 성능을 학습으로 개선했어요. 혼자 새로 시작했다기보다 선행 아이디어를 구체적인 학습과 응용으로 발전시킨 사례예요.",
+        "요슈아 벤지오는 몬트리올에서 신경망과 언어 모델을 연구했어요. 단어를 단순한 번호 대신 학습한 수치 표현으로 다루는 연구도 발전시켰어요. 힌튼, 르쿤, 벤지오의 작업은 서로 연결돼 있지만, 각자의 연구팀과 다른 학자들의 성과가 함께 쌓인 결과예요.",
+        "세 사람은 딥러닝의 개념적·공학적 발전에 기여한 공로로 이천십팔년 튜링상 수상자로 선정됐어요. 발표는 이듬해인 이천십구년에 이뤄졌어요. 힌튼은 이천이십사년 존 홉필드와 노벨 물리학상을 공동 수상했어요. 상은 연구의 의미를 보여 주지만, 수상자 명단이 기술에 기여한 사람의 전체 명단은 아니에요."
+      ],
+      "text": "천구백팔십년대에는 전문가 시스템이 붐이었어요. 전문가의 규칙을 기계 안에 그대로 쌓는 방식이에요. 에드워드 파이겐바움 같은 사람들이 이 흐름을 이끌었어요. 병원과 공장의 문제를 풀며 기대를 모았지만, 규칙을 쌓고 유지하는 비용이 감당이 안 됐어요. 천구백팔십년대 후반, 두 번째 겨울이 왔어요. 신경망의 인기가 약해졌던 시기에도 연구는 이어졌어요. 제프리 힌튼은 신경망의 내부 표현을 학습하는 방법을 연구했어요. 얀 르쿤과 요슈아 벤지오를 비롯한 여러 연구자는 서로 다른 곳에서 방법을 발전시켰어요. 세 사람만 고립되어 버틴 이야기로 줄이면, 함께 일한 학생과 동료, 다른 연구 흐름을 놓치게 돼요. 얀 르쿤과 동료들은 천구백팔십구년 손으로 쓴 우편번호를 읽는 신경망 연구를 발표했어요. 앞서 후쿠시마 구니히코의 네오코그니트론처럼 시각 패턴의 특징을 단계적으로 처리하는 연구도 있었어요. 르쿤 연구팀은 역전파를 적용해 인식 성능을 학습으로 개선했어요. 혼자 새로 시작했다기보다 선행 아이디어를 구체적인 학습과 응용으로 발전시킨 사례예요. 요슈아 벤지오는 몬트리올에서 신경망과 언어 모델을 연구했어요. 단어를 단순한 번호 대신 학습한 수치 표현으로 다루는 연구도 발전시켰어요. 힌튼, 르쿤, 벤지오의 작업은 서로 연결돼 있지만, 각자의 연구팀과 다른 학자들의 성과가 함께 쌓인 결과예요. 세 사람은 딥러닝의 개념적·공학적 발전에 기여한 공로로 이천십팔년 튜링상 수상자로 선정됐어요. 발표는 이듬해인 이천십구년에 이뤄졌어요. 힌튼은 이천이십사년 존 홉필드와 노벨 물리학상을 공동 수상했어요. 상은 연구의 의미를 보여 주지만, 수상자 명단이 기술에 기여한 사람의 전체 명단은 아니에요.",
+      "chars": 828,
+      "display_text": "1980년대에는 전문가 시스템이 붐이었어요. 전문가의 규칙을 기계 안에 그대로 쌓는 방식이에요. 에드워드 파이겐바움 같은 사람들이 이 흐름을 이끌었어요. 병원과 공장의 문제를 풀며 기대를 모았지만, 규칙을 쌓고 유지하는 비용이 감당이 안 됐어요. 1980년대 후반, 두 번째 겨울이 왔어요. 신경망의 인기가 약해졌던 시기에도 연구는 이어졌어요. 제프리 힌튼은 신경망의 내부 표현을 학습하는 방법을 연구했어요. 얀 르쿤과 요슈아 벤지오를 비롯한 여러 연구자는 서로 다른 곳에서 방법을 발전시켰어요. 세 사람만 고립되어 버틴 이야기로 줄이면, 함께 일한 학생과 동료, 다른 연구 흐름을 놓치게 돼요. 얀 르쿤과 동료들은 1989년 손으로 쓴 우편번호를 읽는 신경망 연구를 발표했어요. 앞서 후쿠시마 구니히코의 네오코그니트론처럼 시각 패턴의 특징을 단계적으로 처리하는 연구도 있었어요. 르쿤 연구팀은 역전파를 적용해 인식 성능을 학습으로 개선했어요. 혼자 새로 시작했다기보다 선행 아이디어를 구체적인 학습과 응용으로 발전시킨 사례예요. 요슈아 벤지오는 몬트리올에서 신경망과 언어 모델을 연구했어요. 단어를 단순한 번호 대신 학습한 수치 표현으로 다루는 연구도 발전시켰어요. 힌튼, 르쿤, 벤지오의 작업은 서로 연결돼 있지만, 각자의 연구팀과 다른 학자들의 성과가 함께 쌓인 결과예요. 세 사람은 딥러닝의 개념적·공학적 발전에 기여한 공로로 2018년 튜링상 수상자로 선정됐어요. 발표는 이듬해인 2019년에 이뤄졌어요. 힌튼은 2024년 존 홉필드와 노벨 물리학상을 공동 수상했어요. 상은 연구의 의미를 보여 주지만, 수상자 명단이 기술에 기여한 사람의 전체 명단은 아니에요.",
+      "text_sha256": "7e40ba15b5beaf305c2f13373205bdcdbc636cef0160ef1c77d4f66265166edf"
+    },
+    {
+      "id": "05-scene",
+      "label": "5장 · 2006–2012년 · 데이터와 칩",
+      "display_lines": [
+        "배우는 기계에는 배울 자료가 필요했어요. 페이페이 리가 이끈 ImageNet 프로젝트는 많은 종류의 사물 사진에 이름표를 붙였어요. 2009년 발표 논문의 주저자는 지아 덩이고, 여러 연구자와 주석 작업자들이 함께했어요. 데이터셋은 저절로 모인 사진 더미가 아니에요. 무엇을 모으고 어떤 이름표를 붙일지 설계한 사람들의 일이에요.",
+        "재료가 늘면, 계산할 힘도 함께 필요해요. 젠슨 황이 이끈 엔비디아는 2006년, 그래픽 칩을 범용 계산 도구로 바꾸는 CUDA를 내놨어요. 화면을 그리던 칩이, 이제 계산을 나눠 맡게 된 거예요. 계산하는 칩이 싸고 빨라지면, 배울 수 있는 양도 달라져요. 도구가 먼저 준비되고 있었던 거예요.",
+        "지식을 배우고 전하는 기반도 중요했어요. 앤드류 응은 구글 브레인 연구를 함께 시작했고, 2012년에는 다프네 콜러와 코세라를 공동 창업했어요. 온라인 강의는 대학 밖의 학습자도 머신러닝을 공부할 길을 넓혔어요. 수강생 수는 집계 시점과 강좌에 따라 달라서 여기서는 하나의 숫자로 고정하지 않을게요. 연구자뿐 아니라 교사와 학습자도 기술의 확산에 기여했어요.",
+        "데이터와 도구와, 가르치는 사람이 차례로 갖춰졌어요. 이제 남은 건 이 셋이 한자리에서 만나는 일이었어요. 만날 장소는 다음 장의 대회장이에요. 오늘 사진 검색이 바로 되는 건 우연이 아니에요. 데이터를 설계한 사람과 계산 칩을 만든 사람이 먼저 있었기 때문이에요."
+      ],
+      "lines": [
+        "배우는 기계에는 배울 자료가 필요했어요. 페이페이 리가 이끈 이미지넷 프로젝트는 많은 종류의 사물 사진에 이름표를 붙였어요. 이천구년 발표 논문의 주저자는 지아 덩이고, 여러 연구자와 주석 작업자들이 함께했어요. 데이터셋은 저절로 모인 사진 더미가 아니에요. 무엇을 모으고 어떤 이름표를 붙일지 설계한 사람들의 일이에요.",
+        "재료가 늘면, 계산할 힘도 함께 필요해요. 젠슨 황이 이끈 엔비디아는 이천육년, 그래픽 칩을 범용 계산 도구로 바꾸는 쿠다를 내놨어요. 화면을 그리던 칩이, 이제 계산을 나눠 맡게 된 거예요. 계산하는 칩이 싸고 빨라지면, 배울 수 있는 양도 달라져요. 도구가 먼저 준비되고 있었던 거예요.",
+        "지식을 배우고 전하는 기반도 중요했어요. 앤드류 응은 구글 브레인 연구를 함께 시작했고, 이천십이년에는 다프네 콜러와 코세라를 공동 창업했어요. 온라인 강의는 대학 밖의 학습자도 머신러닝을 공부할 길을 넓혔어요. 수강생 수는 집계 시점과 강좌에 따라 달라서 여기서는 하나의 숫자로 고정하지 않을게요. 연구자뿐 아니라 교사와 학습자도 기술의 확산에 기여했어요.",
+        "데이터와 도구와, 가르치는 사람이 차례로 갖춰졌어요. 이제 남은 건 이 셋이 한자리에서 만나는 일이었어요. 만날 장소는 다음 장의 대회장이에요. 오늘 사진 검색이 바로 되는 건 우연이 아니에요. 데이터를 설계한 사람과 계산 칩을 만든 사람이 먼저 있었기 때문이에요."
+      ],
+      "text": "배우는 기계에는 배울 자료가 필요했어요. 페이페이 리가 이끈 이미지넷 프로젝트는 많은 종류의 사물 사진에 이름표를 붙였어요. 이천구년 발표 논문의 주저자는 지아 덩이고, 여러 연구자와 주석 작업자들이 함께했어요. 데이터셋은 저절로 모인 사진 더미가 아니에요. 무엇을 모으고 어떤 이름표를 붙일지 설계한 사람들의 일이에요. 재료가 늘면, 계산할 힘도 함께 필요해요. 젠슨 황이 이끈 엔비디아는 이천육년, 그래픽 칩을 범용 계산 도구로 바꾸는 쿠다를 내놨어요. 화면을 그리던 칩이, 이제 계산을 나눠 맡게 된 거예요. 계산하는 칩이 싸고 빨라지면, 배울 수 있는 양도 달라져요. 도구가 먼저 준비되고 있었던 거예요. 지식을 배우고 전하는 기반도 중요했어요. 앤드류 응은 구글 브레인 연구를 함께 시작했고, 이천십이년에는 다프네 콜러와 코세라를 공동 창업했어요. 온라인 강의는 대학 밖의 학습자도 머신러닝을 공부할 길을 넓혔어요. 수강생 수는 집계 시점과 강좌에 따라 달라서 여기서는 하나의 숫자로 고정하지 않을게요. 연구자뿐 아니라 교사와 학습자도 기술의 확산에 기여했어요. 데이터와 도구와, 가르치는 사람이 차례로 갖춰졌어요. 이제 남은 건 이 셋이 한자리에서 만나는 일이었어요. 만날 장소는 다음 장의 대회장이에요. 오늘 사진 검색이 바로 되는 건 우연이 아니에요. 데이터를 설계한 사람과 계산 칩을 만든 사람이 먼저 있었기 때문이에요.",
+      "chars": 692,
+      "display_text": "배우는 기계에는 배울 자료가 필요했어요. 페이페이 리가 이끈 ImageNet 프로젝트는 많은 종류의 사물 사진에 이름표를 붙였어요. 2009년 발표 논문의 주저자는 지아 덩이고, 여러 연구자와 주석 작업자들이 함께했어요. 데이터셋은 저절로 모인 사진 더미가 아니에요. 무엇을 모으고 어떤 이름표를 붙일지 설계한 사람들의 일이에요. 재료가 늘면, 계산할 힘도 함께 필요해요. 젠슨 황이 이끈 엔비디아는 2006년, 그래픽 칩을 범용 계산 도구로 바꾸는 CUDA를 내놨어요. 화면을 그리던 칩이, 이제 계산을 나눠 맡게 된 거예요. 계산하는 칩이 싸고 빨라지면, 배울 수 있는 양도 달라져요. 도구가 먼저 준비되고 있었던 거예요. 지식을 배우고 전하는 기반도 중요했어요. 앤드류 응은 구글 브레인 연구를 함께 시작했고, 2012년에는 다프네 콜러와 코세라를 공동 창업했어요. 온라인 강의는 대학 밖의 학습자도 머신러닝을 공부할 길을 넓혔어요. 수강생 수는 집계 시점과 강좌에 따라 달라서 여기서는 하나의 숫자로 고정하지 않을게요. 연구자뿐 아니라 교사와 학습자도 기술의 확산에 기여했어요. 데이터와 도구와, 가르치는 사람이 차례로 갖춰졌어요. 이제 남은 건 이 셋이 한자리에서 만나는 일이었어요. 만날 장소는 다음 장의 대회장이에요. 오늘 사진 검색이 바로 되는 건 우연이 아니에요. 데이터를 설계한 사람과 계산 칩을 만든 사람이 먼저 있었기 때문이에요.",
+      "text_sha256": "65d07cd4b78774fae67776d8d1ae4e2936b96683f538544d0c555b3eb57e3a83"
+    },
+    {
+      "id": "06-scene",
+      "label": "6장 · 2012년 · 알렉스넷",
+      "display_lines": [
+        "2012년, 사진을 보고 무엇인지 맞히는 ImageNet 대회가 열렸어요. 여러 팀이 같은 사진 문제를 두고 겨루며, 누가 앞섰는지 숫자로 가리는 자리예요. 알렉스 크리제프스키와 일리야 수츠케버, 제프리 힌튼이 함께 나왔어요. 이들이 만든 것이 알렉스넷이었고, 겨울을 버텼던 신경망 방식이 이 무대의 답이 될 차례였어요.",
+        "알렉스넷의 신경망은 그래픽 칩 두 개로 나눠 학습했어요. 대회에는 여러 신경망의 예측을 결합한 결과를 제출했어요. 상위 다섯 개 예측 안에 정답이 없는 비율은 15.3퍼센트였고, 다음 팀은 26.2퍼센트였어요. 이것은 모든 오류를 세는 숫자가 아니라, 같은 대회의 같은 평가 기준이에요. 데이터와 계산 장치, 학습 방법을 함께 활용한 효과가 뚜렷하게 드러났어요.",
+        "준비는 앞 장에서 끝났고, 이 대회가 확인 자리였던 거예요. ImageNet이라는 큰 데이터가 있었어요. CUDA로 계산하는 그래픽 칩과 역전파로 배우는 신경망도 준비돼 있었어요. 재료와 도구와 방법이 같은 해에 겹친 거예요. 하나만 있었으면 일어나지 않았을 일이에요.",
+        "이 결과는 영상 인식에서 딥러닝에 대한 관심을 크게 높였어요. 모든 인공지능 문제를 풀었다는 뜻은 아니에요. ImageNet에서 잘 분류하는 능력과 세상을 폭넓게 이해하는 능력도 구분해야 해요. 한 연구의 성과를 읽을 때는 누가 만들었는지와 함께, 어떤 데이터와 시험에서 좋아졌는지를 물어보세요."
+      ],
+      "lines": [
+        "이천십이년, 사진을 보고 무엇인지 맞히는 이미지넷 대회가 열렸어요. 여러 팀이 같은 사진 문제를 두고 겨루며, 누가 앞섰는지 숫자로 가리는 자리예요. 알렉스 크리제프스키와 일리야 수츠케 버, 제프리 힌튼이 함께 나왔어요. 이들이 만든 것이 알렉스넷이었고, 겨울을 버텼던 신경망 방식이 이 무대의 답이 될 차례였어요.",
+        "알렉스넷의 신경망은 그래픽 칩 두 개로 나눠 학습했어요. 대회에는 여러 신경망의 예측을 결합한 결과를 제출했어요. 상위 다섯 개 예측 안에 정답이 없는 비율은 15.3퍼센트였고, 다음 팀은 26.2퍼센트였어요. 이것은 모든 오류를 세는 숫자가 아니라, 같은 대회의 같은 평가 기준이에요. 데이터와 계산 장치, 학습 방법을 함께 활용한 효과가 뚜렷하게 드러났어요.",
+        "준비는 앞 장에서 끝났고, 이 대회가 확인 자리였던 거예요. 이미지넷이라는 큰 데이터가 있었어요. 쿠다로 계산하는 그래픽 칩과 역전파로 배우는 신경망도 준비돼 있었어요. 재료와 도구와 방법이 같은 해에 겹친 거예요. 하나만 있었으면 일어나지 않았을 일이에요.",
+        "이 결과는 영상 인식에서 딥러닝에 대한 관심을 크게 높였어요. 모든 인공지능 문제를 풀었다는 뜻은 아니에요. 이미지넷에서 잘 분류하는 능력과 세상을 폭넓게 이해하는 능력도 구분해야 해요. 한 연구의 성과를 읽을 때는 누가 만들었는지와 함께, 어떤 데이터와 시험에서 좋아졌는지를 물어보세요."
+      ],
+      "text": "이천십이년, 사진을 보고 무엇인지 맞히는 이미지넷 대회가 열렸어요. 여러 팀이 같은 사진 문제를 두고 겨루며, 누가 앞섰는지 숫자로 가리는 자리예요. 알렉스 크리제프스키와 일리야 수츠케 버, 제프리 힌튼이 함께 나왔어요. 이들이 만든 것이 알렉스넷이었고, 겨울을 버텼던 신경망 방식이 이 무대의 답이 될 차례였어요. 알렉스넷의 신경망은 그래픽 칩 두 개로 나눠 학습했어요. 대회에는 여러 신경망의 예측을 결합한 결과를 제출했어요. 상위 다섯 개 예측 안에 정답이 없는 비율은 15.3퍼센트였고, 다음 팀은 26.2퍼센트였어요. 이것은 모든 오류를 세는 숫자가 아니라, 같은 대회의 같은 평가 기준이에요. 데이터와 계산 장치, 학습 방법을 함께 활용한 효과가 뚜렷하게 드러났어요. 준비는 앞 장에서 끝났고, 이 대회가 확인 자리였던 거예요. 이미지넷이라는 큰 데이터가 있었어요. 쿠다로 계산하는 그래픽 칩과 역전파로 배우는 신경망도 준비돼 있었어요. 재료와 도구와 방법이 같은 해에 겹친 거예요. 하나만 있었으면 일어나지 않았을 일이에요. 이 결과는 영상 인식에서 딥러닝에 대한 관심을 크게 높였어요. 모든 인공지능 문제를 풀었다는 뜻은 아니에요. 이미지넷에서 잘 분류하는 능력과 세상을 폭넓게 이해하는 능력도 구분해야 해요. 한 연구의 성과를 읽을 때는 누가 만들었는지와 함께, 어떤 데이터와 시험에서 좋아졌는지를 물어보세요.",
+      "chars": 686,
+      "display_text": "2012년, 사진을 보고 무엇인지 맞히는 ImageNet 대회가 열렸어요. 여러 팀이 같은 사진 문제를 두고 겨루며, 누가 앞섰는지 숫자로 가리는 자리예요. 알렉스 크리제프스키와 일리야 수츠케버, 제프리 힌튼이 함께 나왔어요. 이들이 만든 것이 알렉스넷이었고, 겨울을 버텼던 신경망 방식이 이 무대의 답이 될 차례였어요. 알렉스넷의 신경망은 그래픽 칩 두 개로 나눠 학습했어요. 대회에는 여러 신경망의 예측을 결합한 결과를 제출했어요. 상위 다섯 개 예측 안에 정답이 없는 비율은 15.3퍼센트였고, 다음 팀은 26.2퍼센트였어요. 이것은 모든 오류를 세는 숫자가 아니라, 같은 대회의 같은 평가 기준이에요. 데이터와 계산 장치, 학습 방법을 함께 활용한 효과가 뚜렷하게 드러났어요. 준비는 앞 장에서 끝났고, 이 대회가 확인 자리였던 거예요. ImageNet이라는 큰 데이터가 있었어요. CUDA로 계산하는 그래픽 칩과 역전파로 배우는 신경망도 준비돼 있었어요. 재료와 도구와 방법이 같은 해에 겹친 거예요. 하나만 있었으면 일어나지 않았을 일이에요. 이 결과는 영상 인식에서 딥러닝에 대한 관심을 크게 높였어요. 모든 인공지능 문제를 풀었다는 뜻은 아니에요. ImageNet에서 잘 분류하는 능력과 세상을 폭넓게 이해하는 능력도 구분해야 해요. 한 연구의 성과를 읽을 때는 누가 만들었는지와 함께, 어떤 데이터와 시험에서 좋아졌는지를 물어보세요.",
+      "text_sha256": "a8da2816e73be94c945b84175c086bc050b5482700790d614cbb50007b9fb03f"
+    },
+    {
+      "id": "07-scene",
+      "label": "7장 · 2010–2024년 · 게임에서 과학으로",
+      "display_lines": [
+        "데미스 하사비스와 셰인 레그, 무스타파 술레이만이 2010년 런던에서 딥마인드를 세웠어요. 스스로 배우는 기계를 만들겠다는 회사가 목표였어요. 처음 무대는 게임이었어요, 이기고 지는 결과가 숫자로 분명했기 때문이에요. 잘한다는 것을 눈으로 확인할 수 있는 자리부터 시작한 거예요.",
+        "2014년 구글이 딥마인드를 인수하면서, 작은 회사의 연구가 큰 회사의 계산 자원과 만났어요. 연구를 이어 갈 바탕이 넓어졌어요. 다만 회사가 커져도 질문은 그대로였어요. 기계가 스스로 배워서 어디까지 갈 수 있는가였어요. 실력을 재는 자리를 넘어, 문제를 푸는 자리로 옮겨 가는 일이었어요.",
+        "존 점퍼가 이끈 연구팀은 하사비스를 비롯한 동료들과 알파폴드를 발전시켰어요. 특히 알파폴드 2는 아미노산 서열에서 단백질의 삼차원 구조를 높은 정확도로 예측하는 성과를 냈어요. 구조는 생물학과 신약 연구에 중요한 단서지만, 예측 하나로 약의 효과나 안전성이 증명되는 것은 아니에요. 두 사람만 만든 발명품이 아니라 연구팀의 성과예요.",
+        "2024년 노벨 화학상은 데이비드 베이커에게 단백질 설계의 공로로 절반이, 하사비스와 점퍼에게 단백질 구조 예측의 공로로 나머지 절반이 수여됐어요. 서로 연결된 주제지만 같은 업적에 대한 상은 아니에요. 딥마인드가 게임 연구에서 과학으로 활동을 넓혔다고 해서, 게임용 강화학습을 그대로 단백질에 적용했다는 뜻도 아니에요. 문제에 맞는 방법을 다시 설계한 거예요."
+      ],
+      "lines": [
+        "데미스 하사비스와 셰인 레그, 무스타파 술레이만이 이천십년 런던에서 딥마인드를 세웠어요. 스스로 배우는 기계를 만들겠다는 회사가 목표였어요. 처음 무대는 게임이었어요, 이기고 지는 결과가 숫자로 분명했기 때문이에요. 잘한다는 것을 눈으로 확인할 수 있는 자리부터 시작한 거예요.",
+        "이천십사년 구글이 딥마인드를 인수하면서, 작은 회사의 연구가 큰 회사의 계산 자원과 만났어요. 연구를 이어 갈 바탕이 넓어졌어요. 다만 회사가 커져도 질문은 그대로였어요. 기계가 스스로 배워서 어디까지 갈 수 있는가였어요. 실력을 재는 자리를 넘어, 문제를 푸는 자리로 옮겨 가는 일이었어요.",
+        "존 점퍼가 이끈 연구팀은 하사비스를 비롯한 동료들과 알파폴드를 발전시켰어요. 특히 알파폴드 2는 아미노산 서열에서 단백질의 삼차원 구조를 높은 정확도로 예측하는 성과를 냈어요. 구조는 생물학과 신약 연구에 중요한 단서지만, 예측 하나로 약의 효과나 안전성이 증명되는 것은 아니에요. 두 사람만 만든 발명품이 아니라 연구팀의 성과예요.",
+        "이천이십사년 노벨 화학상은 데이비드 베이커에게 단백질 설계의 공로로 절반이, 하사비스와 점퍼에게 단백질 구조 예측의 공로로 나머지 절반이 수여됐어요. 서로 연결된 주제지만 같은 업적에 대한 상은 아니에요. 딥마인드가 게임 연구에서 과학으로 활동을 넓혔다고 해서, 게임용 강화학습을 그대로 단백질에 적용했다는 뜻도 아니에요. 문제에 맞는 방법을 다시 설계한 거예요."
+      ],
+      "text": "데미스 하사비스와 셰인 레그, 무스타파 술레이만이 이천십년 런던에서 딥마인드를 세웠어요. 스스로 배우는 기계를 만들겠다는 회사가 목표였어요. 처음 무대는 게임이었어요, 이기고 지는 결과가 숫자로 분명했기 때문이에요. 잘한다는 것을 눈으로 확인할 수 있는 자리부터 시작한 거예요. 이천십사년 구글이 딥마인드를 인수하면서, 작은 회사의 연구가 큰 회사의 계산 자원과 만났어요. 연구를 이어 갈 바탕이 넓어졌어요. 다만 회사가 커져도 질문은 그대로였어요. 기계가 스스로 배워서 어디까지 갈 수 있는가였어요. 실력을 재는 자리를 넘어, 문제를 푸는 자리로 옮겨 가는 일이었어요. 존 점퍼가 이끈 연구팀은 하사비스를 비롯한 동료들과 알파폴드를 발전시켰어요. 특히 알파폴드 2는 아미노산 서열에서 단백질의 삼차원 구조를 높은 정확도로 예측하는 성과를 냈어요. 구조는 생물학과 신약 연구에 중요한 단서지만, 예측 하나로 약의 효과나 안전성이 증명되는 것은 아니에요. 두 사람만 만든 발명품이 아니라 연구팀의 성과예요. 이천이십사년 노벨 화학상은 데이비드 베이커에게 단백질 설계의 공로로 절반이, 하사비스와 점퍼에게 단백질 구조 예측의 공로로 나머지 절반이 수여됐어요. 서로 연결된 주제지만 같은 업적에 대한 상은 아니에요. 딥마인드가 게임 연구에서 과학으로 활동을 넓혔다고 해서, 게임용 강화학습을 그대로 단백질에 적용했다는 뜻도 아니에요. 문제에 맞는 방법을 다시 설계한 거예요.",
+      "chars": 710,
+      "display_text": "데미스 하사비스와 셰인 레그, 무스타파 술레이만이 2010년 런던에서 딥마인드를 세웠어요. 스스로 배우는 기계를 만들겠다는 회사가 목표였어요. 처음 무대는 게임이었어요, 이기고 지는 결과가 숫자로 분명했기 때문이에요. 잘한다는 것을 눈으로 확인할 수 있는 자리부터 시작한 거예요. 2014년 구글이 딥마인드를 인수하면서, 작은 회사의 연구가 큰 회사의 계산 자원과 만났어요. 연구를 이어 갈 바탕이 넓어졌어요. 다만 회사가 커져도 질문은 그대로였어요. 기계가 스스로 배워서 어디까지 갈 수 있는가였어요. 실력을 재는 자리를 넘어, 문제를 푸는 자리로 옮겨 가는 일이었어요. 존 점퍼가 이끈 연구팀은 하사비스를 비롯한 동료들과 알파폴드를 발전시켰어요. 특히 알파폴드 2는 아미노산 서열에서 단백질의 삼차원 구조를 높은 정확도로 예측하는 성과를 냈어요. 구조는 생물학과 신약 연구에 중요한 단서지만, 예측 하나로 약의 효과나 안전성이 증명되는 것은 아니에요. 두 사람만 만든 발명품이 아니라 연구팀의 성과예요. 2024년 노벨 화학상은 데이비드 베이커에게 단백질 설계의 공로로 절반이, 하사비스와 점퍼에게 단백질 구조 예측의 공로로 나머지 절반이 수여됐어요. 서로 연결된 주제지만 같은 업적에 대한 상은 아니에요. 딥마인드가 게임 연구에서 과학으로 활동을 넓혔다고 해서, 게임용 강화학습을 그대로 단백질에 적용했다는 뜻도 아니에요. 문제에 맞는 방법을 다시 설계한 거예요.",
+      "text_sha256": "414f4a0352d1d000ba137d1f00b14755545e9cfe15a290cc77d02b99d223e73a"
+    },
+    {
+      "id": "08-scene",
+      "label": "8장 · 2016–2024년 · 강화학습과 알파고",
+      "display_lines": [
+        "시간을 2016년의 바둑 대결로 돌리기 전에, 강화학습의 토대부터 짚어 볼게요. 강화학습은 행동의 결과로 받은 보상을 이용해 다음 행동을 개선하는 학습이에요. 리처드 서튼과 앤드루 바르토는 그 개념과 알고리즘을 발전시키고 교과서로 정리했어요. 두 사람은 2024년 튜링상 수상자로 선정됐고, 발표는 2025년에 이뤄졌어요. 서튼은 2019년 비터 레슨에서, 계산을 확장할 수 있는 탐색과 학습이 장기적으로 강력했다는 역사적 관찰을 제시했어요. 어떤 문제에서나 무조건 큰 모델이 이긴다는 법칙은 아니에요.",
+        "2016년 3월, 알파고가 이세돌과 마주 앉았어요. 다섯 판의 대국 끝에 결과는 네 판 승리와 한 판 패배였어요. 기계가 사람의 승부에서 이긴 장면이었어요. 진 한 판이 오히려 오래 기억에 남았어요, 완벽하지 않다는 것을 보여 준 판이었기 때문이에요.",
+        "알파고는 딥마인드의 데이비드 실버 등을 포함한 연구팀이 만들었어요. 사람의 기보에서 배우는 지도학습, 스스로 대국하며 배우는 강화학습, 다음 수를 살펴보는 탐색이 함께 쓰였어요. 강화학습 하나만으로 나온 성과라고 하면 중요한 부분이 빠져요. 바둑의 명확한 규칙과 승패는 성능을 비교할 수 있는 시험장이 됐어요.",
+        "이 결과가 곧 모든 현실 문제에 같은 방법이 통한다는 뜻은 아니에요. 현실에서는 보상을 어떻게 정할지, 시행착오가 누구에게 피해를 줄지 먼저 생각해야 해요. 알파고와 알파폴드는 문제도 학습 방법도 달라요. 공통점은 큰 계산 자원과 연구팀의 설계로 어려운 문제에 도전했다는 점이에요. 다음에는 언어를 다루는 연구로 넘어갈게요."
+      ],
+      "lines": [
+        "시간을 이천십육년의 바둑 대결로 돌리기 전에, 강화학습의 토대부터 짚어 볼게요. 강화학습은 행동의 결과로 받은 보상을 이용해 다음 행동을 개선하는 학습이에요. 리처드 서튼과 앤드루 바르토는 그 개념과 알고리즘을 발전시키고 교과서로 정리했어요. 두 사람은 이천이십사년 튜링상 수상자로 선정됐고, 발표는 이천이십오년에 이뤄졌어요. 서튼은 이천십구년 비터 레슨에서, 계산을 확장할 수 있는 탐색과 학습이 장기적으로 강력했다는 역사적 관찰을 제시했어요. 어떤 문제에서나 무조건 큰 모델이 이긴다는 법칙은 아니에요.",
+        "이천십육년 삼월, 알파고가 이세돌과 마주 앉았어요. 다섯 판의 대국 끝에 결과는 네 판 승리와 한 판 패배였어요. 기계가 사람의 승부에서 이긴 장면이었어요. 진 한 판이 오히려 오래 기억에 남았어요, 완벽하지 않다는 것을 보여 준 판이었기 때문이에요.",
+        "알파고는 딥마인드의 데이비드 실버 등을 포함한 연구팀이 만들었어요. 사람의 기보에서 배우는 지도학습, 스스로 대국하며 배우는 강화학습, 다음 수를 살펴보는 탐색이 함께 쓰였어요. 강화학습 하나만으로 나온 성과라고 하면 중요한 부분이 빠져요. 바둑의 명확한 규칙과 승패는 성능을 비교할 수 있는 시험장이 됐어요.",
+        "이 결과가 곧 모든 현실 문제에 같은 방법이 통한다는 뜻은 아니에요. 현실에서는 보상을 어떻게 정할지, 시행착오가 누구에게 피해를 줄지 먼저 생각해야 해요. 알파고와 알파폴드는 문제도 학습 방법도 달라요. 공통점은 큰 계산 자원과 연구팀의 설계로 어려운 문제에 도전했다는 점이에요. 다음에는 언어를 다루는 연구로 넘어갈게요."
+      ],
+      "text": "시간을 이천십육년의 바둑 대결로 돌리기 전에, 강화학습의 토대부터 짚어 볼게요. 강화학습은 행동의 결과로 받은 보상을 이용해 다음 행동을 개선하는 학습이에요. 리처드 서튼과 앤드루 바르토는 그 개념과 알고리즘을 발전시키고 교과서로 정리했어요. 두 사람은 이천이십사년 튜링상 수상자로 선정됐고, 발표는 이천이십오년에 이뤄졌어요. 서튼은 이천십구년 비터 레슨에서, 계산을 확장할 수 있는 탐색과 학습이 장기적으로 강력했다는 역사적 관찰을 제시했어요. 어떤 문제에서나 무조건 큰 모델이 이긴다는 법칙은 아니에요. 이천십육년 삼월, 알파고가 이세돌과 마주 앉았어요. 다섯 판의 대국 끝에 결과는 네 판 승리와 한 판 패배였어요. 기계가 사람의 승부에서 이긴 장면이었어요. 진 한 판이 오히려 오래 기억에 남았어요, 완벽하지 않다는 것을 보여 준 판이었기 때문이에요. 알파고는 딥마인드의 데이비드 실버 등을 포함한 연구팀이 만들었어요. 사람의 기보에서 배우는 지도학습, 스스로 대국하며 배우는 강화학습, 다음 수를 살펴보는 탐색이 함께 쓰였어요. 강화학습 하나만으로 나온 성과라고 하면 중요한 부분이 빠져요. 바둑의 명확한 규칙과 승패는 성능을 비교할 수 있는 시험장이 됐어요. 이 결과가 곧 모든 현실 문제에 같은 방법이 통한다는 뜻은 아니에요. 현실에서는 보상을 어떻게 정할지, 시행착오가 누구에게 피해를 줄지 먼저 생각해야 해요. 알파고와 알파폴드는 문제도 학습 방법도 달라요. 공통점은 큰 계산 자원과 연구팀의 설계로 어려운 문제에 도전했다는 점이에요. 다음에는 언어를 다루는 연구로 넘어갈게요.",
+      "chars": 780,
+      "display_text": "시간을 2016년의 바둑 대결로 돌리기 전에, 강화학습의 토대부터 짚어 볼게요. 강화학습은 행동의 결과로 받은 보상을 이용해 다음 행동을 개선하는 학습이에요. 리처드 서튼과 앤드루 바르토는 그 개념과 알고리즘을 발전시키고 교과서로 정리했어요. 두 사람은 2024년 튜링상 수상자로 선정됐고, 발표는 2025년에 이뤄졌어요. 서튼은 2019년 비터 레슨에서, 계산을 확장할 수 있는 탐색과 학습이 장기적으로 강력했다는 역사적 관찰을 제시했어요. 어떤 문제에서나 무조건 큰 모델이 이긴다는 법칙은 아니에요. 2016년 3월, 알파고가 이세돌과 마주 앉았어요. 다섯 판의 대국 끝에 결과는 네 판 승리와 한 판 패배였어요. 기계가 사람의 승부에서 이긴 장면이었어요. 진 한 판이 오히려 오래 기억에 남았어요, 완벽하지 않다는 것을 보여 준 판이었기 때문이에요. 알파고는 딥마인드의 데이비드 실버 등을 포함한 연구팀이 만들었어요. 사람의 기보에서 배우는 지도학습, 스스로 대국하며 배우는 강화학습, 다음 수를 살펴보는 탐색이 함께 쓰였어요. 강화학습 하나만으로 나온 성과라고 하면 중요한 부분이 빠져요. 바둑의 명확한 규칙과 승패는 성능을 비교할 수 있는 시험장이 됐어요. 이 결과가 곧 모든 현실 문제에 같은 방법이 통한다는 뜻은 아니에요. 현실에서는 보상을 어떻게 정할지, 시행착오가 누구에게 피해를 줄지 먼저 생각해야 해요. 알파고와 알파폴드는 문제도 학습 방법도 달라요. 공통점은 큰 계산 자원과 연구팀의 설계로 어려운 문제에 도전했다는 점이에요. 다음에는 언어를 다루는 연구로 넘어갈게요.",
+      "text_sha256": "c4148b161b416a26cdb44997f4cd8cb0f4fafd54009d2456c2c444e9b0503ef4"
+    },
+    {
+      "id": "09-scene",
+      "label": "9장 · 1997–2017년 · 어텐션",
+      "display_lines": [
+        "이번에는 시간을 더 거슬러 언어 모델의 구조를 볼게요. 트랜스포머 이전에도 언어와 연속된 데이터를 다루는 신경망이 있었어요. 1997년 셉 호흐라이터와 위르겐 슈미트후버는 LSTM을 발표했어요. 오래 떨어진 정보의 영향을 학습하기 어려운 문제를 줄이기 위한 구조였어요. 뒤이어 여러 개선이 더해지며 음성이나 문장처럼 순서가 있는 자료에 널리 쓰였어요. 긴 문장을 완벽하게 기억하는 장치는 아니에요.",
+        "초기 신경망 번역에서는 입력 문장을 하나의 고정 길이 벡터에 요약하는 방식이 병목이 됐어요. 2014년 드미트리 바흐다나우와 조경현, 요슈아 벤지오는 번역하는 순간마다 입력의 어느 부분을 참고할지 학습하는 방법을 제안했어요. 어텐션을 이용한 정렬이에요. 예를 들어 다음 단어를 번역할 때 관련 있는 원문 단어에 더 높은 비중을 둘 수 있어요. 논문은 2015년 학회에서 발표됐어요.",
+        "2017년, 아시시 바스와니와 노암 셰이저, 니키 파르마르, 에이던 고메즈 등을 포함한 여덟 저자가 트랜스포머를 발표했어요. 어텐션으로 입력 요소 사이의 관계를 계산하는 구조예요. 반복적으로 한 칸씩 상태를 넘기는 계산을 줄여, 학습할 때 여러 위치를 병렬로 처리하기 좋아졌어요. 공동 저자에는 야코프 우슈코라이트, 라이온 존스, 우카시 카이저, 일리야 폴로수킨도 있어요.",
+        "트랜스포머는 정해진 문맥 범위 안에서 단어 사이의 관계를 계산해요. 문장이 길어도 중요한 내용을 반드시 기억하거나, 모든 지식을 한 번에 보는 것은 아니에요. GPT 같은 생성 모델은 앞서 나온 내용을 바탕으로 다음 토큰을 하나씩 만들어 가요. 토큰은 단어나 단어 조각처럼 모델이 처리하는 단위예요. 학습의 병렬 처리와 답을 생성하는 순서는 구분해야 해요."
+      ],
+      "lines": [
+        "이번에는 시간을 더 거슬러 언어 모델의 구조를 볼게요. 트랜스포머 이전에도 언어와 연속된 데이터를 다루는 신경망이 있었어요. 천구백구십칠년 셉 호흐라이터와 위르겐 슈미트후버는 엘에스티엠을 발표했어요. 오래 떨어진 정보의 영향을 학습하기 어려운 문제를 줄이기 위한 구조였어요. 뒤이어 여러 개선이 더해지며 음성이나 문장처럼 순서가 있는 자료에 널리 쓰였어요. 긴 문장을 완벽하게 기억하는 장치는 아니에요.",
+        "초기 신경망 번역에서는 입력 문장을 하나의 고정 길이 벡터에 요약하는 방식이 병목이 됐어요. 이천십사년 드미트리 바흐다나우와 조경현, 요슈아 벤지오는 번역하는 순간마다 입력의 어느 부분을 참고할지 학습하는 방법을 제안했어요. 어텐션을 이용한 정렬이에요. 예를 들어 다음 단어를 번역할 때 관련 있는 원문 단어에 더 높은 비중을 둘 수 있어요. 논문은 이천십오년 학회에서 발표됐어요.",
+        "이천십칠년, 아시시 바스와니와 노암 셰이저, 니키 파르마르, 에이던 고메즈 등을 포함한 여덟 저자가 트랜스포머를 발표했어요. 어텐션으로 입력 요소 사이의 관계를 계산하는 구조예요. 반복적으로 한 칸씩 상태를 넘기는 계산을 줄여, 학습할 때 여러 위치를 병렬로 처리하기 좋아졌어요. 공동 저자에는 야코프 우슈코라이트, 라이온 존스, 우카시 카이저, 일리야 폴로수킨도 있어요.",
+        "트랜스포머는 정해진 문맥 범위 안에서 단어 사이의 관계를 계산해요. 문장이 길어도 중요한 내용을 반드시 기억하거나, 모든 지식을 한 번에 보는 것은 아니에요. 지피티 같은 생성 모델은 앞서 나온 내용을 바탕으로 다음 토큰을 하나씩 만들어 가요. 토큰은 단어나 단어 조각처럼 모델이 처리하는 단위예요. 학습의 병렬 처리와 답을 생성하는 순서는 구분해야 해요."
+      ],
+      "text": "이번에는 시간을 더 거슬러 언어 모델의 구조를 볼게요. 트랜스포머 이전에도 언어와 연속된 데이터를 다루는 신경망이 있었어요. 천구백구십칠년 셉 호흐라이터와 위르겐 슈미트후버는 엘에스티엠을 발표했어요. 오래 떨어진 정보의 영향을 학습하기 어려운 문제를 줄이기 위한 구조였어요. 뒤이어 여러 개선이 더해지며 음성이나 문장처럼 순서가 있는 자료에 널리 쓰였어요. 긴 문장을 완벽하게 기억하는 장치는 아니에요. 초기 신경망 번역에서는 입력 문장을 하나의 고정 길이 벡터에 요약하는 방식이 병목이 됐어요. 이천십사년 드미트리 바흐다나우와 조경현, 요슈아 벤지오는 번역하는 순간마다 입력의 어느 부분을 참고할지 학습하는 방법을 제안했어요. 어텐션을 이용한 정렬이에요. 예를 들어 다음 단어를 번역할 때 관련 있는 원문 단어에 더 높은 비중을 둘 수 있어요. 논문은 이천십오년 학회에서 발표됐어요. 이천십칠년, 아시시 바스와니와 노암 셰이저, 니키 파르마르, 에이던 고메즈 등을 포함한 여덟 저자가 트랜스포머를 발표했어요. 어텐션으로 입력 요소 사이의 관계를 계산하는 구조예요. 반복적으로 한 칸씩 상태를 넘기는 계산을 줄여, 학습할 때 여러 위치를 병렬로 처리하기 좋아졌어요. 공동 저자에는 야코프 우슈코라이트, 라이온 존스, 우카시 카이저, 일리야 폴로수킨도 있어요. 트랜스포머는 정해진 문맥 범위 안에서 단어 사이의 관계를 계산해요. 문장이 길어도 중요한 내용을 반드시 기억하거나, 모든 지식을 한 번에 보는 것은 아니에요. 지피티 같은 생성 모델은 앞서 나온 내용을 바탕으로 다음 토큰을 하나씩 만들어 가요. 토큰은 단어나 단어 조각처럼 모델이 처리하는 단위예요. 학습의 병렬 처리와 답을 생성하는 순서는 구분해야 해요.",
+      "chars": 848,
+      "display_text": "이번에는 시간을 더 거슬러 언어 모델의 구조를 볼게요. 트랜스포머 이전에도 언어와 연속된 데이터를 다루는 신경망이 있었어요. 1997년 셉 호흐라이터와 위르겐 슈미트후버는 LSTM을 발표했어요. 오래 떨어진 정보의 영향을 학습하기 어려운 문제를 줄이기 위한 구조였어요. 뒤이어 여러 개선이 더해지며 음성이나 문장처럼 순서가 있는 자료에 널리 쓰였어요. 긴 문장을 완벽하게 기억하는 장치는 아니에요. 초기 신경망 번역에서는 입력 문장을 하나의 고정 길이 벡터에 요약하는 방식이 병목이 됐어요. 2014년 드미트리 바흐다나우와 조경현, 요슈아 벤지오는 번역하는 순간마다 입력의 어느 부분을 참고할지 학습하는 방법을 제안했어요. 어텐션을 이용한 정렬이에요. 예를 들어 다음 단어를 번역할 때 관련 있는 원문 단어에 더 높은 비중을 둘 수 있어요. 논문은 2015년 학회에서 발표됐어요. 2017년, 아시시 바스와니와 노암 셰이저, 니키 파르마르, 에이던 고메즈 등을 포함한 여덟 저자가 트랜스포머를 발표했어요. 어텐션으로 입력 요소 사이의 관계를 계산하는 구조예요. 반복적으로 한 칸씩 상태를 넘기는 계산을 줄여, 학습할 때 여러 위치를 병렬로 처리하기 좋아졌어요. 공동 저자에는 야코프 우슈코라이트, 라이온 존스, 우카시 카이저, 일리야 폴로수킨도 있어요. 트랜스포머는 정해진 문맥 범위 안에서 단어 사이의 관계를 계산해요. 문장이 길어도 중요한 내용을 반드시 기억하거나, 모든 지식을 한 번에 보는 것은 아니에요. GPT 같은 생성 모델은 앞서 나온 내용을 바탕으로 다음 토큰을 하나씩 만들어 가요. 토큰은 단어나 단어 조각처럼 모델이 처리하는 단위예요. 학습의 병렬 처리와 답을 생성하는 순서는 구분해야 해요.",
+      "text_sha256": "ea067a50416af676db2db71720c90813bffcf1db327a42e22db4498a9db9489b"
+    },
+    {
+      "id": "10-scene",
+      "label": "10장 · 2014–2020년 · 크게, 그리고 만들게",
+      "display_lines": [
+        "2014년, 이안 구드펠로와 공동 연구자들은 적대적 생성 신경망을 제안했어요. 생성기는 데이터를 만들고, 판별기는 실제 자료와 생성된 자료를 구분해요. 두 모델이 주고받는 학습 신호로 생성 결과를 개선하는 방식이에요. 항상 안정적으로 학습되거나 다른 방식보다 빠른 것은 아니에요. 적대적 생성 신경망은 생성 모델의 중요한 한 갈래이고, GPT의 직접적인 전신은 아니에요.",
+        "2018년, 알렉 래드포드와 공동 연구자들은 나중에 GPT-1이라 불린 모델을 발표했어요. 먼저 많은 글에서 다음 토큰을 예측하도록 학습하고, 그다음 특정 과제에 맞춰 조정했어요. 사전 학습 자체가 이때 처음 생긴 것은 아니에요. 기존 사전 학습의 흐름과 트랜스포머 구조를 결합해 여러 언어 과제에 적용한 성과였어요.",
+        "2020년 톰 브라운을 비롯한 연구진은 1,750억 개 매개변수를 가진 GPT-3를 발표했어요. 매개변수는 학습 과정에서 바뀌는 모델 내부의 수치예요. 연구진은 별도의 가중치 조정 없이 예시를 문맥에 넣는 방식으로 여러 과제를 시험했어요. 규모를 키우며 개선된 결과도 있었지만, 추론의 오류와 편향 같은 한계도 남았어요. 크기만 알면 능력을 다 알 수 있는 것은 아니에요.",
+        "생성 모델은 새로운 자료를 만들지만, 사람처럼 뜻을 알고 의도해서 만드는 것과 같다고 단정할 수는 없어요. 적대적 생성 신경망과 언어 모델은 서로 다른 목표와 구조를 갖고 있어요. 이름이 비슷해 보이더라도 어떤 자료로 무엇을 예측하도록 학습했는지 살펴보면 차이가 보여요. 이제 이런 기술을 연구하고 서비스로 제공하는 조직과 사람의 이야기로 넘어갈게요."
+      ],
+      "lines": [
+        "이천십사년, 이안 구드펠로와 공동 연구자들은 적대적 생성 신경망을 제안했어요. 생성기는 데이터를 만들고, 판별기는 실제 자료와 생성된 자료를 구분해요. 두 모델이 주고받는 학습 신호로 생성 결과를 개선하는 방식이에요. 항상 안정적으로 학습되거나 다른 방식보다 빠른 것은 아니에요. 적대적 생성 신경망은 생성 모델의 중요한 한 갈래이고, 지피티의 직접적인 전신은 아니에요.",
+        "이천십팔년, 알렉 래드포드와 공동 연구자들은 나중에 지피티 원이라 불린 모델을 발표했어요. 먼저 많은 글에서 다음 토큰을 예측하도록 학습하고, 그다음 특정 과제에 맞춰 조정했어요. 사전 학습 자체가 이때 처음 생긴 것은 아니에요. 기존 사전 학습의 흐름과 트랜스포머 구조를 결합해 여러 언어 과제에 적용한 성과였어요.",
+        "이천이십년 톰 브라운을 비롯한 연구진은 천칠백오십억 개 매개변수를 가진 지피티 쓰리를 발표했어요. 매개변수는 학습 과정에서 바뀌는 모델 내부의 수치예요. 연구진은 별도의 가중치 조정 없이 예시를 문맥에 넣는 방식으로 여러 과제를 시험했어요. 규모를 키우며 개선된 결과도 있었지만, 추론의 오류와 편향 같은 한계도 남았어요. 크기만 알면 능력을 다 알 수 있는 것은 아니에요.",
+        "생성 모델은 새로운 자료를 만들지만, 사람처럼 뜻을 알고 의도해서 만드는 것과 같다고 단정할 수는 없어요. 적대적 생성 신경망과 언어 모델은 서로 다른 목표와 구조를 갖고 있어요. 이름이 비슷해 보이더라도 어떤 자료로 무엇을 예측하도록 학습했는지 살펴보면 차이가 보여요. 이제 이런 기술을 연구하고 서비스로 제공하는 조직과 사람의 이야기로 넘어갈게요."
+      ],
+      "text": "이천십사년, 이안 구드펠로와 공동 연구자들은 적대적 생성 신경망을 제안했어요. 생성기는 데이터를 만들고, 판별기는 실제 자료와 생성된 자료를 구분해요. 두 모델이 주고받는 학습 신호로 생성 결과를 개선하는 방식이에요. 항상 안정적으로 학습되거나 다른 방식보다 빠른 것은 아니에요. 적대적 생성 신경망은 생성 모델의 중요한 한 갈래이고, 지피티의 직접적인 전신은 아니에요. 이천십팔년, 알렉 래드포드와 공동 연구자들은 나중에 지피티 원이라 불린 모델을 발표했어요. 먼저 많은 글에서 다음 토큰을 예측하도록 학습하고, 그다음 특정 과제에 맞춰 조정했어요. 사전 학습 자체가 이때 처음 생긴 것은 아니에요. 기존 사전 학습의 흐름과 트랜스포머 구조를 결합해 여러 언어 과제에 적용한 성과였어요. 이천이십년 톰 브라운을 비롯한 연구진은 천칠백오십억 개 매개변수를 가진 지피티 쓰리를 발표했어요. 매개변수는 학습 과정에서 바뀌는 모델 내부의 수치예요. 연구진은 별도의 가중치 조정 없이 예시를 문맥에 넣는 방식으로 여러 과제를 시험했어요. 규모를 키우며 개선된 결과도 있었지만, 추론의 오류와 편향 같은 한계도 남았어요. 크기만 알면 능력을 다 알 수 있는 것은 아니에요. 생성 모델은 새로운 자료를 만들지만, 사람처럼 뜻을 알고 의도해서 만드는 것과 같다고 단정할 수는 없어요. 적대적 생성 신경망과 언어 모델은 서로 다른 목표와 구조를 갖고 있어요. 이름이 비슷해 보이더라도 어떤 자료로 무엇을 예측하도록 학습했는지 살펴보면 차이가 보여요. 이제 이런 기술을 연구하고 서비스로 제공하는 조직과 사람의 이야기로 넘어갈게요.",
+      "chars": 792,
+      "display_text": "2014년, 이안 구드펠로와 공동 연구자들은 적대적 생성 신경망을 제안했어요. 생성기는 데이터를 만들고, 판별기는 실제 자료와 생성된 자료를 구분해요. 두 모델이 주고받는 학습 신호로 생성 결과를 개선하는 방식이에요. 항상 안정적으로 학습되거나 다른 방식보다 빠른 것은 아니에요. 적대적 생성 신경망은 생성 모델의 중요한 한 갈래이고, GPT의 직접적인 전신은 아니에요. 2018년, 알렉 래드포드와 공동 연구자들은 나중에 GPT-1이라 불린 모델을 발표했어요. 먼저 많은 글에서 다음 토큰을 예측하도록 학습하고, 그다음 특정 과제에 맞춰 조정했어요. 사전 학습 자체가 이때 처음 생긴 것은 아니에요. 기존 사전 학습의 흐름과 트랜스포머 구조를 결합해 여러 언어 과제에 적용한 성과였어요. 2020년 톰 브라운을 비롯한 연구진은 1,750억 개 매개변수를 가진 GPT-3를 발표했어요. 매개변수는 학습 과정에서 바뀌는 모델 내부의 수치예요. 연구진은 별도의 가중치 조정 없이 예시를 문맥에 넣는 방식으로 여러 과제를 시험했어요. 규모를 키우며 개선된 결과도 있었지만, 추론의 오류와 편향 같은 한계도 남았어요. 크기만 알면 능력을 다 알 수 있는 것은 아니에요. 생성 모델은 새로운 자료를 만들지만, 사람처럼 뜻을 알고 의도해서 만드는 것과 같다고 단정할 수는 없어요. 적대적 생성 신경망과 언어 모델은 서로 다른 목표와 구조를 갖고 있어요. 이름이 비슷해 보이더라도 어떤 자료로 무엇을 예측하도록 학습했는지 살펴보면 차이가 보여요. 이제 이런 기술을 연구하고 서비스로 제공하는 조직과 사람의 이야기로 넘어갈게요.",
+      "text_sha256": "6b92be0339a744ce8c438e658248d7ccdadd79f35d240c88ff26905de2d19fdc"
+    },
+    {
+      "id": "part2",
+      "label": "2부 · 회사와 사람의 시대",
+      "display_lines": [
+        "두 번째 부분은 회사와 사람의 시대예요. 조직이 밝힌 목표와 실제 성과, 사람들의 이동을 구분해서 살펴볼게요."
+      ],
+      "lines": [
+        "두 번째 부분은 회사와 사람의 시대예요. 조직이 밝힌 목표와 실제 성과, 사람들의 이동을 구분해서 살펴볼게요."
+      ],
+      "text": "두 번째 부분은 회사와 사람의 시대예요. 조직이 밝힌 목표와 실제 성과, 사람들의 이동을 구분해서 살펴볼게요.",
+      "chars": 61,
+      "display_text": "두 번째 부분은 회사와 사람의 시대예요. 조직이 밝힌 목표와 실제 성과, 사람들의 이동을 구분해서 살펴볼게요.",
+      "text_sha256": "fb65a1403015c1ecceaf745c7f6dd0ca793d05dbbd55c27f9d5522b465fb20f1"
+    },
+    {
+      "id": "11-scene",
+      "label": "11장 · 2015년 · 회사를 세운 사람들",
+      "display_lines": [
+        "2015년 12월, 오픈에이아이가 비영리 연구 조직으로 출발했어요. 샘 올트먼과 일론 머스크는 공동 의장을 맡았고, 그렉 브록만과 일리야 수츠케버가 핵심 역할을 맡았어요. 안드레이 카파시, 비키 청, 파멜라 바가타 등 연구자와 엔지니어들도 창립팀에 참여했어요. 공개된 설립문은 인류에게 이로운 인공지능과 연구 공유를 목표로 밝혔어요. 목표를 선언했다는 사실과 이후에 얼마나 실현했는지는 따로 살펴봐야 해요.",
+        "비영리는 연구비를 받거나 수익을 내지 못한다는 뜻이 아니에요. 돈을 어디에 쓰고 누가 통제하며, 이익을 누구에게 분배하는지가 중요해요. 큰 모델을 연구하려면 인력과 계산 장치에 많은 자원이 들어요. 공개와 안전이라는 목표를 어떤 자금 구조 안에서 지킬지가 조직의 중요한 문제가 됐어요.",
+        "창립자와 투자자, 연구자는 같은 조직에서도 다른 선택을 할 수 있어요. 다음 장은 그 선택이 갈라진 사례예요. 누군가의 속마음을 짐작하기보다, 당시 발표와 나중의 법원 판단을 구분하며 볼게요."
+      ],
+      "lines": [
+        "이천십오년 십이월, 오픈에이아이가 비영리 연구 조직으로 출발했어요. 샘 올트먼과 일론 머스크는 공동 의장을 맡았고, 그렉 브록만과 일리야 수츠케 버가 핵심 역할을 맡았어요. 안드레이 카파시, 비키 청, 파멜라 바가타 등 연구자와 엔지니어들도 창립팀에 참여했어요. 공개된 설립문은 인류에게 이로운 인공지능과 연구 공유를 목표로 밝혔어요. 목표를 선언했다는 사실과 이후에 얼마나 실현했는지는 따로 살펴봐야 해요.",
+        "비영리는 연구비를 받거나 수익을 내지 못한다는 뜻이 아니에요. 돈을 어디에 쓰고 누가 통제하며, 이익을 누구에게 분배하는지가 중요해요. 큰 모델을 연구하려면 인력과 계산 장치에 많은 자원이 들어요. 공개와 안전이라는 목표를 어떤 자금 구조 안에서 지킬지가 조직의 중요한 문제가 됐어요.",
+        "창립자와 투자자, 연구자는 같은 조직에서도 다른 선택을 할 수 있어요. 다음 장은 그 선택이 갈라진 사례예요. 누군가의 속마음을 짐작하기보다, 당시 발표와 나중의 법원 판단을 구분하며 볼게요."
+      ],
+      "text": "이천십오년 십이월, 오픈에이아이가 비영리 연구 조직으로 출발했어요. 샘 올트먼과 일론 머스크는 공동 의장을 맡았고, 그렉 브록만과 일리야 수츠케 버가 핵심 역할을 맡았어요. 안드레이 카파시, 비키 청, 파멜라 바가타 등 연구자와 엔지니어들도 창립팀에 참여했어요. 공개된 설립문은 인류에게 이로운 인공지능과 연구 공유를 목표로 밝혔어요. 목표를 선언했다는 사실과 이후에 얼마나 실현했는지는 따로 살펴봐야 해요. 비영리는 연구비를 받거나 수익을 내지 못한다는 뜻이 아니에요. 돈을 어디에 쓰고 누가 통제하며, 이익을 누구에게 분배하는지가 중요해요. 큰 모델을 연구하려면 인력과 계산 장치에 많은 자원이 들어요. 공개와 안전이라는 목표를 어떤 자금 구조 안에서 지킬지가 조직의 중요한 문제가 됐어요. 창립자와 투자자, 연구자는 같은 조직에서도 다른 선택을 할 수 있어요. 다음 장은 그 선택이 갈라진 사례예요. 누군가의 속마음을 짐작하기보다, 당시 발표와 나중의 법원 판단을 구분하며 볼게요.",
+      "chars": 496,
+      "display_text": "2015년 12월, 오픈에이아이가 비영리 연구 조직으로 출발했어요. 샘 올트먼과 일론 머스크는 공동 의장을 맡았고, 그렉 브록만과 일리야 수츠케버가 핵심 역할을 맡았어요. 안드레이 카파시, 비키 청, 파멜라 바가타 등 연구자와 엔지니어들도 창립팀에 참여했어요. 공개된 설립문은 인류에게 이로운 인공지능과 연구 공유를 목표로 밝혔어요. 목표를 선언했다는 사실과 이후에 얼마나 실현했는지는 따로 살펴봐야 해요. 비영리는 연구비를 받거나 수익을 내지 못한다는 뜻이 아니에요. 돈을 어디에 쓰고 누가 통제하며, 이익을 누구에게 분배하는지가 중요해요. 큰 모델을 연구하려면 인력과 계산 장치에 많은 자원이 들어요. 공개와 안전이라는 목표를 어떤 자금 구조 안에서 지킬지가 조직의 중요한 문제가 됐어요. 창립자와 투자자, 연구자는 같은 조직에서도 다른 선택을 할 수 있어요. 다음 장은 그 선택이 갈라진 사례예요. 누군가의 속마음을 짐작하기보다, 당시 발표와 나중의 법원 판단을 구분하며 볼게요.",
+      "text_sha256": "6f0c6cb158d19a4060491686d25c4a7bdb2e972061b6fd44ad8956cb22994c8c"
+    },
+    {
+      "id": "12-scene",
+      "label": "12장 · 2018–2026년 · 갈라진 약속",
+      "display_lines": [
+        "2018년 일론 머스크는 오픈에이아이 이사회를 떠났어요. 함께 조직을 세웠던 사람의 역할이 바뀐 거예요. 이후 당사자들은 설립 목표와 운영 방향을 두고 서로 다른 주장을 내놓았어요. 이직이나 갈등을 한 사람의 성격이나 속마음만으로 설명하기는 어려워요. 공개된 기록으로 확인할 수 있는 일부터 구분해 볼게요.",
+        "연구에 필요한 자금과 조직의 목적을 어떻게 맞출지는 어려운 문제예요. 큰 투자를 받는다고 약속 위반이 자동으로 증명되는 것도, 좋은 목표를 내세웠다고 갈등이 해결되는 것도 아니에요. 회사의 구조와 통제권, 당사자들의 주장, 법원이 인정한 사실을 나누어 읽어야 해요.",
+        "머스크는 이후 오픈에이아이를 상대로 소송을 제기했어요. 2026년 5월 20일 지방법원은 시효에 관한 배심의 권고적 평결을 받아들였어요. 해당 청구는 제기 시한이 지났다는 이유로 기각됐어요. 이는 지방법원 단계의 판단이며, 모든 쟁점에 최종 결론이 났다고 표현하면 안 돼요.",
+        "시효 판단은 약속 위반이라는 주장이 옳았는지 그르렀는지를 본안에서 판단한 것과 달라요. 항소와 후속 절차는 별도로 확인해야 해요. 이 사례에서 배울 점은 유명한 인물의 주장도 주장으로 읽어야 한다는 거예요. 다음에는 같은 연구 조직을 떠나 다른 회사를 세운 사람들을 볼게요."
+      ],
+      "lines": [
+        "이천십팔년 일론 머스크는 오픈에이아이 이사회를 떠났어요. 함께 조직을 세웠던 사람의 역할이 바뀐 거예요. 이후 당사자들은 설립 목표와 운영 방향을 두고 서로 다른 주장을 내놓았어요. 이직이나 갈등을 한 사람의 성격이나 속마음만으로 설명하기는 어려워요. 공개된 기록으로 확인할 수 있는 일부터 구분해 볼게요.",
+        "연구에 필요한 자금과 조직의 목적을 어떻게 맞출지는 어려운 문제예요. 큰 투자를 받는다고 약속 위반이 자동으로 증명되는 것도, 좋은 목표를 내세웠다고 갈등이 해결되는 것도 아니에요. 회사의 구조와 통제권, 당사자들의 주장, 법원이 인정한 사실을 나누어 읽어야 해요.",
+        "머스크는 이후 오픈에이아이를 상대로 소송을 제기했어요. 이천이십육년 오월 이십일 지방법원은 시효에 관한 배심의 권고적 평결을 받아들였어요. 해당 청구는 제기 시한이 지났다는 이유로 기각됐어요. 이는 지방법원 단계의 판단이며, 모든 쟁점에 최종 결론이 났다고 표현하면 안 돼요.",
+        "시효 판단은 약속 위반이라는 주장이 옳았는지 그르렀는지를 본안에서 판단한 것과 달라요. 항소와 후속 절차는 별도로 확인해야 해요. 이 사례에서 배울 점은 유명한 인물의 주장도 주장으로 읽어야 한다는 거예요. 다음에는 같은 연구 조직을 떠나 다른 회사를 세운 사람들을 볼게요."
+      ],
+      "text": "이천십팔년 일론 머스크는 오픈에이아이 이사회를 떠났어요. 함께 조직을 세웠던 사람의 역할이 바뀐 거예요. 이후 당사자들은 설립 목표와 운영 방향을 두고 서로 다른 주장을 내놓았어요. 이직이나 갈등을 한 사람의 성격이나 속마음만으로 설명하기는 어려워요. 공개된 기록으로 확인할 수 있는 일부터 구분해 볼게요. 연구에 필요한 자금과 조직의 목적을 어떻게 맞출지는 어려운 문제예요. 큰 투자를 받는다고 약속 위반이 자동으로 증명되는 것도, 좋은 목표를 내세웠다고 갈등이 해결되는 것도 아니에요. 회사의 구조와 통제권, 당사자들의 주장, 법원이 인정한 사실을 나누어 읽어야 해요. 머스크는 이후 오픈에이아이를 상대로 소송을 제기했어요. 이천이십육년 오월 이십일 지방법원은 시효에 관한 배심의 권고적 평결을 받아들였어요. 해당 청구는 제기 시한이 지났다는 이유로 기각됐어요. 이는 지방법원 단계의 판단이며, 모든 쟁점에 최종 결론이 났다고 표현하면 안 돼요. 시효 판단은 약속 위반이라는 주장이 옳았는지 그르렀는지를 본안에서 판단한 것과 달라요. 항소와 후속 절차는 별도로 확인해야 해요. 이 사례에서 배울 점은 유명한 인물의 주장도 주장으로 읽어야 한다는 거예요. 다음에는 같은 연구 조직을 떠나 다른 회사를 세운 사람들을 볼게요.",
+      "chars": 629,
+      "display_text": "2018년 일론 머스크는 오픈에이아이 이사회를 떠났어요. 함께 조직을 세웠던 사람의 역할이 바뀐 거예요. 이후 당사자들은 설립 목표와 운영 방향을 두고 서로 다른 주장을 내놓았어요. 이직이나 갈등을 한 사람의 성격이나 속마음만으로 설명하기는 어려워요. 공개된 기록으로 확인할 수 있는 일부터 구분해 볼게요. 연구에 필요한 자금과 조직의 목적을 어떻게 맞출지는 어려운 문제예요. 큰 투자를 받는다고 약속 위반이 자동으로 증명되는 것도, 좋은 목표를 내세웠다고 갈등이 해결되는 것도 아니에요. 회사의 구조와 통제권, 당사자들의 주장, 법원이 인정한 사실을 나누어 읽어야 해요. 머스크는 이후 오픈에이아이를 상대로 소송을 제기했어요. 2026년 5월 20일 지방법원은 시효에 관한 배심의 권고적 평결을 받아들였어요. 해당 청구는 제기 시한이 지났다는 이유로 기각됐어요. 이는 지방법원 단계의 판단이며, 모든 쟁점에 최종 결론이 났다고 표현하면 안 돼요. 시효 판단은 약속 위반이라는 주장이 옳았는지 그르렀는지를 본안에서 판단한 것과 달라요. 항소와 후속 절차는 별도로 확인해야 해요. 이 사례에서 배울 점은 유명한 인물의 주장도 주장으로 읽어야 한다는 거예요. 다음에는 같은 연구 조직을 떠나 다른 회사를 세운 사람들을 볼게요.",
+      "text_sha256": "c6580abf557c4cd90a570fc676e6948e15322f0531b1e2fef88270c89b4369c1"
+    },
+    {
+      "id": "13-scene",
+      "label": "13장 · 2021년 · 안전을 먼저 묻는 회사",
+      "display_lines": [
+        "2021년, 다리오 아모데이와 다니엘라 아모데이 등 오픈에이아이 출신 연구자들이 앤트로픽을 세웠어요. 다리오는 대표, 다니엘라는 사장을 맡았어요. 같은 연구 조직에서 일했던 사람들이 새로운 회사를 만든 거예요. 연구자의 이동은 지식과 경험이 다른 조직으로 이어지는 한 경로예요.",
+        "앤트로픽은 설립 발표에서 신뢰할 수 있고 해석할 수 있으며 조종 가능한 인공지능을 연구하겠다고 밝혔어요. 내부에서 왜 그런 답이 나오는지, 원하지 않은 행동을 어떻게 줄일지 묻는 일이에요. 동시에 큰 모델과 많은 계산이 필요한 연구도 계획했어요. 안전 연구와 규모 확대가 서로 완전히 떨어진 선택은 아니에요.",
+        "두 회사 모두 안전하고 유익한 인공지능을 목표로 내세웠어요. 앤트로픽은 신뢰성, 해석 가능성, 조종 가능성을 강조했어요. 이것은 회사가 밝힌 연구 방향이에요. 한쪽은 규모만, 다른 쪽은 안전만 추구한다고 나누거나, 안전을 강조했으니 실제로 더 안전하다고 단정할 수는 없어요. 주장과 공개된 평가 결과를 따로 읽는 태도가 필요해요.",
+        "새 회사를 세우면 연구의 우선순위와 조직 운영을 다르게 정할 수 있어요. 하지만 회사 이름이나 창업자의 말만으로 결과를 평가할 수는 없어요. 어떤 방법을 공개했고, 어떤 조건에서 효과를 보였으며, 무엇을 아직 해결하지 못했는지 확인해야 해요. 다음 장에서는 이런 연구가 대화형 서비스로 널리 알려진 시기를 볼게요."
+      ],
+      "lines": [
+        "이천이십일년, 다리오 아모데이와 다니엘라 아모데이 등 오픈에이아이 출신 연구자들이 앤트로픽을 세웠어요. 다리오는 대표, 다니엘라는 사장을 맡았어요. 같은 연구 조직에서 일했던 사람들이 새로운 회사를 만든 거예요. 연구자의 이동은 지식과 경험이 다른 조직으로 이어지는 한 경로예요.",
+        "앤트로픽은 설립 발표에서 신뢰할 수 있고 해석할 수 있으며 조종 가능한 인공지능을 연구하겠다고 밝혔어요. 내부에서 왜 그런 답이 나오는지, 원하지 않은 행동을 어떻게 줄일지 묻는 일이에요. 동시에 큰 모델과 많은 계산이 필요한 연구도 계획했어요. 안전 연구와 규모 확대가 서로 완전히 떨어진 선택은 아니에요.",
+        "두 회사 모두 안전하고 유익한 인공지능을 목표로 내세웠어요. 앤트로픽은 신뢰성, 해석 가능성, 조종 가능성을 강조했어요. 이것은 회사가 밝힌 연구 방향이에요. 한쪽은 규모만, 다른 쪽은 안전만 추구한다고 나누거나, 안전을 강조했으니 실제로 더 안전하다고 단정할 수는 없어요. 주장과 공개된 평가 결과를 따로 읽는 태도가 필요해요.",
+        "새 회사를 세우면 연구의 우선순위와 조직 운영을 다르게 정할 수 있어요. 하지만 회사 이름이나 창업자의 말만으로 결과를 평가할 수는 없어요. 어떤 방법을 공개했고, 어떤 조건에서 효과를 보였으며, 무엇을 아직 해결하지 못했는지 확인해야 해요. 다음 장에서는 이런 연구가 대화형 서비스로 널리 알려진 시기를 볼게요."
+      ],
+      "text": "이천이십일년, 다리오 아모데이와 다니엘라 아모데이 등 오픈에이아이 출신 연구자들이 앤트로픽을 세웠어요. 다리오는 대표, 다니엘라는 사장을 맡았어요. 같은 연구 조직에서 일했던 사람들이 새로운 회사를 만든 거예요. 연구자의 이동은 지식과 경험이 다른 조직으로 이어지는 한 경로예요. 앤트로픽은 설립 발표에서 신뢰할 수 있고 해석할 수 있으며 조종 가능한 인공지능을 연구하겠다고 밝혔어요. 내부에서 왜 그런 답이 나오는지, 원하지 않은 행동을 어떻게 줄일지 묻는 일이에요. 동시에 큰 모델과 많은 계산이 필요한 연구도 계획했어요. 안전 연구와 규모 확대가 서로 완전히 떨어진 선택은 아니에요. 두 회사 모두 안전하고 유익한 인공지능을 목표로 내세웠어요. 앤트로픽은 신뢰성, 해석 가능성, 조종 가능성을 강조했어요. 이것은 회사가 밝힌 연구 방향이에요. 한쪽은 규모만, 다른 쪽은 안전만 추구한다고 나누거나, 안전을 강조했으니 실제로 더 안전하다고 단정할 수는 없어요. 주장과 공개된 평가 결과를 따로 읽는 태도가 필요해요. 새 회사를 세우면 연구의 우선순위와 조직 운영을 다르게 정할 수 있어요. 하지만 회사 이름이나 창업자의 말만으로 결과를 평가할 수는 없어요. 어떤 방법을 공개했고, 어떤 조건에서 효과를 보였으며, 무엇을 아직 해결하지 못했는지 확인해야 해요. 다음 장에서는 이런 연구가 대화형 서비스로 널리 알려진 시기를 볼게요.",
+      "chars": 690,
+      "display_text": "2021년, 다리오 아모데이와 다니엘라 아모데이 등 오픈에이아이 출신 연구자들이 앤트로픽을 세웠어요. 다리오는 대표, 다니엘라는 사장을 맡았어요. 같은 연구 조직에서 일했던 사람들이 새로운 회사를 만든 거예요. 연구자의 이동은 지식과 경험이 다른 조직으로 이어지는 한 경로예요. 앤트로픽은 설립 발표에서 신뢰할 수 있고 해석할 수 있으며 조종 가능한 인공지능을 연구하겠다고 밝혔어요. 내부에서 왜 그런 답이 나오는지, 원하지 않은 행동을 어떻게 줄일지 묻는 일이에요. 동시에 큰 모델과 많은 계산이 필요한 연구도 계획했어요. 안전 연구와 규모 확대가 서로 완전히 떨어진 선택은 아니에요. 두 회사 모두 안전하고 유익한 인공지능을 목표로 내세웠어요. 앤트로픽은 신뢰성, 해석 가능성, 조종 가능성을 강조했어요. 이것은 회사가 밝힌 연구 방향이에요. 한쪽은 규모만, 다른 쪽은 안전만 추구한다고 나누거나, 안전을 강조했으니 실제로 더 안전하다고 단정할 수는 없어요. 주장과 공개된 평가 결과를 따로 읽는 태도가 필요해요. 새 회사를 세우면 연구의 우선순위와 조직 운영을 다르게 정할 수 있어요. 하지만 회사 이름이나 창업자의 말만으로 결과를 평가할 수는 없어요. 어떤 방법을 공개했고, 어떤 조건에서 효과를 보였으며, 무엇을 아직 해결하지 못했는지 확인해야 해요. 다음 장에서는 이런 연구가 대화형 서비스로 널리 알려진 시기를 볼게요.",
+      "text_sha256": "010ddc10438a3b45d6ecbe91a0d1bf877db054d3ac96f9d829eb522e6298bd9c"
+    },
+    {
+      "id": "14-scene",
+      "label": "14장 · 2022년 · 세상이 답한 날",
+      "display_lines": [
+        "2022년 11월 30일, 오픈에이아이는 ChatGPT를 연구 프리뷰로 공개했어요. 사용자가 직접 대화하고 피드백을 줄 수 있는 형태였어요. 언어 모델을 연구 결과로만 읽던 사람도 화면에서 질문하고 답을 받아 볼 수 있게 됐어요.",
+        "ChatGPT는 질문에 이어 다시 묻고 답하는 대화 화면을 제공했어요. 기술적으로는 사람의 시범 답변과 평가를 활용해 모델을 조정했어요. RLHF는 사람의 평가를 학습에 되먹이는 방법이에요. 답이 더 유용해지도록 돕지만, 사실이 아닌 답을 없애는 보증은 아니에요. 설립자와 경영진뿐 아니라 학습 데이터를 만들고 평가한 사람들의 작업도 제품을 떠받쳤어요.",
+        "이 시기를 기술 쪽에서 이끈 사람이 미라 무라티예요. 무라티는 오픈에이아이의 기술 책임자였어요. 샘 올트먼이 회사의 얼굴로 앞에 서는 동안, 무라티는 모델과 제품을 안쪽에서 챙겼어요. ChatGPT가 연구실 밖으로 나온 데는, 이 안쪽의 손길이 컸어요.",
+        "ChatGPT 이전에도 엘리자 같은 대화 프로그램과 여러 챗봇이 있었어요. ChatGPT가 사람과 인공지능의 첫 대화는 아니에요. 다만 다양한 일을 자연어로 부탁하는 방식이 널리 퍼지는 계기가 됐어요. 편리한 화면이 답의 정확성을 보장하지는 않아요. 그럴듯한 오류가 나올 수 있으니, 중요한 내용은 근거를 확인해야 해요."
+      ],
+      "lines": [
+        "이천이십이년 십일월 삼십일, 오픈에이아이는 챗지피티를 연구 프리뷰로 공개했어요. 사용자가 직접 대화하고 피드백을 줄 수 있는 형태였어요. 언어 모델을 연구 결과로만 읽던 사람도 화면에서 질문하고 답을 받아 볼 수 있게 됐어요.",
+        "챗지피티는 질문에 이어 다시 묻고 답하는 대화 화면을 제공했어요. 기술적으로는 사람의 시범 답변과 평가를 활용해 모델을 조정했어요. 알엘에이치에프는 사람의 평가를 학습에 되먹이는 방법이에요. 답이 더 유용해지도록 돕지만, 사실이 아닌 답을 없애는 보증은 아니에요. 설립자와 경영진뿐 아니라 학습 데이터를 만들고 평가한 사람들의 작업도 제품을 떠받쳤어요.",
+        "이 시기를 기술 쪽에서 이끈 사람이 미라 무라티예요. 무라티는 오픈에이아이의 기술 책임자였어요. 샘 올트먼이 회사의 얼굴로 앞에 서는 동안, 무라티는 모델과 제품을 안쪽에서 챙겼어요. 챗지피티가 연구실 밖으로 나온 데는, 이 안쪽의 손길이 컸어요.",
+        "챗지피티 이전에도 엘리자 같은 대화 프로그램과 여러 챗봇이 있었어요. 챗지피티가 사람과 인공지능의 첫 대화는 아니에요. 다만 다양한 일을 자연어로 부탁하는 방식이 널리 퍼지는 계기가 됐어요. 편리한 화면이 답의 정확성을 보장하지는 않아요. 그럴듯한 오류가 나올 수 있으니, 중요한 내용은 근거를 확인해야 해요."
+      ],
+      "text": "이천이십이년 십일월 삼십일, 오픈에이아이는 챗지피티를 연구 프리뷰로 공개했어요. 사용자가 직접 대화하고 피드백을 줄 수 있는 형태였어요. 언어 모델을 연구 결과로만 읽던 사람도 화면에서 질문하고 답을 받아 볼 수 있게 됐어요. 챗지피티는 질문에 이어 다시 묻고 답하는 대화 화면을 제공했어요. 기술적으로는 사람의 시범 답변과 평가를 활용해 모델을 조정했어요. 알엘에이치에프는 사람의 평가를 학습에 되먹이는 방법이에요. 답이 더 유용해지도록 돕지만, 사실이 아닌 답을 없애는 보증은 아니에요. 설립자와 경영진뿐 아니라 학습 데이터를 만들고 평가한 사람들의 작업도 제품을 떠받쳤어요. 이 시기를 기술 쪽에서 이끈 사람이 미라 무라티예요. 무라티는 오픈에이아이의 기술 책임자였어요. 샘 올트먼이 회사의 얼굴로 앞에 서는 동안, 무라티는 모델과 제품을 안쪽에서 챙겼어요. 챗지피티가 연구실 밖으로 나온 데는, 이 안쪽의 손길이 컸어요. 챗지피티 이전에도 엘리자 같은 대화 프로그램과 여러 챗봇이 있었어요. 챗지피티가 사람과 인공지능의 첫 대화는 아니에요. 다만 다양한 일을 자연어로 부탁하는 방식이 널리 퍼지는 계기가 됐어요. 편리한 화면이 답의 정확성을 보장하지는 않아요. 그럴듯한 오류가 나올 수 있으니, 중요한 내용은 근거를 확인해야 해요.",
+      "chars": 637,
+      "display_text": "2022년 11월 30일, 오픈에이아이는 ChatGPT를 연구 프리뷰로 공개했어요. 사용자가 직접 대화하고 피드백을 줄 수 있는 형태였어요. 언어 모델을 연구 결과로만 읽던 사람도 화면에서 질문하고 답을 받아 볼 수 있게 됐어요. ChatGPT는 질문에 이어 다시 묻고 답하는 대화 화면을 제공했어요. 기술적으로는 사람의 시범 답변과 평가를 활용해 모델을 조정했어요. RLHF는 사람의 평가를 학습에 되먹이는 방법이에요. 답이 더 유용해지도록 돕지만, 사실이 아닌 답을 없애는 보증은 아니에요. 설립자와 경영진뿐 아니라 학습 데이터를 만들고 평가한 사람들의 작업도 제품을 떠받쳤어요. 이 시기를 기술 쪽에서 이끈 사람이 미라 무라티예요. 무라티는 오픈에이아이의 기술 책임자였어요. 샘 올트먼이 회사의 얼굴로 앞에 서는 동안, 무라티는 모델과 제품을 안쪽에서 챙겼어요. ChatGPT가 연구실 밖으로 나온 데는, 이 안쪽의 손길이 컸어요. ChatGPT 이전에도 엘리자 같은 대화 프로그램과 여러 챗봇이 있었어요. ChatGPT가 사람과 인공지능의 첫 대화는 아니에요. 다만 다양한 일을 자연어로 부탁하는 방식이 널리 퍼지는 계기가 됐어요. 편리한 화면이 답의 정확성을 보장하지는 않아요. 그럴듯한 오류가 나올 수 있으니, 중요한 내용은 근거를 확인해야 해요.",
+      "text_sha256": "70f8b39b3ad90ec5d1c560c8457055b5a5642db448702d98be3c39025dff7afd"
+    },
+    {
+      "id": "15-scene",
+      "label": "15장 · 2023년 · 해임과 복귀",
+      "display_lines": [
+        "2023년 11월 17일, 오픈에이아이 이사회는 샘 올트먼의 해임을 발표했어요. 이사회는 의사소통에 대한 신뢰 문제를 이유로 들었어요. 이는 당시 이사회가 밝힌 설명이에요. 공개되지 않은 사정을 우리가 단정해서 채울 수는 없어요. 미라 무라티는 처음에 임시 대표를 맡았어요.",
+        "그 뒤 직원과 투자자들의 반응, 지도부의 협의가 이어졌어요. 마이크로소프트의 사티아 나델라도 이 과정에서 중요한 역할을 했어요. 연구 성과를 가진 조직이라도 누가 의사결정을 하고 누구의 신뢰를 얻는지가 흔들리면 운영이 어려워질 수 있어요.",
+        "해임 뒤 약 닷새 만에 복귀 합의가 나왔고, 11월 29일 공식 복귀가 발표됐어요. 그래서 닷새 만에 돌아왔다는 표현은 합의 시점을 가리키는 줄임말이에요. 공식 복귀 날짜와 같은 뜻으로 쓰면 연표가 어긋나요. 새 이사회 구성도 함께 발표됐어요.",
+        "일리야 수츠케버도 이 사건에 관여한 이사였어요. 이후의 발표에서는 동료들과 관계를 이어 가겠다는 입장이 나왔어요. 이 사건만 보고 누가 안전을 중시했고 누가 돈만 원했다고 나누기는 어려워요. 조직의 권한과 책임, 공개된 설명의 범위를 살펴보는 사례로 읽어 주세요."
+      ],
+      "lines": [
+        "이천이십삼년 십일월 십칠일, 오픈에이아이 이사회는 샘 올트먼의 해임을 발표했어요. 이사회는 의사소통에 대한 신뢰 문제를 이유로 들었어요. 이는 당시 이사회가 밝힌 설명이에요. 공개되지 않은 사정을 우리가 단정해서 채울 수는 없어요. 미라 무라티는 처음에 임시 대표를 맡았어요.",
+        "그 뒤 직원과 투자자들의 반응, 지도부의 협의가 이어졌어요. 마이크로소프트의 사티아 나델라도 이 과정에서 중요한 역할을 했어요. 연구 성과를 가진 조직이라도 누가 의사결정을 하고 누구의 신뢰를 얻는지가 흔들리면 운영이 어려워질 수 있어요.",
+        "해임 뒤 약 닷새 만에 복귀 합의가 나왔고, 십일월 이십구일 공식 복귀가 발표됐어요. 그래서 닷새 만에 돌아왔다는 표현은 합의 시점을 가리키는 줄임말이에요. 공식 복귀 날짜와 같은 뜻으로 쓰면 연표가 어긋나요. 새 이사회 구성도 함께 발표됐어요.",
+        "일리야 수츠케 버도 이 사건에 관여한 이사였어요. 이후의 발표에서는 동료들과 관계를 이어 가겠다는 입장이 나왔어요. 이 사건만 보고 누가 안전을 중시했고 누가 돈만 원했다고 나누기는 어려워요. 조직의 권한과 책임, 공개된 설명의 범위를 살펴보는 사례로 읽어 주세요."
+      ],
+      "text": "이천이십삼년 십일월 십칠일, 오픈에이아이 이사회는 샘 올트먼의 해임을 발표했어요. 이사회는 의사소통에 대한 신뢰 문제를 이유로 들었어요. 이는 당시 이사회가 밝힌 설명이에요. 공개되지 않은 사정을 우리가 단정해서 채울 수는 없어요. 미라 무라티는 처음에 임시 대표를 맡았어요. 그 뒤 직원과 투자자들의 반응, 지도부의 협의가 이어졌어요. 마이크로소프트의 사티아 나델라도 이 과정에서 중요한 역할을 했어요. 연구 성과를 가진 조직이라도 누가 의사결정을 하고 누구의 신뢰를 얻는지가 흔들리면 운영이 어려워질 수 있어요. 해임 뒤 약 닷새 만에 복귀 합의가 나왔고, 십일월 이십구일 공식 복귀가 발표됐어요. 그래서 닷새 만에 돌아왔다는 표현은 합의 시점을 가리키는 줄임말이에요. 공식 복귀 날짜와 같은 뜻으로 쓰면 연표가 어긋나요. 새 이사회 구성도 함께 발표됐어요. 일리야 수츠케 버도 이 사건에 관여한 이사였어요. 이후의 발표에서는 동료들과 관계를 이어 가겠다는 입장이 나왔어요. 이 사건만 보고 누가 안전을 중시했고 누가 돈만 원했다고 나누기는 어려워요. 조직의 권한과 책임, 공개된 설명의 범위를 살펴보는 사례로 읽어 주세요.",
+      "chars": 575,
+      "display_text": "2023년 11월 17일, 오픈에이아이 이사회는 샘 올트먼의 해임을 발표했어요. 이사회는 의사소통에 대한 신뢰 문제를 이유로 들었어요. 이는 당시 이사회가 밝힌 설명이에요. 공개되지 않은 사정을 우리가 단정해서 채울 수는 없어요. 미라 무라티는 처음에 임시 대표를 맡았어요. 그 뒤 직원과 투자자들의 반응, 지도부의 협의가 이어졌어요. 마이크로소프트의 사티아 나델라도 이 과정에서 중요한 역할을 했어요. 연구 성과를 가진 조직이라도 누가 의사결정을 하고 누구의 신뢰를 얻는지가 흔들리면 운영이 어려워질 수 있어요. 해임 뒤 약 닷새 만에 복귀 합의가 나왔고, 11월 29일 공식 복귀가 발표됐어요. 그래서 닷새 만에 돌아왔다는 표현은 합의 시점을 가리키는 줄임말이에요. 공식 복귀 날짜와 같은 뜻으로 쓰면 연표가 어긋나요. 새 이사회 구성도 함께 발표됐어요. 일리야 수츠케버도 이 사건에 관여한 이사였어요. 이후의 발표에서는 동료들과 관계를 이어 가겠다는 입장이 나왔어요. 이 사건만 보고 누가 안전을 중시했고 누가 돈만 원했다고 나누기는 어려워요. 조직의 권한과 책임, 공개된 설명의 범위를 살펴보는 사례로 읽어 주세요.",
+      "text_sha256": "047779bd87ab2a255ca26648cb40ebf927965714205b2a4d88be130b35e4fac1"
+    },
+    {
+      "id": "16-scene",
+      "label": "16장 · 2024–2026년 · 나간 사람들이 세운 회사",
+      "display_lines": [
+        "5일의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 2024년, 수츠케버가 오픈에이아이를 떠났어요. 그가 세운 회사가 SSI예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요.",
+        "SSI는 다니엘 그로스가 2025년 6월 29일부터 회사에 있지 않다고 밝혔어요. 7월 3일에는 수츠케버가 대표를 맡는다고 발표했어요. 2026년 7월에는 엔비디아와 전략적 협력을 발표했어요. 여기서는 공식 발표로 확인한 역할과 협력만 다뤄요. 발표에 없는 투자액을 같은 사실처럼 붙이지 않을게요.",
+        "오픈에이아이의 기술 책임자였던 미라 무라티도 Thinking Machines Lab을 공동 창업했어요. 회사는 사람과 인공지능의 협력, 사용자가 조정할 수 있는 시스템을 연구 방향으로 밝혔어요. 익숙한 조직을 떠나 새 연구 환경을 만드는 선택이에요. 역시 창립자가 밝힌 목표와 그 목표가 실제로 이루어진 정도는 구분해야 해요.",
+        "안드레이 카파시는 오픈에이아이 창립 연구진의 한 사람이에요. 모델을 만드는 일뿐 아니라 강의와 기술 설명을 통해 학습자에게도 알려졌어요. 최근 이직 보도처럼 빠르게 바뀌는 정보는 당시의 공식 발표를 따로 확인해야 해요. 이 장에서는 창립 연구진과 새 연구 조직의 연결이라는, 확인 가능한 이력을 중심으로 볼게요."
+      ],
+      "lines": [
+        "닷새의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 이천이십사년, 수츠케 버가 오픈에이아이를 떠났어요. 그가 세운 회사가 에스에스아이예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요.",
+        "에스에스아이는 다니엘 그로스가 이천이십오년 유월 이십구일부터 회사에 있지 않다고 밝혔어요. 칠월 삼일에는 수츠케 버가 대표를 맡는다고 발표했어요. 이천이십육년 칠월에는 엔비디아와 전략적 협력을 발표했어요. 여기서는 공식 발표로 확인한 역할과 협력만 다뤄요. 발표에 없는 투자액을 같은 사실처럼 붙이지 않을게요.",
+        "오픈에이아이의 기술 책임자였던 미라 무라티도 씽킹 머신스 랩을 공동 창업했어요. 회사는 사람과 인공지능의 협력, 사용자가 조정할 수 있는 시스템을 연구 방향으로 밝혔어요. 익숙한 조직을 떠나 새 연구 환경을 만드는 선택이에요. 역시 창립자가 밝힌 목표와 그 목표가 실제로 이루어진 정도는 구분해야 해요.",
+        "안드레이 카파시는 오픈에이아이 창립 연구진의 한 사람이에요. 모델을 만드는 일뿐 아니라 강의와 기술 설명을 통해 학습자에게도 알려졌어요. 최근 이직 보도처럼 빠르게 바뀌는 정보는 당시의 공식 발표를 따로 확인해야 해요. 이 장에서는 창립 연구진과 새 연구 조직의 연결이라는, 확인 가능한 이력을 중심으로 볼게요."
+      ],
+      "text": "닷새의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 이천이십사년, 수츠케 버가 오픈에이아이를 떠났어요. 그가 세운 회사가 에스에스아이예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요. 에스에스아이는 다니엘 그로스가 이천이십오년 유월 이십구일부터 회사에 있지 않다고 밝혔어요. 칠월 삼일에는 수츠케 버가 대표를 맡는다고 발표했어요. 이천이십육년 칠월에는 엔비디아와 전략적 협력을 발표했어요. 여기서는 공식 발표로 확인한 역할과 협력만 다뤄요. 발표에 없는 투자액을 같은 사실처럼 붙이지 않을게요. 오픈에이아이의 기술 책임자였던 미라 무라티도 씽킹 머신스 랩을 공동 창업했어요. 회사는 사람과 인공지능의 협력, 사용자가 조정할 수 있는 시스템을 연구 방향으로 밝혔어요. 익숙한 조직을 떠나 새 연구 환경을 만드는 선택이에요. 역시 창립자가 밝힌 목표와 그 목표가 실제로 이루어진 정도는 구분해야 해요. 안드레이 카파시는 오픈에이아이 창립 연구진의 한 사람이에요. 모델을 만드는 일뿐 아니라 강의와 기술 설명을 통해 학습자에게도 알려졌어요. 최근 이직 보도처럼 빠르게 바뀌는 정보는 당시의 공식 발표를 따로 확인해야 해요. 이 장에서는 창립 연구진과 새 연구 조직의 연결이라는, 확인 가능한 이력을 중심으로 볼게요.",
+      "chars": 660,
+      "display_text": "5일의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 2024년, 수츠케버가 오픈에이아이를 떠났어요. 그가 세운 회사가 SSI예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요. SSI는 다니엘 그로스가 2025년 6월 29일부터 회사에 있지 않다고 밝혔어요. 7월 3일에는 수츠케버가 대표를 맡는다고 발표했어요. 2026년 7월에는 엔비디아와 전략적 협력을 발표했어요. 여기서는 공식 발표로 확인한 역할과 협력만 다뤄요. 발표에 없는 투자액을 같은 사실처럼 붙이지 않을게요. 오픈에이아이의 기술 책임자였던 미라 무라티도 Thinking Machines Lab을 공동 창업했어요. 회사는 사람과 인공지능의 협력, 사용자가 조정할 수 있는 시스템을 연구 방향으로 밝혔어요. 익숙한 조직을 떠나 새 연구 환경을 만드는 선택이에요. 역시 창립자가 밝힌 목표와 그 목표가 실제로 이루어진 정도는 구분해야 해요. 안드레이 카파시는 오픈에이아이 창립 연구진의 한 사람이에요. 모델을 만드는 일뿐 아니라 강의와 기술 설명을 통해 학습자에게도 알려졌어요. 최근 이직 보도처럼 빠르게 바뀌는 정보는 당시의 공식 발표를 따로 확인해야 해요. 이 장에서는 창립 연구진과 새 연구 조직의 연결이라는, 확인 가능한 이력을 중심으로 볼게요.",
+      "text_sha256": "5c22a2a90550f8826e32de3c1dc24e41aa71152d5d1a85ca40418eda7d2c83cc"
+    },
+    {
+      "id": "17-scene",
+      "label": "17장 · 2025–2026년 · 연구 조직의 변화",
+      "display_lines": [
+        "구글과 메타 같은 큰 기업도 연구팀을 꾸리고, 다른 회사와 협력하고, 연구자를 영입해 왔어요. 새로운 회사의 등장만큼 기존 조직 안의 변화도 중요해요. 다만 직함과 소속은 빨리 바뀌므로, 한 번 만든 인물 지도를 영구적인 사실로 읽으면 안 돼요.",
+        "노암 셰이저는 2017년 트랜스포머 논문의 공동 저자예요. 하사비스는 딥마인드의 공동 창업자이고, 코라이 카부쿠오글루는 딥마인드의 연구 리더로 일해 왔어요. 여기서는 검증한 연구 기여를 중심으로 소개해요. 최근 소속이나 개편 소식이 엇갈릴 때는 과거의 확실한 업적과 현재 직함을 분리해서 읽는 편이 정확해요.",
+        "얀 르쿤과 알렉상드르 르브룅이 참여한 AMI Labs는 2026년 3월 10일 공식 출범과 10억 달러가 넘는 투자를 발표했어요. 출범 당시 르쿤은 회장, 르브룅은 대표로 소개됐어요. 새로운 연구 방향과 조직을 세웠다는 발표이지, 목표한 지능을 이미 완성했다는 뜻은 아니에요.",
+        "메타와 스케일 AI의 관계는 2025년의 사례예요. 스케일 AI는 메타의 지분 투자와 알렉산더 왕의 메타 합류를 발표했어요. 회사를 통째로 인수한 일과 지분을 투자한 일은 구분해야 해요. 인물 이동을 읽을 때도 연구 업적, 직책, 회사의 소유 관계를 한 문장에 섞지 않는 것이 중요해요."
+      ],
+      "lines": [
+        "구글과 메타 같은 큰 기업도 연구팀을 꾸리고, 다른 회사와 협력하고, 연구자를 영입해 왔어요. 새로운 회사의 등장만큼 기존 조직 안의 변화도 중요해요. 다만 직함과 소속은 빨리 바뀌므로, 한 번 만든 인물 지도를 영구적인 사실로 읽으면 안 돼요.",
+        "노암 셰이저는 이천십칠년 트랜스포머 논문의 공동 저자예요. 하사비스는 딥마인드의 공동 창업자이고, 코라이 카부쿠오글루는 딥마인드의 연구 리더로 일해 왔어요. 여기서는 검증한 연구 기여를 중심으로 소개해요. 최근 소속이나 개편 소식이 엇갈릴 때는 과거의 확실한 업적과 현재 직함을 분리해서 읽는 편이 정확해요.",
+        "얀 르쿤과 알렉상드르 르브룅이 참여한 에이엠아이 랩스는 이천이십육년 삼월 십일 공식 출범과 십억 달러가 넘는 투자를 발표했어요. 출범 당시 르쿤은 회장, 르브룅은 대표로 소개됐어요. 새로운 연구 방향과 조직을 세웠다는 발표이지, 목표한 지능을 이미 완성했다는 뜻은 아니에요.",
+        "메타와 스케일 에이아이의 관계는 이천이십오년의 사례예요. 스케일 에이아이는 메타의 지분 투자와 알렉산더 왕의 메타 합류를 발표했어요. 회사를 통째로 인수한 일과 지분을 투자한 일은 구분해야 해요. 인물 이동을 읽을 때도 연구 업적, 직책, 회사의 소유 관계를 한 문장에 섞지 않는 것이 중요해요."
+      ],
+      "text": "구글과 메타 같은 큰 기업도 연구팀을 꾸리고, 다른 회사와 협력하고, 연구자를 영입해 왔어요. 새로운 회사의 등장만큼 기존 조직 안의 변화도 중요해요. 다만 직함과 소속은 빨리 바뀌므로, 한 번 만든 인물 지도를 영구적인 사실로 읽으면 안 돼요. 노암 셰이저는 이천십칠년 트랜스포머 논문의 공동 저자예요. 하사비스는 딥마인드의 공동 창업자이고, 코라이 카부쿠오글루는 딥마인드의 연구 리더로 일해 왔어요. 여기서는 검증한 연구 기여를 중심으로 소개해요. 최근 소속이나 개편 소식이 엇갈릴 때는 과거의 확실한 업적과 현재 직함을 분리해서 읽는 편이 정확해요. 얀 르쿤과 알렉상드르 르브룅이 참여한 에이엠아이 랩스는 이천이십육년 삼월 십일 공식 출범과 십억 달러가 넘는 투자를 발표했어요. 출범 당시 르쿤은 회장, 르브룅은 대표로 소개됐어요. 새로운 연구 방향과 조직을 세웠다는 발표이지, 목표한 지능을 이미 완성했다는 뜻은 아니에요. 메타와 스케일 에이아이의 관계는 이천이십오년의 사례예요. 스케일 에이아이는 메타의 지분 투자와 알렉산더 왕의 메타 합류를 발표했어요. 회사를 통째로 인수한 일과 지분을 투자한 일은 구분해야 해요. 인물 이동을 읽을 때도 연구 업적, 직책, 회사의 소유 관계를 한 문장에 섞지 않는 것이 중요해요.",
+      "chars": 630,
+      "display_text": "구글과 메타 같은 큰 기업도 연구팀을 꾸리고, 다른 회사와 협력하고, 연구자를 영입해 왔어요. 새로운 회사의 등장만큼 기존 조직 안의 변화도 중요해요. 다만 직함과 소속은 빨리 바뀌므로, 한 번 만든 인물 지도를 영구적인 사실로 읽으면 안 돼요. 노암 셰이저는 2017년 트랜스포머 논문의 공동 저자예요. 하사비스는 딥마인드의 공동 창업자이고, 코라이 카부쿠오글루는 딥마인드의 연구 리더로 일해 왔어요. 여기서는 검증한 연구 기여를 중심으로 소개해요. 최근 소속이나 개편 소식이 엇갈릴 때는 과거의 확실한 업적과 현재 직함을 분리해서 읽는 편이 정확해요. 얀 르쿤과 알렉상드르 르브룅이 참여한 AMI Labs는 2026년 3월 10일 공식 출범과 10억 달러가 넘는 투자를 발표했어요. 출범 당시 르쿤은 회장, 르브룅은 대표로 소개됐어요. 새로운 연구 방향과 조직을 세웠다는 발표이지, 목표한 지능을 이미 완성했다는 뜻은 아니에요. 메타와 스케일 AI의 관계는 2025년의 사례예요. 스케일 AI는 메타의 지분 투자와 알렉산더 왕의 메타 합류를 발표했어요. 회사를 통째로 인수한 일과 지분을 투자한 일은 구분해야 해요. 인물 이동을 읽을 때도 연구 업적, 직책, 회사의 소유 관계를 한 문장에 섞지 않는 것이 중요해요.",
+      "text_sha256": "fc8a38159e0cbc6f559dd154da7d7be15a211f5a8329ed835168f1d211d51c47"
+    },
+    {
+      "id": "18-scene",
+      "label": "18장 · 2026년 · 그려지는 중인 지도",
+      "display_lines": [
+        "이제 지도를 현재로 가져와 볼게요. 2026년에도 여러 주요 기업의 규모와 조직이 달라지고 있어요. 오픈에이아이의 기업가치는 8,520억 달러로 평가됐어요. 2026년 3월 기준이에요. 앤트로픽은 9,650억 달러에 닿았어요. 2026년 5월, Series H 투자를 마친 뒤의 숫자예요. 이 숫자는 투자 당시의 기업가치예요. 매출이나 현금 보유액, 모델의 성능 순위를 뜻하지 않아요.",
+        "돈의 크기만큼 회사의 모양도 바뀌고 있어요. 오픈에이아이의 상장 준비가 드러난 건 2026년 6월 8일이에요. 비공개 초안을 제출했다는 사실이 공식으로 알려졌어요. 당시 발표에서는 상장 시기를 정하지 않았다고 했어요. 회사의 성격 자체가 바뀌는 중이에요.",
+        "기업과 정부의 갈등도 있었어요. 2026년 9월 25일 미국 연방항소법원은 앤트로픽의 정부 조달 배제에 대한 소송에서 회사의 이의를 받아들이지 않았어요. 이는 특정 법과 조치에 관한 판단이에요. 다른 법원에서 다투는 별개의 조치까지 같은 사건의 같은 결론으로 묶으면 안 돼요. 법률 절차의 최신 상태는 원문을 다시 확인해야 해요.",
+        "2026년 2월에는 스페이스엑스의 xAI 인수가 공식 발표됐어요. 요슈아 벤지오는 2025년 6월 비영리 단체 LawZero를 세웠고요. 조경현은 뉴욕대 교수직과 병행하던 제넨텍 역할을 2026년 1월까지 맡았고, 이후 오르텟을 공동 창업해 대표가 됐어요. 같은 연구 경험이 기업과 대학, 비영리 조직으로 이어지는 서로 다른 길이에요. 모든 연구자가 같은 종류의 조직을 택하는 것은 아니에요."
+      ],
+      "lines": [
+        "이제 지도를 현재로 가져와 볼게요. 이천이십육년에도 여러 주요 기업의 규모와 조직이 달라지고 있어요. 오픈에이아이의 기업가치는 팔천오백이십억 달러로 평가됐어요. 이천이십육년 삼월 기준이에요. 앤트로픽은 구천육백오십억 달러에 닿았어요. 이천이십육년 오월, 시리즈 에이치 투자를 마친 뒤의 숫자예요. 이 숫자는 투자 당시의 기업가치예요. 매출이나 현금 보유액, 모델의 성능 순위를 뜻하지 않아요.",
+        "돈의 크기만큼 회사의 모양도 바뀌고 있어요. 오픈에이아이의 상장 준비가 드러난 건 이천이십육년 유월 팔일이에요. 비공개 초안을 제출했다는 사실이 공식으로 알려졌어요. 당시 발표에서는 상장 시기를 정하지 않았다고 했어요. 회사의 성격 자체가 바뀌는 중이에요.",
+        "기업과 정부의 갈등도 있었어요. 이천이십육년 구월 이십오일 미국 연방항소법원은 앤트로픽의 정부 조달 배제에 대한 소송에서 회사의 이의를 받아들이지 않았어요. 이는 특정 법과 조치에 관한 판단이에요. 다른 법원에서 다투는 별개의 조치까지 같은 사건의 같은 결론으로 묶으면 안 돼요. 법률 절차의 최신 상태는 원문을 다시 확인해야 해요.",
+        "이천이십육년 이월에는 스페이스엑스의 엑스에이아이 인수가 공식 발표됐어요. 요슈아 벤지오는 이천이십오년 유월 비영리 단체 로 제로를 세웠고요. 조경현은 뉴욕대 교수직과 병행하던 제넨텍 역할을 이천이십육년 일월까지 맡았고, 이후 오르텟을 공동 창업해 대표가 됐어요. 같은 연구 경험이 기업과 대학, 비영리 조직으로 이어지는 서로 다른 길이에요. 모든 연구자가 같은 종류의 조직을 택하는 것은 아니에요."
+      ],
+      "text": "이제 지도를 현재로 가져와 볼게요. 이천이십육년에도 여러 주요 기업의 규모와 조직이 달라지고 있어요. 오픈에이아이의 기업가치는 팔천오백이십억 달러로 평가됐어요. 이천이십육년 삼월 기준이에요. 앤트로픽은 구천육백오십억 달러에 닿았어요. 이천이십육년 오월, 시리즈 에이치 투자를 마친 뒤의 숫자예요. 이 숫자는 투자 당시의 기업가치예요. 매출이나 현금 보유액, 모델의 성능 순위를 뜻하지 않아요. 돈의 크기만큼 회사의 모양도 바뀌고 있어요. 오픈에이아이의 상장 준비가 드러난 건 이천이십육년 유월 팔일이에요. 비공개 초안을 제출했다는 사실이 공식으로 알려졌어요. 당시 발표에서는 상장 시기를 정하지 않았다고 했어요. 회사의 성격 자체가 바뀌는 중이에요. 기업과 정부의 갈등도 있었어요. 이천이십육년 구월 이십오일 미국 연방항소법원은 앤트로픽의 정부 조달 배제에 대한 소송에서 회사의 이의를 받아들이지 않았어요. 이는 특정 법과 조치에 관한 판단이에요. 다른 법원에서 다투는 별개의 조치까지 같은 사건의 같은 결론으로 묶으면 안 돼요. 법률 절차의 최신 상태는 원문을 다시 확인해야 해요. 이천이십육년 이월에는 스페이스엑스의 엑스에이아이 인수가 공식 발표됐어요. 요슈아 벤지오는 이천이십오년 유월 비영리 단체 로 제로를 세웠고요. 조경현은 뉴욕대 교수직과 병행하던 제넨텍 역할을 이천이십육년 일월까지 맡았고, 이후 오르텟을 공동 창업해 대표가 됐어요. 같은 연구 경험이 기업과 대학, 비영리 조직으로 이어지는 서로 다른 길이에요. 모든 연구자가 같은 종류의 조직을 택하는 것은 아니에요.",
+      "chars": 773,
+      "display_text": "이제 지도를 현재로 가져와 볼게요. 2026년에도 여러 주요 기업의 규모와 조직이 달라지고 있어요. 오픈에이아이의 기업가치는 8,520억 달러로 평가됐어요. 2026년 3월 기준이에요. 앤트로픽은 9,650억 달러에 닿았어요. 2026년 5월, Series H 투자를 마친 뒤의 숫자예요. 이 숫자는 투자 당시의 기업가치예요. 매출이나 현금 보유액, 모델의 성능 순위를 뜻하지 않아요. 돈의 크기만큼 회사의 모양도 바뀌고 있어요. 오픈에이아이의 상장 준비가 드러난 건 2026년 6월 8일이에요. 비공개 초안을 제출했다는 사실이 공식으로 알려졌어요. 당시 발표에서는 상장 시기를 정하지 않았다고 했어요. 회사의 성격 자체가 바뀌는 중이에요. 기업과 정부의 갈등도 있었어요. 2026년 9월 25일 미국 연방항소법원은 앤트로픽의 정부 조달 배제에 대한 소송에서 회사의 이의를 받아들이지 않았어요. 이는 특정 법과 조치에 관한 판단이에요. 다른 법원에서 다투는 별개의 조치까지 같은 사건의 같은 결론으로 묶으면 안 돼요. 법률 절차의 최신 상태는 원문을 다시 확인해야 해요. 2026년 2월에는 스페이스엑스의 xAI 인수가 공식 발표됐어요. 요슈아 벤지오는 2025년 6월 비영리 단체 LawZero를 세웠고요. 조경현은 뉴욕대 교수직과 병행하던 제넨텍 역할을 2026년 1월까지 맡았고, 이후 오르텟을 공동 창업해 대표가 됐어요. 같은 연구 경험이 기업과 대학, 비영리 조직으로 이어지는 서로 다른 길이에요. 모든 연구자가 같은 종류의 조직을 택하는 것은 아니에요.",
+      "text_sha256": "298383ce04a93d20e64a4055f76e94cf69db9f48069281aa26fafffe1df423c8"
+    },
+    {
+      "id": "19-scene",
+      "label": "19장 · 2025–2026년 · 여러 지역과 기반 기술",
+      "display_lines": [
+        "마지막 장에서는 시선을 여러 지역과 기반 기술로 넓혀 볼게요. 앞에서 선택한 연구 흐름만으로 인공지능 전체를 설명할 수는 없어요. 다른 나라의 연구팀, 계산 도구를 만드는 엔지니어, 학습 자료를 정리하는 사람들이 함께해요. 이번에 다루지 못한 사람들의 기여도 있다는 점을 기억해 주세요.",
+        "젠슨 황이 이끈 엔비디아는 그래픽 처리 장치와 CUDA로 많은 연구팀의 계산 기반을 제공했어요. 하지만 모든 인공지능이 엔비디아 칩 위에서만 만들어지는 것은 아니에요. 다른 그래픽 처리 장치와 구글의 텐서 처리 장치, 여러 종류의 가속기도 쓰여요. 칩을 설계하고 소프트웨어를 만드는 수많은 엔지니어의 기여도 함께 보아야 해요.",
+        "량원펑이 이끄는 딥시크 연구팀은 2025년 1월 추론 모델 알원을 공개했어요. 공개 논문은 강화학습을 이용한 방법과 평가 결과, 남은 한계를 설명해요. 창업자 한 사람의 성과로 읽기보다 연구진과 공개된 방법을 함께 봐야 해요. 특정 나라나 몇몇 유명 회사만이 이 분야를 만드는 것은 아니라는 사례예요.",
+        "아르튀르 멘시와 기욤 람플, 티모테 라크루아는 미스트랄을 함께 세웠어요. 미스트랄은 학습된 가중치를 공개하는 모델과 별도의 상용 서비스를 제공해요. 가중치 공개는 학습 데이터와 코드가 모두 공개된다는 뜻이 아니고, 이용 조건도 모델마다 확인해야 해요. 람플은 Llama 논문 공저자이기도 해요. 나라와 조직을 건너온 연구가 새로운 회사를 만들었다는 점을 볼 수 있어요."
+      ],
+      "lines": [
+        "마지막 장에서는 시선을 여러 지역과 기반 기술로 넓혀 볼게요. 앞에서 선택한 연구 흐름만으로 인공지능 전체를 설명할 수는 없어요. 다른 나라의 연구팀, 계산 도구를 만드는 엔지니어, 학습 자료를 정리하는 사람들이 함께해요. 이번에 다루지 못한 사람들의 기여도 있다는 점을 기억해 주세요.",
+        "젠슨 황이 이끈 엔비디아는 그래픽 처리 장치와 쿠다로 많은 연구팀의 계산 기반을 제공했어요. 하지만 모든 인공지능이 엔비디아 칩 위에서만 만들어지는 것은 아니에요. 다른 그래픽 처리 장치와 구글의 텐서 처리 장치, 여러 종류의 가속기도 쓰여요. 칩을 설계하고 소프트웨어를 만드는 수많은 엔지니어의 기여도 함께 보아야 해요.",
+        "량원펑이 이끄는 딥시크 연구팀은 이천이십오년 일월 추론 모델 알원을 공개했어요. 공개 논문은 강화학습을 이용한 방법과 평가 결과, 남은 한계를 설명해요. 창업자 한 사람의 성과로 읽기보다 연구진과 공개된 방법을 함께 봐야 해요. 특정 나라나 몇몇 유명 회사만이 이 분야를 만드는 것은 아니라는 사례예요.",
+        "아르튀르 멘시와 기욤 람플, 티모테 라크루아는 미스트랄을 함께 세웠어요. 미스트랄은 학습된 가중치를 공개하는 모델과 별도의 상용 서비스를 제공해요. 가중치 공개는 학습 데이터와 코드가 모두 공개된다는 뜻이 아니고, 이용 조건도 모델마다 확인해야 해요. 람플은 라마 논문 공저자이기도 해요. 나라와 조직을 건너온 연구가 새로운 회사를 만들었다는 점을 볼 수 있어요."
+      ],
+      "text": "마지막 장에서는 시선을 여러 지역과 기반 기술로 넓혀 볼게요. 앞에서 선택한 연구 흐름만으로 인공지능 전체를 설명할 수는 없어요. 다른 나라의 연구팀, 계산 도구를 만드는 엔지니어, 학습 자료를 정리하는 사람들이 함께해요. 이번에 다루지 못한 사람들의 기여도 있다는 점을 기억해 주세요. 젠슨 황이 이끈 엔비디아는 그래픽 처리 장치와 쿠다로 많은 연구팀의 계산 기반을 제공했어요. 하지만 모든 인공지능이 엔비디아 칩 위에서만 만들어지는 것은 아니에요. 다른 그래픽 처리 장치와 구글의 텐서 처리 장치, 여러 종류의 가속기도 쓰여요. 칩을 설계하고 소프트웨어를 만드는 수많은 엔지니어의 기여도 함께 보아야 해요. 량원펑이 이끄는 딥시크 연구팀은 이천이십오년 일월 추론 모델 알원을 공개했어요. 공개 논문은 강화학습을 이용한 방법과 평가 결과, 남은 한계를 설명해요. 창업자 한 사람의 성과로 읽기보다 연구진과 공개된 방법을 함께 봐야 해요. 특정 나라나 몇몇 유명 회사만이 이 분야를 만드는 것은 아니라는 사례예요. 아르튀르 멘시와 기욤 람플, 티모테 라크루아는 미스트랄을 함께 세웠어요. 미스트랄은 학습된 가중치를 공개하는 모델과 별도의 상용 서비스를 제공해요. 가중치 공개는 학습 데이터와 코드가 모두 공개된다는 뜻이 아니고, 이용 조건도 모델마다 확인해야 해요. 람플은 라마 논문 공저자이기도 해요. 나라와 조직을 건너온 연구가 새로운 회사를 만들었다는 점을 볼 수 있어요.",
+      "chars": 715,
+      "display_text": "마지막 장에서는 시선을 여러 지역과 기반 기술로 넓혀 볼게요. 앞에서 선택한 연구 흐름만으로 인공지능 전체를 설명할 수는 없어요. 다른 나라의 연구팀, 계산 도구를 만드는 엔지니어, 학습 자료를 정리하는 사람들이 함께해요. 이번에 다루지 못한 사람들의 기여도 있다는 점을 기억해 주세요. 젠슨 황이 이끈 엔비디아는 그래픽 처리 장치와 CUDA로 많은 연구팀의 계산 기반을 제공했어요. 하지만 모든 인공지능이 엔비디아 칩 위에서만 만들어지는 것은 아니에요. 다른 그래픽 처리 장치와 구글의 텐서 처리 장치, 여러 종류의 가속기도 쓰여요. 칩을 설계하고 소프트웨어를 만드는 수많은 엔지니어의 기여도 함께 보아야 해요. 량원펑이 이끄는 딥시크 연구팀은 2025년 1월 추론 모델 알원을 공개했어요. 공개 논문은 강화학습을 이용한 방법과 평가 결과, 남은 한계를 설명해요. 창업자 한 사람의 성과로 읽기보다 연구진과 공개된 방법을 함께 봐야 해요. 특정 나라나 몇몇 유명 회사만이 이 분야를 만드는 것은 아니라는 사례예요. 아르튀르 멘시와 기욤 람플, 티모테 라크루아는 미스트랄을 함께 세웠어요. 미스트랄은 학습된 가중치를 공개하는 모델과 별도의 상용 서비스를 제공해요. 가중치 공개는 학습 데이터와 코드가 모두 공개된다는 뜻이 아니고, 이용 조건도 모델마다 확인해야 해요. 람플은 Llama 논문 공저자이기도 해요. 나라와 조직을 건너온 연구가 새로운 회사를 만들었다는 점을 볼 수 있어요.",
+      "text_sha256": "6f2ad92ce90a6cea7c9938f2ede7d9d46be4a4cd61097203bbcf167f7a50ffbd"
+    },
+    {
+      "id": "20-ending",
+      "label": "엔딩",
+      "display_lines": [
+        "처음의 질문으로 돌아가 볼게요. 지금의 인공지능은 한 사람의 발명품이 아니라, 서로 다른 연구와 도구, 데이터와 조직이 만나 쌓인 결과예요. 튜링의 질문, 배우는 방법, 계산 장치, 연구팀의 협력을 하나씩 연결해 봤어요. 앞으로 새 모델 소식을 읽을 때는 세 가지를 물어보세요. 누가 어떤 문제를 풀었나요? 어떤 시험과 근거로 확인했나요? 아직 무엇을 해결하지 못했나요? 회사가 밝힌 목표와 실제 결과도 나누어 보세요. 장별 출처와 확인 질문을 다시 살펴보면 이 이야기를 자신의 설명으로 정리할 수 있어요. 끝까지 함께해 주셔서 감사합니다."
+      ],
+      "lines": [
+        "처음의 질문으로 돌아가 볼게요. 지금의 인공지능은 한 사람의 발명품이 아니라, 서로 다른 연구와 도구, 데이터와 조직이 만나 쌓인 결과예요. 튜링의 질문, 배우는 방법, 계산 장치, 연구팀의 협력을 하나씩 연결해 봤어요. 앞으로 새 모델 소식을 읽을 때는 세 가지를 물어보세요. 누가 어떤 문제를 풀었나요? 어떤 시험과 근거로 확인했나요? 아직 무엇을 해결하지 못했나요? 회사가 밝힌 목표와 실제 결과도 나누어 보세요. 장별 출처와 확인 질문을 다시 살펴보면 이 이야기를 자신의 설명으로 정리할 수 있어요. 끝까지 함께해 주셔서 감사합니다."
+      ],
+      "text": "처음의 질문으로 돌아가 볼게요. 지금의 인공지능은 한 사람의 발명품이 아니라, 서로 다른 연구와 도구, 데이터와 조직이 만나 쌓인 결과예요. 튜링의 질문, 배우는 방법, 계산 장치, 연구팀의 협력을 하나씩 연결해 봤어요. 앞으로 새 모델 소식을 읽을 때는 세 가지를 물어보세요. 누가 어떤 문제를 풀었나요? 어떤 시험과 근거로 확인했나요? 아직 무엇을 해결하지 못했나요? 회사가 밝힌 목표와 실제 결과도 나누어 보세요. 장별 출처와 확인 질문을 다시 살펴보면 이 이야기를 자신의 설명으로 정리할 수 있어요. 끝까지 함께해 주셔서 감사합니다.",
+      "chars": 302,
+      "display_text": "처음의 질문으로 돌아가 볼게요. 지금의 인공지능은 한 사람의 발명품이 아니라, 서로 다른 연구와 도구, 데이터와 조직이 만나 쌓인 결과예요. 튜링의 질문, 배우는 방법, 계산 장치, 연구팀의 협력을 하나씩 연결해 봤어요. 앞으로 새 모델 소식을 읽을 때는 세 가지를 물어보세요. 누가 어떤 문제를 풀었나요? 어떤 시험과 근거로 확인했나요? 아직 무엇을 해결하지 못했나요? 회사가 밝힌 목표와 실제 결과도 나누어 보세요. 장별 출처와 확인 질문을 다시 살펴보면 이 이야기를 자신의 설명으로 정리할 수 있어요. 끝까지 함께해 주셔서 감사합니다.",
+      "text_sha256": "2879ebaf2e658454d0dca22c8f210a2bce994a7de0c3e426746de35d04501792"
+    }
+  ]
+};
+const AUDIO_STATUS = {
+  "00-opening": {
+    "status": "pending",
+    "text_sha256": "7776d54b2319b7bdc239013ae58e97bff3d9539b399eee1074a887c496fea006",
+    "expected_mp3": "audio18/00-opening.mp3",
+    "existing_audio_sha256": "adb697c78b5bac24308389eb5cdc5481e44e74253f211a7e4efcb8f50b006591",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 48.9,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "part1": {
+    "status": "pending",
+    "text_sha256": "eee4d7464ae5269137688c697f12ac6269bb80ed4c2f36a631003d48a4d92739",
+    "expected_mp3": "audio18/part1.mp3",
+    "existing_audio_sha256": "31443a078ee936c0bf4f74488050e353a528af14675f9026bc29b8e8f5fce29a",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 8.6,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "01-scene": {
+    "status": "pending",
+    "text_sha256": "b4f2bac64ee8804e56a5c2e13220ae927bba25c5be2cb2099ec6b40d6e5e3ce8",
+    "expected_mp3": "audio18/01-scene.mp3",
+    "existing_audio_sha256": "3509bb80caacfe5a1c4d6460bab01484745560fa201cea83b1acacb4b6ce7257",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 113.0,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "02-scene": {
+    "status": "pending",
+    "text_sha256": "948f45f6a0785b77f3b81009cf15f3d25b788879bba678270bc5a5057a589064",
+    "expected_mp3": "audio18/02-scene.mp3",
+    "existing_audio_sha256": "d71405e32cb8e47180f3eddbf81218686566a1e650d400cb49b83b21eaa66b36",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 115.6,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "03-scene": {
+    "status": "pending",
+    "text_sha256": "d9a5ff1c656c6ff966ca57f4d3233fa96790c66d10d35fb33bedbf4c792a366e",
+    "expected_mp3": "audio18/03-scene.mp3",
+    "existing_audio_sha256": "ba472c0c7955f93eb56bbd1c839f6930dff28c49cba704d2cce089c0b28ef5ac",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 96.7,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "04-scene": {
+    "status": "pending",
+    "text_sha256": "7e40ba15b5beaf305c2f13373205bdcdbc636cef0160ef1c77d4f66265166edf",
+    "expected_mp3": "audio18/04-scene.mp3",
+    "existing_audio_sha256": "95a3dcce473224d50996f052842d003ced31a47c777be4a7e95e735f001e5110",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 124.5,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "05-scene": {
+    "status": "pending",
+    "text_sha256": "65d07cd4b78774fae67776d8d1ae4e2936b96683f538544d0c555b3eb57e3a83",
+    "expected_mp3": "audio18/05-scene.mp3",
+    "existing_audio_sha256": "788c28750f487d9c6a672824040b4e54af63630ed0b3ee98774d14dad1b1e1ab",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 103.8,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "06-scene": {
+    "status": "pending",
+    "text_sha256": "a8da2816e73be94c945b84175c086bc050b5482700790d614cbb50007b9fb03f",
+    "expected_mp3": "audio18/06-scene.mp3",
+    "existing_audio_sha256": "380e659f3c8c198142a747a2794fb933134345c1d592c74139e90126f23e6f92",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 98.0,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "07-scene": {
+    "status": "pending",
+    "text_sha256": "414f4a0352d1d000ba137d1f00b14755545e9cfe15a290cc77d02b99d223e73a",
+    "expected_mp3": "audio18/07-scene.mp3",
+    "existing_audio_sha256": "dcb06ee95361de140e67cddea7e2d63c9dfe16f3b8b2b81506e888d89d343a98",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 104.7,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "08-scene": {
+    "status": "pending",
+    "text_sha256": "c4148b161b416a26cdb44997f4cd8cb0f4fafd54009d2456c2c444e9b0503ef4",
+    "expected_mp3": "audio18/08-scene.mp3",
+    "existing_audio_sha256": "2da72a0fc64b18d1658eccc4cc5c1cccdd1af92c69c152d1b3586f19548a2a27",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 89.4,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "09-scene": {
+    "status": "pending",
+    "text_sha256": "ea067a50416af676db2db71720c90813bffcf1db327a42e22db4498a9db9489b",
+    "expected_mp3": "audio18/09-scene.mp3",
+    "existing_audio_sha256": "cc250fc336bdf67693096806f7f19078c96e718d33964b485df532c4bc487f62",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 115.7,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "10-scene": {
+    "status": "pending",
+    "text_sha256": "6b92be0339a744ce8c438e658248d7ccdadd79f35d240c88ff26905de2d19fdc",
+    "expected_mp3": "audio18/10-scene.mp3",
+    "existing_audio_sha256": "0d304686834ccf73b7f4733c98239660968e5f33a73e58f23f8e6e9341c0105d",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 114.2,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "part2": {
+    "status": "pending",
+    "text_sha256": "fb65a1403015c1ecceaf745c7f6dd0ca793d05dbbd55c27f9d5522b465fb20f1",
+    "expected_mp3": "audio18/part2.mp3",
+    "existing_audio_sha256": "4a805c67cb350206c54273b243c35cefe071c7f7aaf303a74c21369ad2afa603",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 10.2,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "11-scene": {
+    "status": "pending",
+    "text_sha256": "6f0c6cb158d19a4060491686d25c4a7bdb2e972061b6fd44ad8956cb22994c8c",
+    "expected_mp3": "audio18/11-scene.mp3",
+    "existing_audio_sha256": "e6dffd974038281610c15fedaadd6ebccf21166fc8b21d9ba63dce73384c19d1",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 61.3,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "12-scene": {
+    "status": "pending",
+    "text_sha256": "c6580abf557c4cd90a570fc676e6948e15322f0531b1e2fef88270c89b4369c1",
+    "expected_mp3": "audio18/12-scene.mp3",
+    "existing_audio_sha256": "ba8ab07e75caa97cdc4a8db299e01cd8fe911ec768ffb73f53a1b519e43a9b57",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 95.3,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "13-scene": {
+    "status": "pending",
+    "text_sha256": "010ddc10438a3b45d6ecbe91a0d1bf877db054d3ac96f9d829eb522e6298bd9c",
+    "expected_mp3": "audio18/13-scene.mp3",
+    "existing_audio_sha256": "6564752e4e15fedf3bb7a7af1b74560cc3a716258de6156d4cef728329001d08",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 93.6,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "14-scene": {
+    "status": "pending",
+    "text_sha256": "70f8b39b3ad90ec5d1c560c8457055b5a5642db448702d98be3c39025dff7afd",
+    "expected_mp3": "audio18/14-scene.mp3",
+    "existing_audio_sha256": "e5db948c4b96203abb2d3f546b7ba2b76d4359f08e521b8b6c7e228fd63a7732",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 103.0,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "15-scene": {
+    "status": "pending",
+    "text_sha256": "047779bd87ab2a255ca26648cb40ebf927965714205b2a4d88be130b35e4fac1",
+    "expected_mp3": "audio18/15-scene.mp3",
+    "existing_audio_sha256": "3b0b215d0158ff9f7732791136f2ea8cf000c764692ae39bb467e7c1dc865dcf",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 85.5,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "16-scene": {
+    "status": "pending",
+    "text_sha256": "5c22a2a90550f8826e32de3c1dc24e41aa71152d5d1a85ca40418eda7d2c83cc",
+    "expected_mp3": "audio18/16-scene.mp3",
+    "existing_audio_sha256": "8c22ae10f6ce1cee06932872336214d00e120be1dbbf684e8fe0a88f02b3fff5",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 87.1,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "17-scene": {
+    "status": "pending",
+    "text_sha256": "fc8a38159e0cbc6f559dd154da7d7be15a211f5a8329ed835168f1d211d51c47",
+    "expected_mp3": "audio18/17-scene.mp3",
+    "existing_audio_sha256": "e16386ff081cddb622133754ae63430da57ed1cfa624d7c8b08b2bcac8cba637",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 93.7,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "18-scene": {
+    "status": "pending",
+    "text_sha256": "298383ce04a93d20e64a4055f76e94cf69db9f48069281aa26fafffe1df423c8",
+    "expected_mp3": "audio18/18-scene.mp3",
+    "existing_audio_sha256": "ccb4e00c52be878a9b3834f8e4a9e6fa083453be55c867948b1fe5e1c9202e4e",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 110.1,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "19-scene": {
+    "status": "pending",
+    "text_sha256": "6f2ad92ce90a6cea7c9938f2ede7d9d46be4a4cd61097203bbcf167f7a50ffbd",
+    "expected_mp3": "audio18/19-scene.mp3",
+    "existing_audio_sha256": "49bdf6da2aefe9cd6fd5b36e7cf35c42b5203998c7bd9463774251cf1e259a7a",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 91.2,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  },
+  "20-ending": {
+    "status": "pending",
+    "text_sha256": "2879ebaf2e658454d0dca22c8f210a2bce994a7de0c3e426746de35d04501792",
+    "expected_mp3": "audio18/20-ending.mp3",
+    "existing_audio_sha256": "5c2f36174ce11b2ec5b3e4ed4198b079e1fa5a24a521d662b786b4445f2a0ab8",
+    "script_verified": false,
+    "audio_verified": false,
+    "quality_status": "unreviewed",
+    "existing_audio_seconds": 38.5,
+    "rendered_seconds": null,
+    "reason": "no_recorded_text_or_sha256"
+  }
+};
 const P = {
  "turing": {
   "n": "앨런 튜링",
@@ -390,9 +1205,9 @@ const P = {
   "m": "노이만",
   "e": "헝가리 출신 수학자",
   "t": [
-   "1945 프로그램 내장 방식 제시"
+   "1945 EDVAC 보고서"
   ],
-  "why": "프로그램만 바꾸면 기계가 다른 일을 하게 만들었어요"
+  "why": "프로그램 내장 컴퓨터 구조를 정리한 핵심 인물이에요"
  },
  "mccarthy": {
   "n": "존 매카시",
@@ -407,7 +1222,7 @@ const P = {
  "minsky": {
   "n": "마빈 민스키",
   "m": "민스키",
-  "e": "MIT 교수",
+  "e": "MIT 연구자 (생전)",
   "t": [
    "1956 다트머스 참석",
    "1969 퍼셉트론 한계 지적"
@@ -439,14 +1254,14 @@ const P = {
   "t": [
    "1958 퍼셉트론 발표"
   ],
-  "why": "배우는 기계의 첫 번째 대답을 내놨어요"
+  "why": "초기 신경망의 학습 가능성을 보여 준 연구자예요"
  },
  "werbos": {
   "n": "폴 베르보스",
   "m": "베르보스",
   "e": "미국 연구자",
   "t": [
-   "1974 역전파 원형 제시"
+   "1974 신경망 학습에 역전파 활용 제안"
   ],
   "why": "오차를 거꾸로 흘리는 학습법을 먼저 적었어요"
  },
@@ -467,19 +1282,19 @@ const P = {
    "1986 역전파 대중화",
    "2012 알렉스넷 지도",
    "2018 튜링상",
-   "2024 노벨 물리학상"
+   "2024 홉필드와 노벨 물리학상"
   ],
   "why": "겨울에도 신경망을 지킨 사람이에요"
  },
  "lecun": {
   "n": "얀 르쿤",
   "m": "르쿤",
-  "e": "메타 전 수석 AI 과학자",
+  "e": "신경망 연구자·AMI 공동 창업자",
   "t": [
    "1989 합성곱 신경망",
    "메타 FAIR 창립",
    "2018 튜링상",
-   "2026 AMI Labs 회장"
+   "2026.3 AMI 출범 당시 회장"
   ],
   "why": "읽는 기계를 만들고, 겨울에도 현장을 지켰어요"
  },
@@ -527,7 +1342,7 @@ const P = {
  "koller": {
   "n": "다프네 콜러",
   "m": "콜러",
-  "e": "스탠퍼드 교수",
+  "e": "코세라 공동 창업자",
   "t": [
    "코세라 공동 창업"
   ],
@@ -552,17 +1367,16 @@ const P = {
    "2024 SSI 설립",
    "2025 SSI 대표"
   ],
-  "why": "규모의 시대를 열고, 안전으로 방향을 튼 사람이에요"
+  "why": "알렉스넷 연구와 새로운 연구 조직의 설립에 참여했어요"
  },
  "hassabis": {
   "n": "데미스 하사비스",
   "m": "하사비스",
-  "e": "구글 딥마인드 의장",
+  "e": "딥마인드 공동 창업자",
   "t": [
    "2010 딥마인드 공동 설립",
-   "2016 알파고",
-   "2024 노벨 화학상",
-   "2026 딥마인드 의장·알파벳 수석 과학자"
+   "2016 알파고 연구팀",
+   "2024 노벨 화학상"
   ],
   "why": "게임에서 과학으로 배움의 무대를 넓혔어요"
  },
@@ -578,13 +1392,12 @@ const P = {
  "jumper": {
   "n": "존 점퍼",
   "m": "점퍼",
-  "e": "앤트로픽 합류 (2026)",
+  "e": "AlphaFold 연구팀 리더",
   "t": [
-   "알파폴드 개발",
-   "2024 노벨 화학상",
-   "2026 앤트로픽 합류 발표"
+   "AlphaFold 개발",
+   "2024 노벨 화학상"
   ],
-  "why": "알파폴드로 과학의 정답을 맞힌 사람 중 하나예요"
+  "why": "연구팀을 이끌어 단백질 구조 예측을 발전시켰어요"
  },
  "sutton": {
   "n": "리처드 서튼",
@@ -612,7 +1425,7 @@ const P = {
   "e": "오픈에이아이 대표",
   "t": [
    "2015 오픈에이아이 공동 창립",
-   "2023 해임·5일 만에 복귀"
+   "2023 해임·복귀 합의·공식 복귀"
   ],
   "why": "규모의 시대를 회사로 이끈 사람이에요"
  },
@@ -648,7 +1461,7 @@ const P = {
  "schmidhuber": {
   "n": "위르겐 슈미트후버",
   "m": "슈미트후버",
-  "e": "스위스 연구자",
+  "e": "LSTM 공동 저자",
   "t": [
    "1997 LSTM 공저"
   ],
@@ -669,7 +1482,7 @@ const P = {
   "e": "NYU 교수",
   "t": [
    "어텐션 기계번역 공저",
-   "2026 제넨텍 퇴사·새 회사 공동 설립"
+   "2026 Ortet 공동 창업·대표, NYU 교수"
   ],
   "why": "한국인 연구자로 어텐션의 씨앗에 이름을 올렸어요"
  },
@@ -685,12 +1498,11 @@ const P = {
  "shazeer": {
   "n": "노암 셰이저",
   "m": "셰이저",
-  "e": "오픈에이아이 (2026 합류)",
+  "e": "트랜스포머 공동 저자",
   "t": [
-   "2017 트랜스포머 공저",
-   "2026 구글 딥마인드에서 오픈에이아이로 합류"
+   "2017 트랜스포머 공저"
   ],
-  "why": "트랜스포머를 만들고, 자리를 옮긴 사람이에요"
+  "why": "어텐션 중심의 언어 모델 구조를 함께 제안했어요"
  },
  "gomez": {
   "n": "에이던 고메즈",
@@ -708,7 +1520,7 @@ const P = {
   "t": [
    "2018 GPT-1 주저자"
   ],
-  "why": "먼저 많이 읽히는 방식을 연 사람 중 하나예요"
+  "why": "사전 학습과 트랜스포머를 언어 과제에 결합했어요"
  },
  "brown": {
   "n": "톰 브라운",
@@ -718,7 +1530,7 @@ const P = {
    "2020 GPT-3 주저자",
    "앤트로픽 공동 설립"
   ],
-  "why": "규모가 실력을 가른다는 걸 보인 사람 중 하나예요"
+  "why": "대규모 언어 모델의 가능성과 한계를 실험했어요"
  },
  "goodfellow": {
   "n": "이안 구드펠로",
@@ -736,7 +1548,7 @@ const P = {
   "t": [
    "2021 앤트로픽 공동 설립"
   ],
-  "why": "안전을 먼저 묻는 회사를 세운 사람이에요"
+  "why": "안전·신뢰성을 연구 목표로 밝힌 앤트로픽을 공동 창업했어요"
  },
  "daniela": {
   "n": "다니엘라 아모데이",
@@ -745,7 +1557,7 @@ const P = {
   "t": [
    "2021 앤트로픽 공동 설립"
   ],
-  "why": "안전을 먼저 묻는 회사를 세운 사람 중 하나예요"
+  "why": "앤트로픽을 공동 창업하고 조직 운영을 맡았어요"
  },
  "murati": {
   "n": "미라 무라티",
@@ -753,7 +1565,7 @@ const P = {
   "e": "씽킹 머신스 랩 창업자",
   "t": [
    "오픈에이아이 기술 책임자|out",
-   "2025 씽킹 머신스 랩 설립"
+   "Thinking Machines Lab 공동 창업"
   ],
   "why": "챗지피티 시대를 안에서 이끌고, 새 회사를 연 사람이에요"
  },
@@ -769,55 +1581,55 @@ const P = {
  "gross": {
   "n": "다니엘 그로스",
   "m": "그로스",
-  "e": "메타로 이적 (2025)",
+  "e": "SSI 공동 창업자",
   "t": [
-   "SSI 첫 대표|out",
-   "2025 메타로 이적"
+   "SSI 공동 창업",
+   "2025 SSI에서 떠남|out"
   ],
-  "why": "에스에스아이의 첫 대표를 맡았던 사람이에요"
+  "why": "SSI를 함께 설립했고 이후 회사를 떠났어요"
  },
  "karpathy": {
   "n": "안드레이 카파시",
   "m": "카파시",
-  "e": "앤트로픽 (2026 합류)",
+  "e": "오픈에이아이 창립 연구진",
   "t": [
    "오픈에이아이 창립 멤버",
-   "2026 앤트로픽 합류"
+   "AI 교육·기술 설명"
   ],
-  "why": "가르치는 개발자로 알려지고, 자리를 옮긴 사람이에요"
+  "why": "연구와 교육을 통해 학습자의 이해를 돕는 사람이에요"
  },
  "lebrun": {
   "n": "알렉상드르 르브룅",
   "m": "르브룅",
-  "e": "AMI Labs 대표",
+  "e": "AMI 출범 당시 대표 (2026.3)",
   "t": [
-   "2026 AMI Labs 대표"
+   "2026.3 AMI 대표로 소개"
   ],
   "why": "르쿤의 새 회사에서 대표를 맡은 사람이에요"
  },
  "kabukcuoglu": {
   "n": "코라이 카부쿠오글루",
   "m": "카부쿠오글루",
-  "e": "구글 딥마인드 SVP",
+  "e": "딥마인드 연구 리더",
   "t": [
-   "2026 딥마인드 실무 책임"
+   "딥러닝·강화학습 연구"
   ],
-  "why": "개편된 딥마인드의 실무를 맡은 사람이에요"
+  "why": "딥마인드 연구 조직의 발전에 기여한 사람이에요"
  },
  "wang": {
   "n": "알렉산더 왕",
   "m": "왕",
-  "e": "메타로 합류",
+  "e": "2025 메타 합류 발표",
   "t": [
    "스케일 에이아이 창업",
-   "메타 지분 투자와 함께 합류"
+   "2025 메타 투자·합류 발표"
   ],
   "why": "데이터 회사에서 메타로 자리를 옮긴 사람이에요"
  },
  "papert": {
   "n": "시모어 페퍼트",
   "m": "페퍼트",
-  "e": "MIT 교수",
+  "e": "MIT 연구자 (생전)",
   "t": [
    "1969 『Perceptrons』 공저"
   ],
@@ -826,7 +1638,7 @@ const P = {
  "feigenbaum": {
   "n": "에드워드 파이겐바움",
   "m": "파이겐바움",
-  "e": "스탠퍼드 교수",
+  "e": "스탠퍼드 명예교수",
   "t": [
    "전문가 시스템 개척",
    "1994 튜링상"
@@ -846,12 +1658,12 @@ const P = {
  "suleyman": {
   "n": "무스타파 술레이만",
   "m": "술레이만",
-  "e": "마이크로소프트 AI 대표",
+  "e": "딥마인드 공동 창업자",
   "t": [
    "2010 딥마인드 공동 설립",
    "2024 마이크로소프트 AI 대표"
   ],
-  "why": "딥마인드를 함께 세우고, 지금은 큰 회사의 AI를 이끄는 사람이에요"
+  "why": "딥마인드를 함께 세우고 2024년 마이크로소프트 AI 대표로 임명됐어요"
  }
 };
 
@@ -897,14 +1709,17 @@ const SCENES = [
     part:1,
     who:['turing','shannon','vonneumann','mccarthy','minsky','newell','simon'],
     lines:[
-      '1950년, 앨런 튜링이 질문 하나를 던졌어요. 기계가 생각할 수 있는가, 이 질문이었어요. 튜링은 이 질문을 말싸움으로 끝낼 일이 아니라고 봤어요. 그래서 시험 하나를 제안했어요. 화면 너머의 상대가 사람인지 기계인지 구분할 수 없으면, 생각한다고 봐도 좋다는 거예요. 우리가 챗봇과 대화하며 사람 같다고 느끼는 순간마다, 사실은 그 시험을 치르고 있는 셈이에요. 어디까지나 비유예요, 시험지를 나눠 드린 건 아니니까요.',
-      '그보다 두 해 먼저, 1948년에 클로드 섀넌은 정보라는 말을 수학으로 정의했어요. 정보를 재는 단위를 비트라고 불렀는데, 비트라는 말 자체는 존 튜키가 제안한 거예요. 지금 우리가 주고받는 모든 데이터가 이 정의 위에서 움직이고 있어요. 같은 시절 존 폰 노이만은 프로그램 내장 방식이라는 컴퓨터 구조를 제시했어요. 배선을 뜯어고치지 않아도, 프로그램만 바꾸면 기계가 다른 일을 하게 됐어요.',
-      '1956년 여름, 존 매카시가 동료들을 다트머스에 불러 모았어요. 마빈 민스키와 앨런 뉴웰, 허버트 사이먼 같은 사람들이 한자리에 모였어요. 인공지능이라는 이름은 매카시가 1955년 제안서에 쓰면서 처음 붙인 거예요. 두 달 동안, 생각하는 기계를 어떻게 만들 것인가를 두고 논의가 이어졌어요.',
-      '다만 이름이 먼저 생긴 거예요. 기계를 어떻게 생각하게 할지는 아직 빈자리였어요. 이 이야기는 그 빈자리를 채워 간 사람들의 얘기예요. 질문은 이미 여섯 해 전에 나와 있었어요. 이제 이름을 붙인 사람들이 한자리에 모인 거예요. 다음 장에서는 첫 번째 대답이 왜 겨울을 맞았는지 볼게요.',
+      '1950년, 앨런 튜링은 기계가 생각할 수 있는가라는 질문을 던졌어요. 생각이라는 말의 뜻만 다투는 대신, 대화에서 드러나는 행동을 비교하자고 제안했어요. 사람이 글로만 대화하며 상대가 사람인지 기계인지 가려 보는 모방 게임이에요. 나중에 튜링 테스트라고 불리게 됐어요. 이 시험을 잘 치른다고 의식이나 이해가 증명되는 것은 아니에요. 무엇을 지능의 증거로 볼지 묻는 출발점이에요.',
+      '그보다 두 해 먼저, 1948년에 클로드 섀넌은 정보를 수학적으로 다루는 이론을 발표했어요. 정보량은 메시지의 뜻이나 진실보다, 얼마나 뜻밖의 선택인지를 재요. 비트라는 말은 존 튜키가 제안한 용어를 썼어요. 존 폰 노이만은 1945년 에드박 보고서에서 프로그램을 메모리에 두는 구조를 정리했어요. 동료들의 설계와 토론이 함께 만든 성과여서 한 사람만의 발명이라고 하기는 어려워요.',
+      '1956년 여름, 미국 다트머스에서 인공지능 연구 모임이 열렸어요. 전해인 1955년, 존 매카시와 마빈 민스키, 너새니얼 로체스터, 클로드 섀넌이 제안서를 함께 썼어요. 매카시가 제안한 인공지능이라는 이름이 그 문서에 들어 있었어요. 앨런 뉴웰과 허버트 사이먼도 참여해 기호로 문제를 푸는 연구를 소개했어요. 모두가 두 달 내내 함께 있었던 회의로 생각할 필요는 없어요.',
+      '기계 지능 연구가 그 모임에서 처음 시작된 것은 아니에요. 튜링의 질문, 정보이론, 계산기 설계가 이미 있었어요. 다트머스는 이런 문제들을 하나의 연구 분야로 묶는 계기가 됐어요. 이제 학습하는 기계를 만들려던 연구자들이 어떤 성과와 한계를 만났는지 볼게요.',
   ],
     stats:[["1948", "섀넌 정보이론"], ["1950", "튜링 테스트 제안"], ["1956", "다트머스 워크숍"]],
     hook:"기계가 생각할 수 있는가 — 답보다 질문이 먼저였어요",
-    terms:[["튜링 테스트", "상대가 사람인지 기계인지 구분 못하면 생각한다고 보는 시험"], ["비트", "정보의 양을 재는 단위"]]
+    terms:[["튜링 테스트", "글로 드러나는 대화 행동을 비교하는 시험, 의식의 증명은 아님"], ["비트", "정보의 양을 재는 단위"]],
+    learning_question:"튜링 테스트를 통과하면 의식이 증명될까요?",
+    learning_answer:"아니요. 대화 행동을 비교하는 시험과 의식·이해의 증명은 구분해요.",
+    src:[["2026-10-05", "Turing, Computing Machinery and Intelligence", "https://academic.oup.com/mind/article/LIX/236/433/986238"], ["2026-10-05", "Dartmouth research proposal", "https://www-formal.stanford.edu/jmc/history/dartmouth/dartmouth.html"], ["2026-10-05", "EDVAC report historical collection", "https://www.computerhistory.org/revolution/birth-of-the-computer/4/88"], ["2026-10-05", "Shannon original paper, university-hosted reprint", "https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf"], ["2026-10-05", "IEEE Computer Society, John Clifford Shaw archival biography", "https://history.computer.org/shaw.html"]]
   },
   {
     year:'1958–1973년 · 퍼셉트론과 겨울',
@@ -912,14 +1727,17 @@ const SCENES = [
     part:1,
     who:['rosenblatt','minsky','papert'],
     lines:[
-      '첫 번째 대답은 1958년에 나왔어요. 프랭크 로젠블랫이 퍼셉트론이라는 기계를 만들었어요. 퍼셉트론은 데이터를 보며 스스로 고쳐 나가는 기계였어요. 틀리면 그 틀림을 보고, 다음에는 덜 틀리게 바꾸는 방식이었어요. 사람이 규칙을 하나하나 넣어 주지 않아도 되는 기계였어요. 그래서 퍼셉트론은 배우는 기계로 주목을 받았어요.',
-      '배우는 기계가 나왔으니, 생각하는 기계도 머지않았다는 기대가 빠르게 커졌어요. 다만 기대와 실력 사이에는 거리가 있었어요. 1966년, 기계번역의 성과를 평가한 ALPAC 보고서가 나왔어요. 기계번역은 느리고 비싸기만 하다는 결론이었고, 미국 정부의 번역 연구비는 그 길로 끊겼어요. 기대가 한 분야에서 먼저 꺾인 거예요.',
-      '1969년, 마빈 민스키와 시모어 페퍼트가 『Perceptrons』라는 책을 냈어요. 퍼셉트론이 할 수 없는 일을 하나하나 짚어 낸 책이었어요. 1973년에는 영국의 라이트힐 보고서가 비슷한 결론을 내며 연구비를 줄였어요. 한계가 분명해지자 기대는 식어 갔고, 연구에 붙던 자금이 줄었어요. 다음 연구를 이어 갈 돈이 끊긴 거예요.',
-      '이 시기를 인공지능의 첫 번째 겨울이라고 불러요. 겨울이 왔다는 건 연구가 완전히 멈췄다는 뜻은 아니에요. 돈과 사람이 다른 곳으로 옮겨 갔다는 뜻이에요. 남은 사람들은 조용히 자리를 지켰고, 배우는 기계라는 생각 자체는 이 시기에도 남았어요. 다만 씨앗은 남았어요. 겨울이 길어져도, 한 번 배운 건 사라지지 않거든요.',
+      '1958년, 프랭크 로젠블랫은 퍼셉트론의 학습 이론을 발표했어요. 입력마다 가중치를 두고, 예측이 틀리면 그 값을 바꾸는 방식이에요. 예를 들어 점들을 두 무리로 나누는 경계를 조금씩 고쳐 가는 거예요. 기계 학습의 시작을 이 한 해로 단정할 수는 없지만, 데이터에서 배우는 초기 신경망의 중요한 이정표였어요.',
+      '배우는 기계가 알려지자 기대도 커졌어요. 하지만 기대와 성능 사이에는 거리가 있었어요. 1966년 미국의 자동 언어처리 자문위원회 보고서는 당시 기계번역의 비용과 품질을 비판했어요. 보고서는 기계번역 지원의 축소에 영향을 줬지만, 언어학과 번역 보조 도구 연구까지 모두 중단하라고 한 것은 아니었어요. 한 보고서가 모든 인공지능 연구비를 끊었다고 보면 역사를 너무 단순하게 읽게 돼요.',
+      '1969년, 마빈 민스키와 시모어 페퍼트는 『퍼셉트론』에서 특정 퍼셉트론 구조의 수학적 한계를 분석했어요. 그 비판을 모든 신경망이 불가능하다는 증명으로 받아들이면 안 돼요. 1973년 영국의 라이트힐 보고서도 당시 연구의 성과와 확장 가능성을 비판했어요. 과도한 기대, 계산 자원의 부족, 정책과 투자 변화가 겹치며 지원이 위축됐어요.',
+      '이런 시기를 인공지능의 겨울이라고 불러요. 분야마다 시작과 영향이 달랐고, 연구 전체가 한날한시에 멈춘 것은 아니에요. 통계적 방법과 기호 처리, 신경망 연구는 서로 다른 곳에서 이어졌어요. 겨울이라는 비유는 관심과 지원의 변화를 설명해요. 실패한 가설을 고치고 새로운 방법을 찾는 일까지 사라졌다는 뜻은 아니에요.',
   ],
     stats:[["1958", "퍼셉트론"], ["1966", "ALPAC 보고서"], ["1969", "『Perceptrons』 한계 지적"]],
-    hook:"배우는 기계의 첫 대답, 그리고 식어 간 기대",
-    terms:[["퍼셉트론", "틀리면 스스로 고쳐 나가는 배우는 기계"], ["첫 번째 겨울", "자금과 관심이 식어 연구가 움츠러든 시기"]]
+    hook:"초기 학습 기계의 성과와 한계, 그리고 줄어든 지원",
+    terms:[["퍼셉트론", "틀리면 스스로 고쳐 나가는 배우는 기계"], ["첫 번째 겨울", "자금과 관심이 식어 연구가 움츠러든 시기"]],
+    learning_question:"인공지능의 겨울에는 모든 연구가 멈췄을까요?",
+    learning_answer:"아니요. 분야와 국가마다 지원과 관심이 줄어든 정도가 달랐고 연구는 이어졌어요.",
+    src:[["2026-10-05", "Cornell history of Rosenblatt perceptron", "https://news.cornell.edu/stories/2019/09/professors-perceptron-paved-way-ai-60-years-too-soon"], ["2026-10-05", "ALPAC, Language and Machines", "https://aclanthology.org/www.mt-archive.info/ALPAC-1966.pdf"], ["2026-10-05", "Minsky and Papert, Perceptrons", "https://mitpress.mit.edu/9780262130431/perceptrons/"], ["2026-10-05", "Rosenblatt, The perceptron, Psychological Review", "https://pubmed.ncbi.nlm.nih.gov/13602029/"], ["2026-10-05", "Lighthill, Artificial Intelligence: A General Survey", "https://www.aiai.ed.ac.uk/events/lighthill1973/lighthill.pdf"], ["2026-10-05", "McCarthy review of Lighthill SRC symposium", "https://www-formal.stanford.edu/jmc/reviews/lighthill/lighthill.html"]]
   },
   {
     year:'1974–1986년 · 배우는 법',
@@ -927,14 +1745,17 @@ const SCENES = [
     part:1,
     who:['werbos','rumelhart','hinton'],
     lines:[
-      '이 무렵 주류는 기호주의라는 방식이었어요. 사람이 규칙을 하나하나 적어 넣으면, 기계가 그 규칙을 따르는 방식이에요. 규칙이 늘수록 사람의 손이 많이 갔고, 세상의 일을 전부 규칙으로 적을 수는 없었어요. 적어 넣지 않은 규칙 앞에서는 기계가 멈췄어요. 기호주의가 막힌 자리가 겨울의 한가운데였어요.',
-      '1974년, 폴 베르보스가 박사 논문에서 한 가지 방법을 제시했어요. 답이 틀리면, 그 오차를 거꾸로 흘려보내는 방법이었어요. 오차를 따라 조금씩 고쳐 나가면, 기계가 배울 수 있다는 얘기예요. 이 방법이 세상에 넓게 퍼진 건 그로부터 12년 뒤예요. 방법은 먼저 나왔지만, 알아보는 사람이 필요했던 거예요.',
-      '1986년, 데이비드 루멜하트와 제프리 힌튼, 로널드 윌리엄스가 역전파를 널리 알렸어요. 오차를 거꾸로 흘려보내며 층마다 조금씩 고치는 학습법이에요. 오차를 줄이는 일이 곧 배우는 일이 되면서, 층이 깊은 신경망도 가르칠 수 있게 됐어요. 배우는 기계가 다시 앞으로 나올 길이 열린 거예요.',
-      '두 방식의 차이가 분명해진 시기예요. 규칙을 넣는 쪽은 사람의 손이 한계였어요. 배우게 하는 쪽은 데이터와 계산이 한계였어요. 어느 쪽이 먼저 한계를 넘을지가 다음 이야기의 열쇠예요. 그래서 다음 장의 사람들은, 배우는 쪽에 남기로 했어요.',
+      '당시 중요한 흐름 중 하나는 기호주의였어요. 지식을 기호와 관계로 표현하고, 규칙이나 탐색으로 문제를 풀었어요. 전문가가 적은 규칙을 쓰는 방법도 있지만, 기호주의 전체가 규칙을 손으로 입력하는 방식만을 뜻하지는 않아요. 지식을 얼마나 잘 표현하고 큰 문제를 얼마나 효율적으로 푸느냐가 어려운 과제였어요.',
+      '1974년, 폴 베르보스는 박사 논문에서 신경망 학습에 오차의 미분을 거꾸로 전달하는 방법을 활용하는 생각을 제시했어요. 관련 미분 계산법에는 더 이른 연구도 있어요. 한 사람이 아무 배경 없이 발명했다기보다, 계산 방법과 학습 문제를 연결해 온 역사예요. 오늘의 모델도 답이 얼마나 틀렸는지 계산하고, 그 오차를 줄이는 쪽으로 매개변수를 바꿔요.',
+      '1986년, 데이비드 루멜하트와 제프리 힌튼, 로널드 윌리엄스는 여러 층의 신경망을 역전파로 학습시키는 결과를 널리 알렸어요. 마지막 층의 오차가 각 연결에 얼마나 영향을 받았는지 거꾸로 계산해요. 그 값을 이용해 연결의 가중치를 조금씩 바꿔요. 이 논문이 깊은 신경망의 모든 문제를 해결한 것은 아니지만, 내부 표현을 학습하는 방법의 가능성을 보여 줬어요.',
+      '규칙을 쓰는 방법과 데이터에서 배우는 방법은 서로 밀어내기만 한 관계가 아니에요. 오늘도 두 방법을 함께 쓰는 시스템이 있어요. 역전파는 신경망이 스스로 목적을 정한다는 뜻도 아니에요. 사람이 정한 학습 목표를 수치로 계산해 가중치를 고치는 도구예요. 이제 그 도구로 실제 문제를 풀던 사람들을 볼게요.',
   ],
-    stats:[["1974", "역전파 원형"], ["1986", "역전파 대중화"]],
+    stats:[["1974", "베르보스 박사 논문"], ["1986", "역전파 학습의 확산"]],
     hook:"규칙을 넣는 쪽과, 배우게 하는 쪽의 갈림길",
-    terms:[["기호주의", "사람이 규칙을 하나하나 적어 넣는 방식"], ["역전파", "오차를 거꾸로 흘려보내며 고치는 학습법"]]
+    terms:[["기호주의", "지식을 기호·관계로 표현하고 규칙·탐색으로 처리"], ["역전파", "오차를 거꾸로 흘려보내며 고치는 학습법"]],
+    learning_question:"역전파가 스스로 학습 목표도 정할까요?",
+    learning_answer:"아니요. 정해진 손실에 대한 미분을 계산해 가중치를 조정하는 데 활용해요.",
+    src:[["2026-10-05", "Rumelhart, Hinton, Williams, Learning representations by back-propagating errors", "https://www.nature.com/articles/323533a0"], ["2026-10-05", "Werbos, Backpropagation: past and future", "https://www.werbos.com/AD2004.pdf"]]
   },
   {
     year:'1980–2000년대 · 겨울을 버틴 사람들',
@@ -943,14 +1764,17 @@ const SCENES = [
     who:['feigenbaum','hinton','lecun','bengio'],
     lines:[
       '1980년대에는 전문가 시스템이 붐이었어요. 전문가의 규칙을 기계 안에 그대로 쌓는 방식이에요. 에드워드 파이겐바움 같은 사람들이 이 흐름을 이끌었어요. 병원과 공장의 문제를 풀며 기대를 모았지만, 규칙을 쌓고 유지하는 비용이 감당이 안 됐어요. 1980년대 후반, 두 번째 겨울이 왔어요.',
-      '주류가 떠난 자리에도 남은 사람들이 있었어요. 제프리 힌튼은 토론토에서 신경망 연구를 이어 갔어요. 주류 학회가 신경망을 외면하던 시기였어요. 힌튼은 그 자리에서, 신경망이 배울 수 있다는 말을 멈추지 않았어요. 관심이 식은 분야에 남는다는 건, 자리를 지키는 일부터 해야 한다는 뜻이에요. 사람이 적어진 연구실에서도 질문은 그대로였어요.',
-      '얀 르쿤은 1989년, 우편번호를 읽는 합성곱 신경망을 선보였어요. 봉투에 적힌 우편번호를 기계가 읽어 내는 일이었어요. 글자를 사람이 아니라 기계가 배워서 읽는다는 걸 보인 거예요. 기계가 배워서 읽는다는 발상 자체가 낯설던 때예요. 작은 성공이었지만, 방향을 보여 주는 성공이었어요.',
-      '요슈아 벤지오는 몬트리올에서 신경망 연구를 이어 가며, 세 사람은 서로 다른 곳에서 같은 믿음을 지켰어요. 배우는 기계가 답이라는 믿음이었어요. 겨울이 길어질수록 남은 사람은 더 적어졌어요. 그래도 세 곳의 연구는 멈추지 않았어요.',
-      '버틴다는 건, 매일 같은 질문을 다시 붙드는 일이에요. 세월이 흘러 2018년, 이 세 사람은 튜링상을 함께 받았어요. 힌튼은 2024년에 노벨 물리학상까지 받았어요. 그 상은 겨울을 버틴 시간에 대한 답이기도 했어요. 남들이 떠난 연구실에 남은 건, 배우는 기계라는 믿음이었어요.',
+      '신경망의 인기가 약해졌던 시기에도 연구는 이어졌어요. 제프리 힌튼은 신경망의 내부 표현을 학습하는 방법을 연구했어요. 얀 르쿤과 요슈아 벤지오를 비롯한 여러 연구자는 서로 다른 곳에서 방법을 발전시켰어요. 세 사람만 고립되어 버틴 이야기로 줄이면, 함께 일한 학생과 동료, 다른 연구 흐름을 놓치게 돼요.',
+      '얀 르쿤과 동료들은 1989년 손으로 쓴 우편번호를 읽는 신경망 연구를 발표했어요. 앞서 후쿠시마 구니히코의 네오코그니트론처럼 시각 패턴의 특징을 단계적으로 처리하는 연구도 있었어요. 르쿤 연구팀은 역전파를 적용해 인식 성능을 학습으로 개선했어요. 혼자 새로 시작했다기보다 선행 아이디어를 구체적인 학습과 응용으로 발전시킨 사례예요.',
+      '요슈아 벤지오는 몬트리올에서 신경망과 언어 모델을 연구했어요. 단어를 단순한 번호 대신 학습한 수치 표현으로 다루는 연구도 발전시켰어요. 힌튼, 르쿤, 벤지오의 작업은 서로 연결돼 있지만, 각자의 연구팀과 다른 학자들의 성과가 함께 쌓인 결과예요.',
+      '세 사람은 딥러닝의 개념적·공학적 발전에 기여한 공로로 2018년 튜링상 수상자로 선정됐어요. 발표는 이듬해인 2019년에 이뤄졌어요. 힌튼은 2024년 존 홉필드와 노벨 물리학상을 공동 수상했어요. 상은 연구의 의미를 보여 주지만, 수상자 명단이 기술에 기여한 사람의 전체 명단은 아니에요.',
   ],
-    stats:[["1989", "합성곱 신경망"], ["2018", "튜링상 세 사람"]],
+    stats:[["1989", "우편번호 인식 연구"], ["2018", "튜링상 수상 연도"]],
     hook:"전문가 시스템이 식어 간 자리에서, 배우는 쪽에 남은 사람들",
-    terms:[["전문가 시스템", "전문가의 규칙을 기계에 그대로 쌓는 방식"], ["합성곱 신경망", "글자와 사진 읽기에 쓰인 신경망 구조"], ["튜링상", "컴퓨터 과학에서 가장 권위 있는 상"]]
+    terms:[["전문가 시스템", "전문가의 규칙을 기계에 그대로 쌓는 방식"], ["합성곱 신경망", "글자와 사진 읽기에 쓰인 신경망 구조"], ["튜링상", "컴퓨터 과학에서 가장 권위 있는 상"]],
+    learning_question:"상을 받은 사람이 기술을 혼자 만든 걸까요?",
+    learning_answer:"아니요. 수상 업적과 함께 공동 연구자·학생·선행 연구의 기여도 보아야 해요.",
+    src:[["2026-10-05", "ACM announcement of 2018 Turing Award", "https://www.globenewswire.com/news-release/2019/03/27/1773711/0/en/FATHERS-OF-THE-DEEP-LEARNING-REVOLUTION-RECEIVE-ACM-A-M-TURING-AWARD.html"], ["2026-10-05", "Nobel Prize Physics teaching material", "https://www.nobelprize.org/uploads/2024/11/Speakersmanuscript_Physics_2024_NobelPrizeLessons.pdf"], ["2026-10-05", "Fukushima, Neocognitron", "https://pubmed.ncbi.nlm.nih.gov/7370364/"], ["2026-10-05", "LeCun research history", "https://yann.lecun.com/ex/research/index.html"]]
   },
   {
     year:'2006–2012년 · 데이터와 칩',
@@ -958,14 +1782,17 @@ const SCENES = [
     part:1,
     who:['feifei','huang','ng','koller'],
     lines:[
-      '배우는 기계에는 배울 거리가 필요했어요. 페이페이 리는 2007년, 그 배울 거리를 만드는 ImageNet이라는 일을 착수했어요. 사진마다 이름표를 다는 대규모 데이터였어요. 이름표를 다는 일은 손이 많이 가는 일이었어요. 2009년에 그 데이터가 공개됐어요. 기계가 사진을 보며 배울 재료가 한꺼번에 늘어난 거예요.',
+      '배우는 기계에는 배울 자료가 필요했어요. 페이페이 리가 이끈 ImageNet 프로젝트는 많은 종류의 사물 사진에 이름표를 붙였어요. 2009년 발표 논문의 주저자는 지아 덩이고, 여러 연구자와 주석 작업자들이 함께했어요. 데이터셋은 저절로 모인 사진 더미가 아니에요. 무엇을 모으고 어떤 이름표를 붙일지 설계한 사람들의 일이에요.',
       '재료가 늘면, 계산할 힘도 함께 필요해요. 젠슨 황이 이끈 엔비디아는 2006년, 그래픽 칩을 범용 계산 도구로 바꾸는 CUDA를 내놨어요. 화면을 그리던 칩이, 이제 계산을 나눠 맡게 된 거예요. 계산하는 칩이 싸고 빨라지면, 배울 수 있는 양도 달라져요. 도구가 먼저 준비되고 있었던 거예요.',
-      '만든 사람 옆에는 가르친 사람도 필요했어요. 앤드류 응은 구글 브레인을 함께 세우고, 다프네 콜러와는 코세라를 만들어 강의를 열었어요. 강의가 열리자 배우려는 사람들이 모여들었어요. 응의 강의를 들은 사람이 전 세계에서 700만 명이 넘어요. 가르치는 일이 연구만큼 중요해진 거예요. 연구실 안에만 있던 지식이 바깥으로 나간 거예요.',
+      '지식을 배우고 전하는 기반도 중요했어요. 앤드류 응은 구글 브레인 연구를 함께 시작했고, 2012년에는 다프네 콜러와 코세라를 공동 창업했어요. 온라인 강의는 대학 밖의 학습자도 머신러닝을 공부할 길을 넓혔어요. 수강생 수는 집계 시점과 강좌에 따라 달라서 여기서는 하나의 숫자로 고정하지 않을게요. 연구자뿐 아니라 교사와 학습자도 기술의 확산에 기여했어요.',
       '데이터와 도구와, 가르치는 사람이 차례로 갖춰졌어요. 이제 남은 건 이 셋이 한자리에서 만나는 일이었어요. 만날 장소는 다음 장의 대회장이에요. 오늘 사진 검색이 바로 되는 건 우연이 아니에요. 데이터를 설계한 사람과 계산 칩을 만든 사람이 먼저 있었기 때문이에요.',
   ],
-    stats:[["2006", "CUDA 발표"], ["2009", "ImageNet 공개"], ["700만+", "코세라 수강 (앤드류 응)"]],
+    stats:[["2006", "CUDA 발표"], ["2009", "ImageNet 논문"], ["2012", "코세라 공동 창업"]],
     hook:"재료와 도구와, 가르치는 사람이 차례로 갖춰진 시간",
-    terms:[["ImageNet", "사진마다 이름표를 단 대규모 학습 데이터"], ["CUDA", "화면 칩을 범용 계산에 쓰는 도구"]]
+    terms:[["ImageNet", "사진마다 이름표를 단 대규모 학습 데이터"], ["CUDA", "화면 칩을 범용 계산에 쓰는 도구"]],
+    learning_question:"대규모 데이터가 저절로 학습 재료가 될까요?",
+    learning_answer:"수집과 분류 체계, 이름표 작업, 품질 검토가 필요해요.",
+    src:[["2026-10-05", "ImageNet original authors and collection", "https://www.image-net.org/update-sep-17-2019.php"], ["2026-10-05", "NVIDIA CUDA historical introduction", "https://developer.nvidia.com/blog/cuda-refresher-getting-started-with-cuda/"], ["2026-10-05", "Coursera official ten-year history", "https://blog.coursera.org/celebrating-10-years-of-learning-without-limits/"], ["2026-10-05", "Andrew Ng official biography", "https://www.andrewng.org/"]]
   },
   {
     year:'2012년 · 알렉스넷',
@@ -974,13 +1801,16 @@ const SCENES = [
     who:['krizhevsky','sutskever','hinton'],
     lines:[
       '2012년, 사진을 보고 무엇인지 맞히는 ImageNet 대회가 열렸어요. 여러 팀이 같은 사진 문제를 두고 겨루며, 누가 앞섰는지 숫자로 가리는 자리예요. 알렉스 크리제프스키와 일리야 수츠케버, 제프리 힌튼이 함께 나왔어요. 이들이 만든 것이 알렉스넷이었고, 겨울을 버텼던 신경망 방식이 이 무대의 답이 될 차례였어요.',
-      '알렉스넷은 그래픽 칩 2개가 나눠 계산하며 학습한 결과였어요. 오류를 크게 낮추며 대회에서 우승을 차지했어요. 배우는 방식이 다른 방식들을 앞지른 순간이었어요. 칩으로 배우는 방식이 통한다는 걸 보인 거예요. 결과는 누가 봐도 분명했어요. 이날 이후, 이 분야를 보는 시선이 달라졌어요.',
+      '알렉스넷의 신경망은 그래픽 칩 두 개로 나눠 학습했어요. 대회에는 여러 신경망의 예측을 결합한 결과를 제출했어요. 상위 다섯 개 예측 안에 정답이 없는 비율은 15.3퍼센트였고, 다음 팀은 26.2퍼센트였어요. 이것은 모든 오류를 세는 숫자가 아니라, 같은 대회의 같은 평가 기준이에요. 데이터와 계산 장치, 학습 방법을 함께 활용한 효과가 뚜렷하게 드러났어요.',
       '준비는 앞 장에서 끝났고, 이 대회가 확인 자리였던 거예요. ImageNet이라는 큰 데이터가 있었어요. CUDA로 계산하는 그래픽 칩과 역전파로 배우는 신경망도 준비돼 있었어요. 재료와 도구와 방법이 같은 해에 겹친 거예요. 하나만 있었으면 일어나지 않았을 일이에요.',
-      '이후 딥러닝이라는 말이 빠르게 퍼지며, 연구실의 믿음이 산업의 방향이 된 거예요. 이 승리가 딥러닝 시대의 방아쇠가 됐어요. 겨울이 끝나고, 배우는 기계의 시대가 본격적으로 열렸어요. 여기서 한 가지만 기억해 주세요. 새 알고리즘만이 아니에요. 데이터와 칩이 한날한시에 만난 거예요.',
+      '이 결과는 영상 인식에서 딥러닝에 대한 관심을 크게 높였어요. 모든 인공지능 문제를 풀었다는 뜻은 아니에요. ImageNet에서 잘 분류하는 능력과 세상을 폭넓게 이해하는 능력도 구분해야 해요. 한 연구의 성과를 읽을 때는 누가 만들었는지와 함께, 어떤 데이터와 시험에서 좋아졌는지를 물어보세요.',
   ],
-    stats:[["2012", "알렉스넷 우승"], ["GPU 2개", "학습에 사용"]],
+    stats:[["15.3%", "상위 5개 예측 오류율"], ["26.2%", "같은 대회 다음 팀"]],
     hook:"큰 대회에서 배우는 방식이 다른 방식을 앞지른 해",
-    terms:[["알렉스넷", "그래픽 칩 2개로 학습한 신경망"], ["딥러닝", "층이 깊은 신경망을 학습시키는 방식"]]
+    terms:[["알렉스넷", "그래픽 칩 2개로 학습한 신경망"], ["딥러닝", "층이 깊은 신경망을 학습시키는 방식"]],
+    learning_question:"알렉스넷의 15.3%는 어떤 오류율일까요?",
+    learning_answer:"같은 ImageNet 대회에서 상위 다섯 예측 안에 정답이 없는 비율이에요.",
+    src:[["2026-10-05", "AlexNet original paper", "https://cave.cs.toronto.edu/kriz/imagenet_classification_with_deep_convolutional.pdf"]]
   },
   {
     year:'2010–2024년 · 게임에서 과학으로',
@@ -990,13 +1820,15 @@ const SCENES = [
     lines:[
       '데미스 하사비스와 셰인 레그, 무스타파 술레이만이 2010년 런던에서 딥마인드를 세웠어요. 스스로 배우는 기계를 만들겠다는 회사가 목표였어요. 처음 무대는 게임이었어요, 이기고 지는 결과가 숫자로 분명했기 때문이에요. 잘한다는 것을 눈으로 확인할 수 있는 자리부터 시작한 거예요.',
       '2014년 구글이 딥마인드를 인수하면서, 작은 회사의 연구가 큰 회사의 계산 자원과 만났어요. 연구를 이어 갈 바탕이 넓어졌어요. 다만 회사가 커져도 질문은 그대로였어요. 기계가 스스로 배워서 어디까지 갈 수 있는가였어요. 실력을 재는 자리를 넘어, 문제를 푸는 자리로 옮겨 가는 일이었어요.',
-      '존 점퍼가 이 흐름에 함께했고, 두 사람이 만든 것이 알파폴드예요. 알파폴드는 단백질 구조를 예측하는 일을 맡았어요. 단백질이 어떻게 접히는지는 오랫동안 풀기 어려운 문제였어요. 접힌 모양을 알아야 약을 만들고 병을 이해할 수 있어요. 기계가 그 모양을 맞히기 시작하면서, 게임의 점수 대신 과학의 정답을 맞히는 일이 됐어요.',
-      '2024년, 하사비스와 점퍼는 데이비드 베이커와 함께 노벨 화학상을 받았어요. 게임 회사로 시작한 연구가 과학의 상까지 닿은 거예요. 함께 세운 술레이만은 지금 마이크로소프트에서 AI를 이끌고 있어요. 배움이라는 한 가지 방법이 여러 무대를 건넌 셈이에요. 게임에서 이긴 기계가, 다음에는 과학의 문제를 풀기 시작해요. 다만 그 힘이 한 회사 안에 모인다는 건, 또 다른 얘기예요.',
+      '존 점퍼가 이끈 연구팀은 하사비스를 비롯한 동료들과 알파폴드를 발전시켰어요. 특히 알파폴드 2는 아미노산 서열에서 단백질의 삼차원 구조를 높은 정확도로 예측하는 성과를 냈어요. 구조는 생물학과 신약 연구에 중요한 단서지만, 예측 하나로 약의 효과나 안전성이 증명되는 것은 아니에요. 두 사람만 만든 발명품이 아니라 연구팀의 성과예요.',
+      '2024년 노벨 화학상은 데이비드 베이커에게 단백질 설계의 공로로 절반이, 하사비스와 점퍼에게 단백질 구조 예측의 공로로 나머지 절반이 수여됐어요. 서로 연결된 주제지만 같은 업적에 대한 상은 아니에요. 딥마인드가 게임 연구에서 과학으로 활동을 넓혔다고 해서, 게임용 강화학습을 그대로 단백질에 적용했다는 뜻도 아니에요. 문제에 맞는 방법을 다시 설계한 거예요.',
   ],
     stats:[["2010", "딥마인드 설립"], ["2024", "노벨 화학상"]],
-    hook:"게임에서 이긴 기계가 과학의 정답을 맞히기까지",
-    terms:[["알파폴드", "단백질이 접히는 모양을 예측하는 모델"]],
-    src:[["2026-10-04", "Reuters, 구글 딥마인드 개편", "https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/"], ["2026-10-04", "TechCrunch, 점퍼 앤트로픽 합류", "https://techcrunch.com/2026/06/20/nobel-laureate-john-jumper-is-leaving-deepmind-for-rival-anthropic/"]]
+    hook:"게임과 과학, 서로 다른 문제에 맞춰 발전한 연구",
+    terms:[["AlphaFold", "아미노산 서열에서 단백질 구조를 예측"], ["구조 예측", "신약의 효과·안전성 입증과는 구분"]],
+    learning_question:"단백질 구조를 예측하면 신약 안전성도 증명될까요?",
+    learning_answer:"아니요. 구조는 연구의 단서이고 효과·안전성은 별도의 검증이 필요해요.",
+    src:[["2026-10-05", "AlphaFold2 Nature paper", "https://www.nature.com/articles/s41586-021-03819-2"], ["2026-10-05", "Nobel Chemistry official explanation", "https://www.nobelprize.org/prizes/chemistry/2024/popular-information/"]]
   },
   {
     year:'2016–2024년 · 강화학습과 알파고',
@@ -1004,15 +1836,17 @@ const SCENES = [
     part:1,
     who:['sutton','barto','hassabis','leesedol'],
     lines:[
-      '알파고 얘기 전에, 강화학습부터 짚고 갈게요. 리처드 서튼과 앤드루 바르토는 이 분야를 교과서와 개념으로 정리한 사람들이에요. 강화학습은 곧, 직접 해 보고 결과를 따라 고치는 배움이에요. 잘하면 보상을 받고 틀리면 다음엔 다르게 하는 거예요. 서튼은 2019년에 비터 레슨이라는 짧은 글을 썼어요. 계산이 싸지면 결국 스스로 배우는 방법이 이긴다는 얘기예요. 두 사람은 2024년 튜링상을 함께 받았어요.',
+      '시간을 2016년의 바둑 대결로 돌리기 전에, 강화학습의 토대부터 짚어 볼게요. 강화학습은 행동의 결과로 받은 보상을 이용해 다음 행동을 개선하는 학습이에요. 리처드 서튼과 앤드루 바르토는 그 개념과 알고리즘을 발전시키고 교과서로 정리했어요. 두 사람은 2024년 튜링상 수상자로 선정됐고, 발표는 2025년에 이뤄졌어요. 서튼은 2019년 비터 레슨에서, 계산을 확장할 수 있는 탐색과 학습이 장기적으로 강력했다는 역사적 관찰을 제시했어요. 어떤 문제에서나 무조건 큰 모델이 이긴다는 법칙은 아니에요.',
       '2016년 3월, 알파고가 이세돌과 마주 앉았어요. 다섯 판의 대국 끝에 결과는 네 판 승리와 한 판 패배였어요. 기계가 사람의 승부에서 이긴 장면이었어요. 진 한 판이 오히려 오래 기억에 남았어요, 완벽하지 않다는 것을 보여 준 판이었기 때문이에요.',
-      '이 대국의 무대를 만든 건 앞 장의 딥마인드예요. 강화학습이라는 오래된 방법이 큰 무대에서 증명된 순간이었어요. 게임에서 배운 기계가, 과학의 정답을 맞히는 기계로 이어진 거예요.',
-      '이기고 지는 이야기만은 아니에요. 스스로 해 보며 배우는 방법이, 사람의 최고수와 겨룰 자리에 선 거예요. 다음 장에서는 기계가 말을 다루는 법이 바뀐 이야기를 볼게요.',
+      '알파고는 딥마인드의 데이비드 실버 등을 포함한 연구팀이 만들었어요. 사람의 기보에서 배우는 지도학습, 스스로 대국하며 배우는 강화학습, 다음 수를 살펴보는 탐색이 함께 쓰였어요. 강화학습 하나만으로 나온 성과라고 하면 중요한 부분이 빠져요. 바둑의 명확한 규칙과 승패는 성능을 비교할 수 있는 시험장이 됐어요.',
+      '이 결과가 곧 모든 현실 문제에 같은 방법이 통한다는 뜻은 아니에요. 현실에서는 보상을 어떻게 정할지, 시행착오가 누구에게 피해를 줄지 먼저 생각해야 해요. 알파고와 알파폴드는 문제도 학습 방법도 달라요. 공통점은 큰 계산 자원과 연구팀의 설계로 어려운 문제에 도전했다는 점이에요. 다음에는 언어를 다루는 연구로 넘어갈게요.',
   ],
     stats:[["2016", "알파고 4승 1패"], ["2024", "서튼·바르토 튜링상"]],
     hook:"해 보며 배우는 법이 사람의 승부를 이긴 날",
-    terms:[["강화학습", "직접 해 보고 결과를 따라 고치는 배움"], ["비터 레슨", "계산이 싸지면 스스로 배우는 방법이 이긴다는 글"]],
-    src:[["2026-10-04", "Reuters, 구글 딥마인드 개편", "https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/"]]
+    terms:[["강화학습", "직접 해 보고 결과를 따라 고치는 배움"], ["비터 레슨", "확장 가능한 탐색·학습의 역사적 힘을 논한 글"]],
+    learning_question:"알파고가 사용한 학습 방법은 강화학습뿐일까요?",
+    learning_answer:"사람 기보를 이용한 지도학습, 자기 대국 강화학습, 탐색을 함께 썼어요.",
+    src:[["2026-10-05", "Silver and colleagues, AlphaGo Nature paper", "https://research.google/pubs/mastering-the-game-of-go-with-deep-neural-networks-and-tree-search/"], ["2026-10-05", "DeepMind, Deep Reinforcement Learning", "https://deepmind.google/blog/deep-reinforcement-learning/"], ["2026-10-05", "ACM Andrew Barto award record", "https://awards.acm.org/award_winners/barto_9471663"], ["2026-10-05", "Sutton, The Bitter Lesson, original essay university copy", "https://www.cs.utexas.edu/~eunsol/courses/data/bitter_lesson.pdf"]]
   },
   {
     year:'1997–2017년 · 어텐션',
@@ -1020,16 +1854,18 @@ const SCENES = [
     part:1,
     who:['hochreiter','schmidhuber','bahdanau','cho','vaswani','shazeer','gomez'],
     lines:[
-      '트랜스포머가 나오기 전 얘기부터 할게요. 1997년, 셉 호흐라이터와 위르겐 슈미트후버가 LSTM을 냈어요. LSTM은 긴 문장을 기억하는 일을 맡았어요. 잊을 것과 남길 것을 나누어 다루는 구조였어요. 순서대로 읽으며 기억을 이어 가는 방식이었어요. 20년 가까이 이 구조가 표준이 되며, 긴 글을 다루는 기계의 바탕이 됐어요.',
-      '다만 멀리 떨어진 단어는 한 번에 보기 어려웠어요. 문장이 길어질수록 앞부분이 흐려지는, 순서대로 읽는 방식의 한계였어요. 그때 다른 생각이 나왔어요. 드미트리 바흐다나우와 조경현, 요슈아 벤지오가 어텐션의 씨앗을 냈어요. 겨울을 버틴 세 사람 중 한 명인 벤지오가 여기서 다시 등장하는 거예요. 어텐션은 곧, 번역할 때 중요한 단어에 주목하는 방법이에요. 한국인 연구자가 그 씨앗을 낸 사람 중 하나예요.',
-      '2017년, 구글 연구자 8명이 논문 하나를 냈어요. 그 구조의 이름이 트랜스포머예요. 저자에는 바스와니와 셰이저, 고메즈 등이 있었어요. 트랜스포머는 멀리 있는 단어를 한 번에 보는 구조예요. 문장 전체를 한 번에 볼 수 있으니, 계산을 여러 칩에 나눠 맡기기도 좋아졌어요. 순서를 기다리지 않으니 속도가 난 거예요.',
-      '순서를 외우는 일보다 관계를 보는 일이 중요해지면서, 문장이 길어져도 중요한 단어를 놓치지 않게 됐어요. 지금의 언어 모델이 이 구조 위에 서 있어요. 지금 쓰는 번역과 요약의 출발이 이 구조예요. 8명이 쓴 짧은 논문 하나가 판을 바꾼 셈이에요.',
+      '이번에는 시간을 더 거슬러 언어 모델의 구조를 볼게요. 트랜스포머 이전에도 언어와 연속된 데이터를 다루는 신경망이 있었어요. 1997년 셉 호흐라이터와 위르겐 슈미트후버는 LSTM을 발표했어요. 오래 떨어진 정보의 영향을 학습하기 어려운 문제를 줄이기 위한 구조였어요. 뒤이어 여러 개선이 더해지며 음성이나 문장처럼 순서가 있는 자료에 널리 쓰였어요. 긴 문장을 완벽하게 기억하는 장치는 아니에요.',
+      '초기 신경망 번역에서는 입력 문장을 하나의 고정 길이 벡터에 요약하는 방식이 병목이 됐어요. 2014년 드미트리 바흐다나우와 조경현, 요슈아 벤지오는 번역하는 순간마다 입력의 어느 부분을 참고할지 학습하는 방법을 제안했어요. 어텐션을 이용한 정렬이에요. 예를 들어 다음 단어를 번역할 때 관련 있는 원문 단어에 더 높은 비중을 둘 수 있어요. 논문은 2015년 학회에서 발표됐어요.',
+      '2017년, 아시시 바스와니와 노암 셰이저, 니키 파르마르, 에이던 고메즈 등을 포함한 여덟 저자가 트랜스포머를 발표했어요. 어텐션으로 입력 요소 사이의 관계를 계산하는 구조예요. 반복적으로 한 칸씩 상태를 넘기는 계산을 줄여, 학습할 때 여러 위치를 병렬로 처리하기 좋아졌어요. 공동 저자에는 야코프 우슈코라이트, 라이온 존스, 우카시 카이저, 일리야 폴로수킨도 있어요.',
+      '트랜스포머는 정해진 문맥 범위 안에서 단어 사이의 관계를 계산해요. 문장이 길어도 중요한 내용을 반드시 기억하거나, 모든 지식을 한 번에 보는 것은 아니에요. GPT 같은 생성 모델은 앞서 나온 내용을 바탕으로 다음 토큰을 하나씩 만들어 가요. 토큰은 단어나 단어 조각처럼 모델이 처리하는 단위예요. 학습의 병렬 처리와 답을 생성하는 순서는 구분해야 해요.',
   ],
     stats:[["1997", "LSTM"], ["2017", "트랜스포머, 저자 8인"]],
-    table:{"h": ["구조", "방식", "한계"], "r": [["LSTM (1997)", "순서대로 읽으며 기억", "긴 문장에서 앞부분이 흐려짐"], ["트랜스포머 (2017)", "문장 전체를 한 번에 봄", "계산량이 크게 듦"]]},
+    table:{"h": ["구조", "학습 계산", "주의할 점"], "r": [["LSTM", "순서에 따라 상태 전달", "긴 의존성 학습을 돕지만 완벽하지 않음"], ["트랜스포머", "여러 위치 병렬 처리", "문맥 한계·계산 비용, 생성은 순차적"]]},
     hook:"순서대로 외우는 일에서, 관계를 보는 일로",
-    terms:[["어텐션", "번역할 때 중요한 단어에 주목하는 방법"], ["트랜스포머", "문장 전체를 한 번에 펼쳐 보는 구조"]],
-    src:[["2026-10-04", "TechCrunch, 셰이저 오픈AI 합류", "https://techcrunch.com/2026/06/18/openai-is-bringing-on-some-big-guns-in-the-lead-up-to-its-ipo/"], ["2026-10-04", "더바이오, 오르텟 출범", "https://www.thebionews.net/news/articleView.html?idxno=28595"]]
+    terms:[["어텐션", "번역할 때 중요한 단어에 주목하는 방법"], ["트랜스포머", "주어진 문맥에서 어텐션으로 관계를 계산하는 구조"]],
+    learning_question:"학습의 병렬 처리와 GPT의 답 생성은 같은 순서일까요?",
+    learning_answer:"아니요. 학습에서 여러 위치를 처리할 수 있지만 답 생성은 대체로 토큰을 순차적으로 만들어요.",
+    src:[["2026-10-05", "LSTM authors original repository", "https://www.bioinf.jku.at/software/lstm/"], ["2026-10-05", "Gers, Schmidhuber, Cummins, Learning to forget", "https://pubmed.ncbi.nlm.nih.gov/11032042/"], ["2026-10-05", "Bahdanau, Cho, Bengio, Neural Machine Translation", "https://arxiv.org/abs/1409.0473"], ["2026-10-05", "Vaswani and seven coauthors, Attention Is All You Need", "https://arxiv.org/abs/1706.03762"]]
   },
   {
     year:'2014–2020년 · 크게, 그리고 만들게',
@@ -1037,14 +1873,17 @@ const SCENES = [
     part:1,
     who:['radford','brown','goodfellow'],
     lines:[
-      '2014년, 이안 구드펠로가 적대적 생성 신경망(GAN)을 제안했어요. 만드는 모델과 가려내는 모델이 겨루는 구조예요. 한쪽이 만들면 다른 쪽이 진짜인지 따져요. 겨루는 상대가 있을 때 더 빨리 느는 구조였어요. 답하는 기계 옆에 만드는 기계가 서면서, 맞히는 일만 있던 자리에 만드는 일이 더해졌어요.',
-      '2018년, 알렉 래드포드 등이 GPT-1을 냈어요. GPT-1은 다음 단어를 맞히며 배우는 모델이었어요. 먼저 많이 읽히고 그다음에 익히게 하는 방식이었어요. 곧, 사전 학습이라는 이름이 붙은 방식이에요. 책과 글을 읽으며 말의 흐름을 먼저 익히는 거예요. 가르치기 전에 읽히는 순서가 핵심이었어요.',
-      '2020년, 톰 브라운 등이 GPT-3를 냈어요. GPT-3는 훨씬 큰 규모로 만들어졌어요. 크기가 달라지면 할 수 있는 일도 달라져요. 규모는 실력의 다른 이름이 되기 시작했어요. 같은 방식이라도 규모가 커지면 결과가 달라진다는 것을 보여 줬어요. 이 논문의 주저자인 톰 브라운은, 뒤에 앤트로픽을 함께 세운 사람이에요. 읽히는 양과 크기가 실력을 가른 시기였어요.',
-      '배움의 크기를 키우는 쪽과 만드는 쪽이 함께 자랐어요. 다만 만드는 쪽의 주류는 그새 옮겨 갔어요. 지금 그림과 영상을 만드는 생성형의 주류는, 노이즈를 조금씩 걷어 내며 형태를 만드는 확산 모델이에요. 읽는 기계와 만드는 기계가 같은 시대를 연 거예요. 이제 도구는 갖춰졌어요. 다음부터는 이 도구를 손에 쥔 사람들이 회사를 세우는 이야기예요.',
+      '2014년, 이안 구드펠로와 공동 연구자들은 적대적 생성 신경망을 제안했어요. 생성기는 데이터를 만들고, 판별기는 실제 자료와 생성된 자료를 구분해요. 두 모델이 주고받는 학습 신호로 생성 결과를 개선하는 방식이에요. 항상 안정적으로 학습되거나 다른 방식보다 빠른 것은 아니에요. 적대적 생성 신경망은 생성 모델의 중요한 한 갈래이고, GPT의 직접적인 전신은 아니에요.',
+      '2018년, 알렉 래드포드와 공동 연구자들은 나중에 GPT-1이라 불린 모델을 발표했어요. 먼저 많은 글에서 다음 토큰을 예측하도록 학습하고, 그다음 특정 과제에 맞춰 조정했어요. 사전 학습 자체가 이때 처음 생긴 것은 아니에요. 기존 사전 학습의 흐름과 트랜스포머 구조를 결합해 여러 언어 과제에 적용한 성과였어요.',
+      '2020년 톰 브라운을 비롯한 연구진은 1,750억 개 매개변수를 가진 GPT-3를 발표했어요. 매개변수는 학습 과정에서 바뀌는 모델 내부의 수치예요. 연구진은 별도의 가중치 조정 없이 예시를 문맥에 넣는 방식으로 여러 과제를 시험했어요. 규모를 키우며 개선된 결과도 있었지만, 추론의 오류와 편향 같은 한계도 남았어요. 크기만 알면 능력을 다 알 수 있는 것은 아니에요.',
+      '생성 모델은 새로운 자료를 만들지만, 사람처럼 뜻을 알고 의도해서 만드는 것과 같다고 단정할 수는 없어요. 적대적 생성 신경망과 언어 모델은 서로 다른 목표와 구조를 갖고 있어요. 이름이 비슷해 보이더라도 어떤 자료로 무엇을 예측하도록 학습했는지 살펴보면 차이가 보여요. 이제 이런 기술을 연구하고 서비스로 제공하는 조직과 사람의 이야기로 넘어갈게요.',
   ],
     stats:[["2014", "GAN 제안"], ["2018", "GPT-1"], ["2020", "GPT-3"]],
     hook:"읽는 기계 옆에 만드는 기계가 서기까지",
-    terms:[["사전 학습", "먼저 많이 읽히고, 그다음에 익히게 하는 방식"], ["적대적 생성 신경망", "만드는 모델과 가려내는 모델이 겨루는 구조"], ["확산 모델", "노이즈를 걷어 내며 형태를 만드는 지금의 주류 방식"]]
+    terms:[["사전 학습", "큰 자료로 먼저 학습한 뒤 여러 과제에 활용"], ["적대적 생성 신경망", "만드는 모델과 가려내는 모델이 겨루는 구조"]],
+    learning_question:"GPT의 사전 학습은 2018년에 처음 발명됐을까요?",
+    learning_answer:"아니요. 선행 사전 학습 연구를 트랜스포머 구조와 결합한 흐름이에요.",
+    src:[["2026-10-05", "Goodfellow and colleagues, Generative Adversarial Networks", "https://arxiv.org/abs/1406.2661"], ["2026-10-05", "OpenAI, Improving language understanding with unsupervised learning", "https://openai.com/index/language-unsupervised/"], ["2026-10-05", "Brown and colleagues, Language Models are Few-Shot Learners", "https://arxiv.org/abs/2005.14165"]]
   },
   {
     year:'2015년 · 회사를 세운 사람들',
@@ -1052,13 +1891,16 @@ const SCENES = [
     part:2,
     who:['altman','brockman','musk','sutskever','karpathy'],
     lines:[
-      '기술의 계보가 회사로 이어지는 자리예요. 2015년 말, 샘 올트먼과 그렉 브록만이 나섰어요. 일론 머스크와 일리야 수츠케버 등도 함께했어요. 창립 멤버에는 젊은 연구자 안드레이 카파시도 있었어요. 그렇게 비영리 회사 오픈에이아이가 세워졌어요. 돈을 버는 회사가 아니라, 기술을 나누겠다는 출발이었어요. 만든 사람들이 처음부터 약속을 내건 회사였어요.',
-      '세운 사람들이 내건 약속은 나눠 가진다는 것이었어요. 다만 약속과 현실은 늘 같은 속도로 가지 않아요. 커지는 연구를 약속만으로 감당하기 어려워진 거예요. 연구를 키우려면 큰돈이 필요했어요. 돈이 없으면 연구도 멈춘다는 현실이었어요.',
-      '나눠 가진다는 약속과 규모를 키우려는 힘이, 한 회사 안에서 부딪히기 시작했어요. 약속이 어떻게 흔들리는지, 이어서 볼게요.',
+      '2015년 12월, 오픈에이아이가 비영리 연구 조직으로 출발했어요. 샘 올트먼과 일론 머스크는 공동 의장을 맡았고, 그렉 브록만과 일리야 수츠케버가 핵심 역할을 맡았어요. 안드레이 카파시, 비키 청, 파멜라 바가타 등 연구자와 엔지니어들도 창립팀에 참여했어요. 공개된 설립문은 인류에게 이로운 인공지능과 연구 공유를 목표로 밝혔어요. 목표를 선언했다는 사실과 이후에 얼마나 실현했는지는 따로 살펴봐야 해요.',
+      '비영리는 연구비를 받거나 수익을 내지 못한다는 뜻이 아니에요. 돈을 어디에 쓰고 누가 통제하며, 이익을 누구에게 분배하는지가 중요해요. 큰 모델을 연구하려면 인력과 계산 장치에 많은 자원이 들어요. 공개와 안전이라는 목표를 어떤 자금 구조 안에서 지킬지가 조직의 중요한 문제가 됐어요.',
+      '창립자와 투자자, 연구자는 같은 조직에서도 다른 선택을 할 수 있어요. 다음 장은 그 선택이 갈라진 사례예요. 누군가의 속마음을 짐작하기보다, 당시 발표와 나중의 법원 판단을 구분하며 볼게요.',
   ],
     stats:[["2015", "오픈에이아이 설립"]],
-    hook:"돈을 버는 회사가 아니라, 기술을 나누겠다는 출발",
-    terms:[["비영리", "돈 버는 것이 목적이 아닌 회사 형태"]]
+    hook:"인류에게 유익한 AI를 목표로 출발한 비영리 연구 조직",
+    terms:[["비영리", "수익을 소유자에게 분배하지 않는 조직 형태"]],
+    learning_question:"비영리 조직은 수익이나 후원을 받을 수 없을까요?",
+    learning_answer:"그렇지 않아요. 수익을 소유자에게 나누지 않는 구조와 조직 목적·통제권을 살펴봐야 해요.",
+    src:[["2026-10-05", "Introducing OpenAI", "https://openai.com/index/introducing-openai/"]]
   },
   {
     year:'2018–2026년 · 갈라진 약속',
@@ -1066,15 +1908,17 @@ const SCENES = [
     part:2,
     who:['musk','altman'],
     lines:[
-      '2018년, 일론 머스크가 오픈에이아이 이사회를 떠났어요. 회사를 세운 사람 중 한 명이 먼저 나간 거예요. 이별에는 늘 여러 겹의 이유가 있어요. 방향을 두고 생각이 갈리며, 약속을 지키는 방법에서 어긋나기 시작했어요. 남은 사람들과 나간 사람의 길이 나뉜 해였어요.',
-      '연구를 키우려면 큰돈이 필요했어요. 돈이 없으면 연구도 멈춘다는 현실이었어요. 큰돈이 들어오면 나눠 가진다는 약속이 흔들려요. 비영리로 남을 것인가, 규모를 택할 것인가의 문제였어요. 샘 올트먼은 남은 사람들 쪽에 서 있었어요. 약속과 현실이 서로 다른 쪽을 당긴 거예요.',
-      '시간은 2026년까지 흘러요. 머스크는 오픈에이아이를 상대로 소송을 냈어요. 처음부터 함께한 사람들이 서로를 상대로 선 거예요. 2026년 5월 18일, 배심은 시효가 지났다는 의견을 냈어요. 배심 의견은 권고에 그치고, 판사가 이를 받아들이며 기각이 확정됐어요. 세운 사람과 세운 회사가 법정에서 마주한 끝이었어요.',
-      '다만 본안까지 판단한 것은 아니었어요. 약속을 어겼는지는 가려지지 않은 거예요. 머스크는 항소하겠다는 뜻을 밝혔어요. 갈라진 약속의 끝은 아직 오지 않았어요. 약속과 돈이 부딪히면, 사람이 먼저 나뉘어요. 다음 장에서는 다른 답을 낸 사람들을 볼게요.',
+      '2018년 일론 머스크는 오픈에이아이 이사회를 떠났어요. 함께 조직을 세웠던 사람의 역할이 바뀐 거예요. 이후 당사자들은 설립 목표와 운영 방향을 두고 서로 다른 주장을 내놓았어요. 이직이나 갈등을 한 사람의 성격이나 속마음만으로 설명하기는 어려워요. 공개된 기록으로 확인할 수 있는 일부터 구분해 볼게요.',
+      '연구에 필요한 자금과 조직의 목적을 어떻게 맞출지는 어려운 문제예요. 큰 투자를 받는다고 약속 위반이 자동으로 증명되는 것도, 좋은 목표를 내세웠다고 갈등이 해결되는 것도 아니에요. 회사의 구조와 통제권, 당사자들의 주장, 법원이 인정한 사실을 나누어 읽어야 해요.',
+      '머스크는 이후 오픈에이아이를 상대로 소송을 제기했어요. 2026년 5월 20일 지방법원은 시효에 관한 배심의 권고적 평결을 받아들였어요. 해당 청구는 제기 시한이 지났다는 이유로 기각됐어요. 이는 지방법원 단계의 판단이며, 모든 쟁점에 최종 결론이 났다고 표현하면 안 돼요.',
+      '시효 판단은 약속 위반이라는 주장이 옳았는지 그르렀는지를 본안에서 판단한 것과 달라요. 항소와 후속 절차는 별도로 확인해야 해요. 이 사례에서 배울 점은 유명한 인물의 주장도 주장으로 읽어야 한다는 거예요. 다음에는 같은 연구 조직을 떠나 다른 회사를 세운 사람들을 볼게요.',
   ],
-    stats:[["2018", "머스크 이사회 떠남"], ["2026", "소송 기각 (시효)"]],
-    hook:"약속과 돈이 부딪히면, 사람이 먼저 나뉘어요",
-    terms:[["비영리", "돈 버는 것이 목적이 아닌 회사 형태"], ["시효", "법이 정한 기간이 지나 청구할 수 없게 되는 것"]],
-    src:["2026-10-04", "머스크 소송 평결 정리", "https://waltercounsel.com/musk-openai-verdict-shows-value-of-early-stage-governance/"]
+    stats:[["2018", "머스크 이사회 떠남"], ["2026", "지방법원 시효 판단"]],
+    hook:"출발의 목표를 어떤 조직과 자금 구조로 지킬 것인가",
+    terms:[["비영리", "수익을 소유자에게 분배하지 않는 조직 형태"], ["시효", "법이 정한 기간이 지나 청구할 수 없게 되는 것"]],
+    learning_question:"시효로 기각되면 모든 주장의 옳고 그름이 정해질까요?",
+    learning_answer:"아니요. 제기 시한에 대한 판단과 주장 내용에 대한 본안 판단은 달라요.",
+    src:[["2026-10-05", "Musk v. Altman, post-trial order, docket 580", "https://storage.courtlistener.com/recap/gov.uscourts.cand.433688/gov.uscourts.cand.433688.580.0.pdf"], ["2026-10-05", "OpenAI supporters, Musk board departure announcement", "https://openai.com/index/openai-supporters/"]]
   },
   {
     year:'2021년 · 안전을 먼저 묻는 회사',
@@ -1082,15 +1926,18 @@ const SCENES = [
     part:2,
     who:['dario','daniela'],
     lines:[
-      '2021년, 다리오 아모데이와 다니엘라 아모데이가 나섰어요. 두 사람을 포함해 모두 7명이 앤트로픽을 세웠어요. 모두 오픈에이아이를 나온 사람들이었어요. 같은 연구실에서 배운 사람들이 다른 회사를 만든 거예요. 출발은 같았지만, 묻는 질문이 달랐어요.',
-      '앤트로픽이 앞세운 것은 안전 연구였어요. 잘 만드는 것만큼 안전하게 만드는 것을 먼저 물었어요. 무엇을 만들까보다 어떻게 만들까를 먼저 물은 거예요. 속도를 내기 전에 멈출 줄 아는 법을 연구한다는 거예요. 질문의 순서가 다른 회사와 달랐어요.',
-      '두 회사는 같은 곳에서 출발했어요. 목표는 같았어요, 안전하고 이로운 범용 지능이에요. 다만 한쪽은 규모를 키우는 데 먼저 힘을 썼고, 한쪽은 안전을 확인하는 데 먼저 힘을 썼어요. 어느 쪽이 옳다고 단정할 얘기는 아니에요. 다른 질문을 던졌다는 것 자체가 중요해요. 갈라진 길이 오히려 전체의 균형을 만든 거예요.',
-      '만든 사람들이 스스로에게 질문을 바꾼 거예요. 질문이 다르면 만들어지는 것도 달라져요. 그 질문이 지금의 경쟁을 더 풍성하게 만들었어요. 같은 연구실에서 나온 두 회사가 서로 다른 답을 냈어요. 안전을 먼저 묻는 쪽의 얘기를 들었으니, 이제 세상이 답할 차례예요.',
+      '2021년, 다리오 아모데이와 다니엘라 아모데이 등 오픈에이아이 출신 연구자들이 앤트로픽을 세웠어요. 다리오는 대표, 다니엘라는 사장을 맡았어요. 같은 연구 조직에서 일했던 사람들이 새로운 회사를 만든 거예요. 연구자의 이동은 지식과 경험이 다른 조직으로 이어지는 한 경로예요.',
+      '앤트로픽은 설립 발표에서 신뢰할 수 있고 해석할 수 있으며 조종 가능한 인공지능을 연구하겠다고 밝혔어요. 내부에서 왜 그런 답이 나오는지, 원하지 않은 행동을 어떻게 줄일지 묻는 일이에요. 동시에 큰 모델과 많은 계산이 필요한 연구도 계획했어요. 안전 연구와 규모 확대가 서로 완전히 떨어진 선택은 아니에요.',
+      '두 회사 모두 안전하고 유익한 인공지능을 목표로 내세웠어요. 앤트로픽은 신뢰성, 해석 가능성, 조종 가능성을 강조했어요. 이것은 회사가 밝힌 연구 방향이에요. 한쪽은 규모만, 다른 쪽은 안전만 추구한다고 나누거나, 안전을 강조했으니 실제로 더 안전하다고 단정할 수는 없어요. 주장과 공개된 평가 결과를 따로 읽는 태도가 필요해요.',
+      '새 회사를 세우면 연구의 우선순위와 조직 운영을 다르게 정할 수 있어요. 하지만 회사 이름이나 창업자의 말만으로 결과를 평가할 수는 없어요. 어떤 방법을 공개했고, 어떤 조건에서 효과를 보였으며, 무엇을 아직 해결하지 못했는지 확인해야 해요. 다음 장에서는 이런 연구가 대화형 서비스로 널리 알려진 시기를 볼게요.',
   ],
-    stats:[["2021", "앤트로픽 설립"], ["7인", "창업 멤버"]],
-    table:{"h": ["회사", "출발", "공통 목표 · 먼저 힘쓰는 곳"], "r": [["오픈에이아이", "2015", "안전하고 이로운 범용 지능 · 규모를 키우는 쪽 먼저"], ["앤트로픽", "2021", "안전하고 이로운 범용 지능 · 안전을 확인하는 쪽 먼저"]]},
-    hook:"무엇을 만들까보다, 어떻게 만들까를 먼저 물은 회사",
-    terms:[["안전 연구", "잘 만드는 것만큼 안전하게 만드는 것을 연구하는 일"]]
+    stats:[["2021", "앤트로픽 설립"], ["신뢰성·안전", "설립 발표의 연구 목표"]],
+    table:{"h": ["회사", "설립", "설립 당시 밝힌 방향"], "r": [["오픈에이아이", "2015", "인류에 유익한 AI·공유·안전"], ["앤트로픽", "2021", "안전·신뢰성·해석 가능성"]]},
+    hook:"회사가 밝힌 안전 목표와 실제 검증 결과는 구분해요",
+    terms:[["안전 연구", "잘 만드는 것만큼 안전하게 만드는 것을 연구하는 일"]],
+    learning_question:"안전을 내세운 회사는 더 안전하다고 입증된 걸까요?",
+    learning_answer:"선언과 입증은 달라요. 공개 평가, 연구 방법, 실제 운용 결과를 확인해야 해요.",
+    src:[["2026-10-05", "Anthropic Series A founding announcement", "https://www.anthropic.com/news/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems"]]
   },
   {
     year:'2022년 · 세상이 답한 날',
@@ -1098,29 +1945,35 @@ const SCENES = [
     part:2,
     who:['altman','murati'],
     lines:[
-      '앞 장에서 안전을 먼저 묻는 회사를 봤어요. 이제 시선을 다시 오픈에이아이로 돌려 볼게요. 2022년 11월 말, ChatGPT가 세상에 나왔어요. 처음엔 연구 성과를 보여 주는 공개 시험에 가까웠어요. 그런데 반응은 예상을 훌쩍 넘어섰어요.',
-      '두 달 만에 사용자가 1억 명에 닿았어요. UBS가 추정한 숫자예요. 역사상 가장 빠르게 퍼진 서비스 중 하나였어요. 비결은 새 화면이었어요. 묻고 답하는 대화 창 하나가 전부였거든요. 기술 쪽에서는 RLHF라는 방법이 받치고 있었어요. 사람의 평가를 학습에 되먹여, 답이 사람의 기대에 맞게 다듬는 방법이에요. 그날부터 대화 화면이 AI의 얼굴이 됐어요. 기술을 몰라도 누구나 바로 쓸 수 있게 된 거예요.',
+      '2022년 11월 30일, 오픈에이아이는 ChatGPT를 연구 프리뷰로 공개했어요. 사용자가 직접 대화하고 피드백을 줄 수 있는 형태였어요. 언어 모델을 연구 결과로만 읽던 사람도 화면에서 질문하고 답을 받아 볼 수 있게 됐어요.',
+      'ChatGPT는 질문에 이어 다시 묻고 답하는 대화 화면을 제공했어요. 기술적으로는 사람의 시범 답변과 평가를 활용해 모델을 조정했어요. RLHF는 사람의 평가를 학습에 되먹이는 방법이에요. 답이 더 유용해지도록 돕지만, 사실이 아닌 답을 없애는 보증은 아니에요. 설립자와 경영진뿐 아니라 학습 데이터를 만들고 평가한 사람들의 작업도 제품을 떠받쳤어요.',
       '이 시기를 기술 쪽에서 이끈 사람이 미라 무라티예요. 무라티는 오픈에이아이의 기술 책임자였어요. 샘 올트먼이 회사의 얼굴로 앞에 서는 동안, 무라티는 모델과 제품을 안쪽에서 챙겼어요. ChatGPT가 연구실 밖으로 나온 데는, 이 안쪽의 손길이 컸어요.',
-      '사람들은 처음으로 AI와 대화를 나누기 시작했어요. 숙제를 묻고, 편지를 고치고, 이야기를 지어 달라고 했어요. AI가 전문가의 도구에서 모두의 화면으로 옮겨 온 거예요. 오늘 우리가 AI 하면 떠올리는 화면이 여기서 나왔어요. 다만 잘나갈 때일수록, 안에서는 다른 일이 벌어지고 있었어요.',
+      'ChatGPT 이전에도 엘리자 같은 대화 프로그램과 여러 챗봇이 있었어요. ChatGPT가 사람과 인공지능의 첫 대화는 아니에요. 다만 다양한 일을 자연어로 부탁하는 방식이 널리 퍼지는 계기가 됐어요. 편리한 화면이 답의 정확성을 보장하지는 않아요. 그럴듯한 오류가 나올 수 있으니, 중요한 내용은 근거를 확인해야 해요.',
   ],
-    stats:[["2022", "ChatGPT 공개"], ["2개월", "사용자 1억 명 (UBS 추정)"]],
+    stats:[["2022.11.30", "ChatGPT 연구 프리뷰 공개"], ["RLHF", "사람의 평가를 학습에 활용"]],
     hook:"대화 창 하나가 AI의 얼굴이 된 날",
-    terms:[["ChatGPT", "묻고 답하는 대화 화면으로 쓰는 서비스"], ["RLHF", "사람의 평가를 학습에 되먹여 답을 다듬는 방법"]]
+    terms:[["ChatGPT", "묻고 답하는 대화 화면으로 쓰는 서비스"], ["RLHF", "사람의 평가를 학습에 되먹여 답을 다듬는 방법"]],
+    learning_question:"대화가 자연스러우면 답도 사실일까요?",
+    learning_answer:"그렇지 않아요. 자연스러운 문장과 사실 정확성은 별개라 중요한 내용은 확인해야 해요.",
+    src:[["2026-10-05", "Introducing ChatGPT", "https://openai.com/index/chatgpt/"], ["2026-10-05", "Weizenbaum, ELIZA, Communications of the ACM", "https://doi.org/10.1145/365153.365168"]]
   },
   {
-    year:'2023년 · 5일의 소동',
-    title:'해임과 복귀',
+    year:'2023년 · 해임과 복귀',
+    title:'조직의 통제권을 드러낸 사건',
     part:2,
     who:['altman','nadella','sutskever'],
     lines:[
-      'ChatGPT가 세상을 바꾼 지 일 년쯤 지난 때예요. 2023년 11월, 오픈에이아이 이사회가 움직였어요. 이사회의 선택은 샘 올트먼의 해임이었어요. 발표는 갑작스러웠고, 이유는 또렷하게 설명되지 않았어요. 밖에서 보던 사람들은 그저 놀랄 수밖에 없었어요.',
-      '회사 안쪽의 반응은 더 빨랐어요. 직원들이 잇따라 목소리를 냈어요. 올트먼이 돌아오지 않으면 함께 나가겠다는 뜻을 밝혔어요. 투자자들도 가만히 있지 않았어요. 만든 사람들이 만든 회사를 떠날 수도 있는 상황이었어요. 해임 5일 동안 회사의 운명이 오간 거예요.',
-      '그때 마이크로소프트의 사티아 나델라가 움직였어요. 나델라는 올트먼을 받아들일 자리를 마련해 뒀어요. 결국 이사회가 한발 물러섰어요. 5일 만에 올트먼이 대표 자리로 돌아왔어요.',
-      '이 소동에는 일리야 수츠케버의 그림자도 있어요. 수츠케버는 이사로서 해임 쪽에 섰던 사람이에요. 그런데 며칠 사이에 입장을 바꿨어요. 후회한다는 뜻을 밖으로 밝히기까지 했어요. 5일 만에 돌아온 건 한 사람만이 아니에요. 그 회사에 건 돈과 신뢰가 같이 돌아온 거예요.',
+      '2023년 11월 17일, 오픈에이아이 이사회는 샘 올트먼의 해임을 발표했어요. 이사회는 의사소통에 대한 신뢰 문제를 이유로 들었어요. 이는 당시 이사회가 밝힌 설명이에요. 공개되지 않은 사정을 우리가 단정해서 채울 수는 없어요. 미라 무라티는 처음에 임시 대표를 맡았어요.',
+      '그 뒤 직원과 투자자들의 반응, 지도부의 협의가 이어졌어요. 마이크로소프트의 사티아 나델라도 이 과정에서 중요한 역할을 했어요. 연구 성과를 가진 조직이라도 누가 의사결정을 하고 누구의 신뢰를 얻는지가 흔들리면 운영이 어려워질 수 있어요.',
+      '해임 뒤 약 닷새 만에 복귀 합의가 나왔고, 11월 29일 공식 복귀가 발표됐어요. 그래서 닷새 만에 돌아왔다는 표현은 합의 시점을 가리키는 줄임말이에요. 공식 복귀 날짜와 같은 뜻으로 쓰면 연표가 어긋나요. 새 이사회 구성도 함께 발표됐어요.',
+      '일리야 수츠케버도 이 사건에 관여한 이사였어요. 이후의 발표에서는 동료들과 관계를 이어 가겠다는 입장이 나왔어요. 이 사건만 보고 누가 안전을 중시했고 누가 돈만 원했다고 나누기는 어려워요. 조직의 권한과 책임, 공개된 설명의 범위를 살펴보는 사례로 읽어 주세요.',
   ],
-    stats:[["2023", "해임 소동"], ["5일", "복귀까지"]],
-    hook:"해임에서 복귀까지, 5일 동안 오간 회사의 운명",
-    terms:[["이사회", "회사의 큰 결정을 내리는 사람들의 모임"]]
+    stats:[["11월 17일", "해임 발표"], ["11월 29일", "공식 복귀 발표"]],
+    hook:"해임·복귀 합의·공식 복귀, 서로 다른 날짜를 구분해요",
+    terms:[["이사회", "회사의 큰 결정을 내리는 사람들의 모임"]],
+    learning_question:"복귀 합의와 공식 업무 복귀 날짜는 같을까요?",
+    learning_answer:"발표마다 가리키는 사건이 달라요. 해임·합의·공식 복귀를 구분해 연표를 읽어요.",
+    src:[["2026-10-05", "OpenAI leadership transition announcement", "https://openai.com/index/openai-announces-leadership-transition/"], ["2026-10-05", "OpenAI return announcement", "https://openai.com/index/sam-altman-returns-as-ceo-openai-has-a-new-initial-board/"]]
   },
   {
     year:'2024–2026년 · 나간 사람들이 세운 회사',
@@ -1129,30 +1982,34 @@ const SCENES = [
     who:['sutskever','gross','murati','karpathy'],
     lines:[
       '5일의 소동이 지나고, 회사는 겉으로 안정을 찾았어요. 그런데 사람이 한 명씩 떠나기 시작했어요. 2024년, 수츠케버가 오픈에이아이를 떠났어요. 그가 세운 회사가 SSI예요. 안전한 초지능, 곧 사람보다 뛰어나도 안전한 지능을 내건 곳이에요.',
-      'SSI의 처음 대표는 다니엘 그로스였어요. 그런데 2025년 여름, 그로스가 메타로 옮겼어요. 그때부터 수츠케버가 직접 대표를 맡았어요. 2026년 7월에는 엔비디아와 장기 협력이 발표됐어요. 50억 달러라는 규모는 언론 보도 기준이에요. 회사 공식 공시는 아니에요.',
-      '무라티도 같은 시기에 떠났어요. 2024년 9월, 기술 책임자였던 무라티가 회사를 나왔어요. 이듬해에는 Thinking Machines Lab을 세웠어요. ChatGPT 시대를 안쪽에서 이끌던 사람이, 이제 자기 이름의 회사를 연 거예요.',
-      '오픈에이아이 창립 멤버였던 안드레이 카파시도 자리를 옮긴 사람 중 하나예요. 2026년 5월, 카파시가 앤트로픽에 합류했어요. 떠난 사람들이 경쟁 회사로 가거나, 새 회사를 세운 거예요. 사람은 나가도, 배운 건 남아요. 나간 사람들이 각자 회사를 세우면서 계보는 더 넓어졌어요.',
+      'SSI는 다니엘 그로스가 2025년 6월 29일부터 회사에 있지 않다고 밝혔어요. 7월 3일에는 수츠케버가 대표를 맡는다고 발표했어요. 2026년 7월에는 엔비디아와 전략적 협력을 발표했어요. 여기서는 공식 발표로 확인한 역할과 협력만 다뤄요. 발표에 없는 투자액을 같은 사실처럼 붙이지 않을게요.',
+      '오픈에이아이의 기술 책임자였던 미라 무라티도 Thinking Machines Lab을 공동 창업했어요. 회사는 사람과 인공지능의 협력, 사용자가 조정할 수 있는 시스템을 연구 방향으로 밝혔어요. 익숙한 조직을 떠나 새 연구 환경을 만드는 선택이에요. 역시 창립자가 밝힌 목표와 그 목표가 실제로 이루어진 정도는 구분해야 해요.',
+      '안드레이 카파시는 오픈에이아이 창립 연구진의 한 사람이에요. 모델을 만드는 일뿐 아니라 강의와 기술 설명을 통해 학습자에게도 알려졌어요. 최근 이직 보도처럼 빠르게 바뀌는 정보는 당시의 공식 발표를 따로 확인해야 해요. 이 장에서는 창립 연구진과 새 연구 조직의 연결이라는, 확인 가능한 이력을 중심으로 볼게요.',
   ],
-    stats:[["2024", "SSI 설립"], ["2026", "카파시 앤트로픽 합류"]],
+    stats:[["2024", "SSI 출범"], ["2025", "수츠케버 대표 취임"]],
     hook:"사람은 나가도, 배운 건 남는 이야기",
     terms:[["SSI", "안전한 초지능을 내건 회사"], ["초지능", "사람보다 뛰어난 지능"]],
-    src:["2026-10-04", "TechCrunch, 카파시 합류", "https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/"]
+    learning_question:"한 사람의 이직만으로 회사 전체의 기술이 옮겨갈까요?",
+    learning_answer:"연구 경험은 이동하지만 성과에는 동료·데이터·계산 자원·조직이 함께 필요해요.",
+    src:[["2026-10-05", "SSI official updates", "https://ssi.inc/updates"], ["2026-10-05", "Thinking Machines official mission", "https://thinkingmachines.ai/"], ["2026-10-05", "NVIDIA SSI strategic partnership announcement", "https://investor.nvidia.com/news/press-release-details/2026/Ilya-Sutskevers-Safe-Superintelligence-Inc--and-NVIDIA-Announce-Long-Term-Strategic-Partnership/default.aspx"], ["2026-10-05", "Thinking Machines NVIDIA partnership announcement", "https://thinkingmachines.ai/news/nvidia-partnership/"]]
   },
   {
-    year:'2026년 · 먼저 만든 쪽의 움직임',
-    title:'구글과 메타의 움직임',
+    year:'2025–2026년 · 연구 조직의 변화',
+    title:'연구 조직은 어떻게 바뀔까',
     part:2,
     who:['shazeer','lecun','lebrun','hassabis','kabukcuoglu','wang'],
     lines:[
-      '이번에는 먼저 만든 쪽의 이야기를 볼게요. 구글과 메타는 AI를 일찍부터 연구해 온 회사예요. 그런데 세상의 주목은 뒤에 온 회사들이 가져갔어요. 2026년, 두 회사 안에서도 큰 움직임이 이어졌어요. 사람의 이동이 그 중심에 있었어요.',
-      '노암 셰이저의 이동이 대표적이에요. 셰이저는 오픈에이아이 출신이 아니에요. 2026년 6월, 구글 딥마인드를 떠나 오픈에이아이에 처음 합류했어요. 먼저 만든 쪽의 핵심 연구자가 자리를 옮긴 거예요.',
-      '얀 르쿤은 메타를 떠나 자기 길을 열었어요. 르쿤은 메타의 페이스북 AI 리서치를 이끌던 사람이에요. 2026년 3월 11일, AMI Labs가 출범했어요. 10억 달러가 넘는 시드 투자를 받은 출발이었어요. 회장은 르쿤이 맡고, 대표는 알렉상드르 르브룅이에요.',
-      '구글 딥마인드도 안쪽이 바뀌었어요. 2026년 8월 5일, 리더십 개편이 있었어요. 데미스 하사비스는 의장과 알파벳 수석 과학자로 역할을 바꿨어요. 실무는 코라이 카부쿠오글루가 맡았어요. 메타는 스케일 AI를 인수한 게 아니에요. 지분에 투자했고, 알렉산더 왕이 그 길로 합류했어요. 먼저 만든 쪽이 늘 먼저 도착하는 건 아니에요. 가진 걸 어떻게 쓰느냐가 다음 장의 지형을 정해요.',
+      '구글과 메타 같은 큰 기업도 연구팀을 꾸리고, 다른 회사와 협력하고, 연구자를 영입해 왔어요. 새로운 회사의 등장만큼 기존 조직 안의 변화도 중요해요. 다만 직함과 소속은 빨리 바뀌므로, 한 번 만든 인물 지도를 영구적인 사실로 읽으면 안 돼요.',
+      '노암 셰이저는 2017년 트랜스포머 논문의 공동 저자예요. 하사비스는 딥마인드의 공동 창업자이고, 코라이 카부쿠오글루는 딥마인드의 연구 리더로 일해 왔어요. 여기서는 검증한 연구 기여를 중심으로 소개해요. 최근 소속이나 개편 소식이 엇갈릴 때는 과거의 확실한 업적과 현재 직함을 분리해서 읽는 편이 정확해요.',
+      '얀 르쿤과 알렉상드르 르브룅이 참여한 AMI Labs는 2026년 3월 10일 공식 출범과 10억 달러가 넘는 투자를 발표했어요. 출범 당시 르쿤은 회장, 르브룅은 대표로 소개됐어요. 새로운 연구 방향과 조직을 세웠다는 발표이지, 목표한 지능을 이미 완성했다는 뜻은 아니에요.',
+      '메타와 스케일 AI의 관계는 2025년의 사례예요. 스케일 AI는 메타의 지분 투자와 알렉산더 왕의 메타 합류를 발표했어요. 회사를 통째로 인수한 일과 지분을 투자한 일은 구분해야 해요. 인물 이동을 읽을 때도 연구 업적, 직책, 회사의 소유 관계를 한 문장에 섞지 않는 것이 중요해요.',
   ],
-    stats:[["2026", "AMI Labs 출범"], ["2026", "딥마인드 개편"]],
-    hook:"먼저 만든 쪽이 늘 먼저 도착하는 건 아니에요",
+    stats:[["2025", "메타의 스케일 AI 투자"], ["2026.3.10", "AMI Labs 출범"]],
+    hook:"연구 업적과 현재 직함, 투자와 인수는 나누어 읽어요",
     terms:[["AMI Labs", "르쿤이 회장을 맡은 새 연구 회사"]],
-    src:["2026-10-04", "Reuters, 구글 딥마인드 개편", "https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/"]
+    learning_question:"최신 인물 소개를 읽을 때 무엇을 확인해야 할까요?",
+    learning_answer:"발표 날짜, 발표한 주체, 새 역할의 정확한 범위를 확인해요.",
+    src:[["2026-10-05", "AMI official launch", "https://amilabs.xyz/updates"], ["2026-10-05", "Scale AI company evolution", "https://scale.com/blog/scale-ai-announces-next-phase-of-company-evolution"], ["2026-10-05", "AMI lead investor launch statement", "https://www.cathaycapital.com/de/advanced-machine-intelligence-ami-is-enabling-the-next-ai-revolution-built-on-foundational-world-models/"]]
   },
   {
     year:'2026년 · 그려지는 중인 지도',
@@ -1160,40 +2017,45 @@ const SCENES = [
     part:2,
     who:['altman','dario','musk','bengio','cho','jumper'],
     lines:[
-      '이제 지도를 현재로 가져와 볼게요. 2026년의 AI 지형은 몇 개 회사가 나눠 갖고 있어요. 오픈에이아이의 기업가치는 8,520억 달러로 평가됐어요. 2026년 3월 기준이에요. 앤트로픽은 9,650억 달러에 닿았어요. 2026년 5월, Series H 투자를 마친 뒤의 숫자예요.',
-      '돈의 크기만큼 회사의 모양도 바뀌고 있어요. 오픈에이아이의 상장 준비가 드러난 건 2026년 6월 8일이에요. 비공개 초안을 제출했다는 사실이 공식으로 알려졌어요. 다만 상장 시기는 아직 정해지지 않았어요. 회사의 성격 자체가 바뀌는 중이에요.',
-      '다툼도 있었어요. 앤트로픽과 국방부의 사이가 소송으로 번졌어요. 8월에는 연방지법이 한 지정을 위법하다고 봤어요. 9월에는 항소법원이 다른 배제를 유지했어요. 두 판결이 서로를 지운 건 아니에요. 안전을 내건 회사가 국가와 법정에서 맞선 거예요.',
-      '일론 머스크의 xAI는 스페이스엑스 아래로 들어갔어요. 2026년 2월 인수가 있었고, 7월에는 SpaceXAI라는 새 이름을 내걸었어요. 요슈아 벤지오는 2025년 6월, 비영리 단체 LawZero를 세웠어요. 조경현은 2026년 1월 제넨텍을 떠나 대학으로 돌아왔어요. 그해 9월에는 새 회사를 함께 세워 대표를 겸하고 있어요. 존 점퍼는 2026년 6월 앤트로픽에 합류한다고 발표했어요. 지도는 아직 그려지는 중이에요. 그래서 마지막 장에서는, 이 계보 밖에 서 있는 사람들을 볼게요.',
+      '이제 지도를 현재로 가져와 볼게요. 2026년에도 여러 주요 기업의 규모와 조직이 달라지고 있어요. 오픈에이아이의 기업가치는 8,520억 달러로 평가됐어요. 2026년 3월 기준이에요. 앤트로픽은 9,650억 달러에 닿았어요. 2026년 5월, Series H 투자를 마친 뒤의 숫자예요. 이 숫자는 투자 당시의 기업가치예요. 매출이나 현금 보유액, 모델의 성능 순위를 뜻하지 않아요.',
+      '돈의 크기만큼 회사의 모양도 바뀌고 있어요. 오픈에이아이의 상장 준비가 드러난 건 2026년 6월 8일이에요. 비공개 초안을 제출했다는 사실이 공식으로 알려졌어요. 당시 발표에서는 상장 시기를 정하지 않았다고 했어요. 회사의 성격 자체가 바뀌는 중이에요.',
+      '기업과 정부의 갈등도 있었어요. 2026년 9월 25일 미국 연방항소법원은 앤트로픽의 정부 조달 배제에 대한 소송에서 회사의 이의를 받아들이지 않았어요. 이는 특정 법과 조치에 관한 판단이에요. 다른 법원에서 다투는 별개의 조치까지 같은 사건의 같은 결론으로 묶으면 안 돼요. 법률 절차의 최신 상태는 원문을 다시 확인해야 해요.',
+      '2026년 2월에는 스페이스엑스의 xAI 인수가 공식 발표됐어요. 요슈아 벤지오는 2025년 6월 비영리 단체 LawZero를 세웠고요. 조경현은 뉴욕대 교수직과 병행하던 제넨텍 역할을 2026년 1월까지 맡았고, 이후 오르텟을 공동 창업해 대표가 됐어요. 같은 연구 경험이 기업과 대학, 비영리 조직으로 이어지는 서로 다른 길이에요. 모든 연구자가 같은 종류의 조직을 택하는 것은 아니에요.',
   ],
     stats:[["8,520억 달러", "오픈에이아이 (2026.3)"], ["9,650억 달러", "앤트로픽 (2026.5)"]],
-    table:{"h": ["회사", "기업가치 (2026)", "상태"], "r": [["오픈에이아이", "8,520억 달러", "상장 준비 중"], ["앤트로픽", "9,650억 달러", "정부와 소송 중"], ["SpaceXAI", "스페이스엑스 산하", "2026 개명"]]},
-    hook:"돈의 크기가 회사의 모양까지 바꾸는 중이에요",
-    terms:[["기업가치", "회사가 얼마로 평가되는지를 나타내는 숫자"], ["상장", "회사 주식을 시장에 내놓는 일"]],
-    src:["2026-10-04", "OpenAI, 회사 구조", "https://openai.com/our-structure/"]
+    table:{"h": ["회사", "당시 기업가치", "확인한 발표·판단"], "r": [["오픈에이아이", "8,520억 달러 (3.31)", "6.8 상장 초안 제출 발표"], ["앤트로픽", "9,650억 달러 (5.28)", "9.25 조달 배제 이의 기각"], ["xAI", "이 표에서 평가액 비교 안 함", "2.2 스페이스엑스 인수 발표"]]},
+    hook:"날짜를 붙여 읽는 기업 지도, 평가액은 능력의 점수가 아니에요",
+    terms:[["기업가치", "투자 당시 회사의 평가액, 매출·현금 보유액과 다름"], ["상장 준비", "초안 제출과 실제 상장 완료는 구분"]],
+    learning_question:"기업가치가 높으면 모델 성능도 가장 좋을까요?",
+    learning_answer:"기업가치는 투자 평가액이에요. 성능·매출·현금 보유액과 다른 수치예요.",
+    src:[["2026-10-05", "OpenAI funding announcement", "https://openai.com/index/accelerating-the-next-phase-ai/"], ["2026-10-05", "Anthropic Series H", "https://www.anthropic.com/news/series-h"], ["2026-10-05", "OpenAI confidential draft S-1 announcement", "https://openai.com/index/openai-submits-confidential-s-1/"], ["2026-10-05", "DC Circuit Anthropic v Department of War, 26-1049", "https://media.cadc.uscourts.gov/opinions/docs/2026/09/26-1049-2194984.pdf"], ["2026-10-05", "xAI joins SpaceX", "https://x.ai/news/xai-joins-spacex"], ["2026-10-05", "LawZero founding announcement", "https://lawzero.org/en/news/yoshua-bengio-launches-lawzero-new-nonprofit-advancing-safe-design-ai"], ["2026-10-05", "Kyunghyun Cho official biography", "https://kyunghyuncho.me/"], ["2026-10-05", "Anthropic v DoW, ND California order 250", "https://docs.justia.com/cases/federal/district-courts/california/candce/3:2026cv01996/465515/250"]]
   },
   {
-    year:'2025–2026년 · 계보 밖의 사람들',
-    title:'가계도 밖에서',
+    year:'2025–2026년 · 여러 지역과 기반 기술',
+    title:'넓어지는 연구 지도',
     part:2,
     who:['huang','liang','mensch','lample'],
     lines:[
-      '마지막 장에서는 계보 밖에 서 있던 사람들을 봐요. 주인공이 아니라고 중요하지 않은 건 아니에요. 오히려 이 사람들이 없으면 앞의 이야기가 성립하지 않아요. 토대를 깐 사람, 다른 길을 연 사람들이에요. 한 명씩 만나 볼게요.',
-      '젠슨 황의 엔비디아부터 볼게요. 다섯째 장에서 본 대로, 엔비디아는 칩과 CUDA로 토대를 깔았어요. 지금도 AI를 만드는 회사들이 그 칩을 기다리고 있어요. 모든 계보가 그 위를 지나가는 셈이에요.',
-      '량원펑의 딥시크는 중국에서 다른 길을 열었어요. 2025년 초, 딥시크의 추론 모델이 세계의 주목을 받았어요. 큰 회사들만 AI를 만드는 건 아니라는 걸 보여 준 거예요. 지도 밖에 있던 자리에서 새 길이 열린 셈이에요.',
-      '아르튀르 멘시와 기욤 람플의 미스트랄은 유럽의 길이에요. 미스트랄은 오픈 웨이트, 곧 학습 결과를 공개하는 모델을 내는 회사예요. 람플은 메타의 Llama 논문에 공동 저자로 이름을 올린 사람이에요. AI의 무대가 한두 나라만은 아니라는 걸, 이 회사가 보여 주고 있어요. 계보 밖에도 사람들은 있었어요. 칩을 만들고, 다른 나라에서 다른 길을 연 사람들이에요. 처음 질문으로 돌아가 볼까요?',
+      '마지막 장에서는 시선을 여러 지역과 기반 기술로 넓혀 볼게요. 앞에서 선택한 연구 흐름만으로 인공지능 전체를 설명할 수는 없어요. 다른 나라의 연구팀, 계산 도구를 만드는 엔지니어, 학습 자료를 정리하는 사람들이 함께해요. 이번에 다루지 못한 사람들의 기여도 있다는 점을 기억해 주세요.',
+      '젠슨 황이 이끈 엔비디아는 그래픽 처리 장치와 CUDA로 많은 연구팀의 계산 기반을 제공했어요. 하지만 모든 인공지능이 엔비디아 칩 위에서만 만들어지는 것은 아니에요. 다른 그래픽 처리 장치와 구글의 텐서 처리 장치, 여러 종류의 가속기도 쓰여요. 칩을 설계하고 소프트웨어를 만드는 수많은 엔지니어의 기여도 함께 보아야 해요.',
+      '량원펑이 이끄는 딥시크 연구팀은 2025년 1월 추론 모델 알원을 공개했어요. 공개 논문은 강화학습을 이용한 방법과 평가 결과, 남은 한계를 설명해요. 창업자 한 사람의 성과로 읽기보다 연구진과 공개된 방법을 함께 봐야 해요. 특정 나라나 몇몇 유명 회사만이 이 분야를 만드는 것은 아니라는 사례예요.',
+      '아르튀르 멘시와 기욤 람플, 티모테 라크루아는 미스트랄을 함께 세웠어요. 미스트랄은 학습된 가중치를 공개하는 모델과 별도의 상용 서비스를 제공해요. 가중치 공개는 학습 데이터와 코드가 모두 공개된다는 뜻이 아니고, 이용 조건도 모델마다 확인해야 해요. 람플은 Llama 논문 공저자이기도 해요. 나라와 조직을 건너온 연구가 새로운 회사를 만들었다는 점을 볼 수 있어요.',
   ],
-    stats:[["GPU", "모든 계보가 지나는 토대"], ["2025", "딥시크 추론 모델 주목"]],
-    table:{"h": ["인물", "자리", "연 길"], "r": [["젠슨 황", "엔비디아", "칩과 CUDA"], ["량원펑", "딥시크", "추론 모델"], ["멘시·람플", "미스트랄", "오픈 웨이트"]]},
-    hook:"주인공이 아니어도, 없으면 이야기가 성립하지 않는 사람들",
-    terms:[["오픈 웨이트", "학습 결과를 공개하는 모델"], ["추론 모델", "답을 내기 전에 생각을 이어 가는 모델"]]
+    stats:[["GPU", "많은 AI 연구의 계산 기반"], ["2025", "딥시크 추론 모델 주목"]],
+    table:{"h": ["인물", "자리", "연 길"], "r": [["젠슨 황", "엔비디아", "칩과 CUDA"], ["량원펑", "딥시크", "추론 모델"], ["멘시·람플·라크루아", "미스트랄", "가중치 공개 모델 등"]]},
+    hook:"여러 지역의 연구팀과 기반 기술로 넓혀 보는 지도",
+    terms:[["오픈 웨이트", "학습된 가중치를 공개, 데이터·코드·이용 조건은 별도"], ["추론 모델", "답 생성에 추가 계산을 활용하도록 학습한 모델"]],
+    learning_question:"오픈 웨이트면 코드와 데이터도 모두 자유롭게 쓸까요?",
+    learning_answer:"아니요. 가중치·코드·학습 데이터의 공개 범위와 라이선스를 각각 확인해요.",
+    src:[["2026-10-05", "DeepSeek R1 official release", "https://deepseek.com/en/news/deepseek-r1/"], ["2026-10-05", "DeepSeek R1 research paper", "https://arxiv.org/abs/2501.12948"], ["2026-10-05", "Mistral official About", "https://mistral.ai/fr/about/"], ["2026-10-05", "LLaMA original paper", "https://arxiv.org/abs/2302.13971"]]
   }
 ];
 
 Object.assign(RIVALS, EXTRAS);
-const PARTS = {"1": {"name": "기술의 계보", "desc": "질문이 태어나고, 겨울을 지나, 배우는 기계가 돌아오기까지"}, "2": {"name": "회사와 사람의 시대", "desc": "나눠 갖겠다는 약속이 규모와 부딪히고, 사람들이 갈라져 나가기까지"}};
-const PART_TEXT = {"1": "기술의 계보, 첫 번째 부분이에요. 질문이 태어나고 겨울을 지나, 배우는 기계가 돌아오기까지의 이야기예요.", "2": "회사와 사람의 시대, 두 번째 부분이에요. 기술을 나누겠다는 약속이 규모와 부딪히고, 사람들이 갈라져 나가는 이야기예요."};
-const END_QUOTE = "오늘은 왜 지금의 에이아이가 있는지, 그 질문 하나만 따라왔어요. 겨울을 버틴 사람들과 도구를 먼저 만든 사람들, 그리고 가르친 사람들을 봤죠. 처음 질문으로 돌아가 볼까요? 답은 한 사람의 천재성보다, 이어진 사람들의 선택에 있었어요. 계보는 비유일 뿐이에요. 다만 그 길을 따라가면, 지금 손에 든 도구가 공짜로 생기지 않았다는 건 분명해져요. 새 에이아이를 만날 때마다 물어보세요. 이건 누가, 무엇을 배울 수 있게 만든 결과인가요. 끝까지 함께해 주셔서 감사합니다.";
-const ROLL_HTML = "<div class=\"rl-title\">인공지능을 만든 사람들<small>엔딩 크레딧 · AIStory · 2026.10.04</small></div>\n<div class=\"rl-sec\"><h3>결론</h3><p>답은 한 사람의 천재성보다, 이어진 사람들의 선택에 있었어요</p></div>\n<div class=\"rl-sec\"><h3>기획 · 총괄 · 최종 승인</h3><p>계속 “진행해줘”라고 말한 분</p></div>\n<div class=\"rl-sec\"><h3>원고 작성</h3><p>Claude<br><span class=\"rsub\">AI가 쓴, AI를 만든 사람들의 이야기입니다.<br>이해충돌은 미리 고지합니다 — 사실관계는 AI 여러 개와 웹 검색으로 교차 점검했고, 사람이 최종 검토했습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>팩트체크</h3><p>또 다른 Claude 여러 명과 웹 검색<br><span class=\"rsub\">시점이 틀리기 쉬운 2026년 사항은 원문 보도와 대조했고, 확인되지 않은 것은 쓰지 않았습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>검토</h3><p>사실검증 · 구성 · 스타일, 세 관점의 병렬 검토<br><span class=\"rsub\">빠진 사람과 틀린 시점부터 찾으라고 요구받았고, 정정 3건과 보강 7건을 가져왔습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>낭독</h3><p>AI 합성 음성<br><span class=\"rsub\">사람 목소리가 아니라 AI가 합성한 음성입니다. 전체 길이는 실측 33분 23초예요.</span></p></div>\n<div class=\"rl-sec\"><h3>이 자료의 구성</h3><p>1부 기술의 계보 (1–10장) · 2부 회사와 사람의 시대 (11–19장)</p></div>\n<div class=\"rl-sec\"><h3>인물 표시</h3><p class=\"ph\">인물 사진은 사용하지 않았습니다. 모든 인물은 이니셜로 표시됩니다.</p></div>\n<div class=\"rl-sec\"><h3>편집 원칙</h3><p>확인하지 못한 것은 쓰지 않는다<br><span class=\"rsub\">근거가 없으면 ‘확인 불가’라고 적었습니다.<br>(그래도 나레이션은 여러 번 고쳐 쓰였습니다)</span></p></div>\n<div class=\"rl-sec\"><h3>면책</h3><p>이 자료는 공개된 발표와 보도를 바탕으로 재구성했습니다.<br><span class=\"rsub\">날짜와 기업가치는 2026-10-04 기준이며 바뀔 수 있습니다.<br>우리말 이름과 독음은 이 자료의 표기이며 공식 명칭이 아닙니다.</span></p></div>\n<div class=\"rl-sec\"><h3>최신 사항의 출처</h3><p class=\"ph rsub\">변동이 잦은 2026년 사항은 아래 자료로 확인했습니다.</p><p class=\"ph\"><a href=\"https://waltercounsel.com/musk-openai-verdict-shows-value-of-early-stage-governance/\" target=\"_blank\" rel=\"noopener\">머스크 소송 평결 정리</a></p><p class=\"ph\"><a href=\"https://www.engadget.com/2209300/xai-now-officially-spacexai/\" target=\"_blank\" rel=\"noopener\">Engadget, SpaceXAI 개명</a></p><p class=\"ph\"><a href=\"https://openai.com/our-structure/\" target=\"_blank\" rel=\"noopener\">OpenAI, 회사 구조</a></p><p class=\"ph\"><a href=\"https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/\" target=\"_blank\" rel=\"noopener\">TechCrunch, 카파시 합류</a></p><p class=\"ph\"><a href=\"https://www.reuters.com/world/inside-google-executive-moves-that-led-its-big-ai-reshuffle-2026-08-12/\" target=\"_blank\" rel=\"noopener\">Reuters, 구글 딥마인드 개편</a></p><p class=\"ph\"><a href=\"https://lawzero.org/en/news/yoshua-bengio-launches-lawzero-new-nonprofit-advancing-safe-design-ai\" target=\"_blank\" rel=\"noopener\">LawZero, 설립 발표</a></p></div>\n<div class=\"rl-sec\"><h3>음악</h3><p>없음<br><span class=\"rsub\">크레딧은 조용히 올라갑니다</span></p></div>\n<div class=\"rl-sec\"><h3>특수효과</h3><p>없음<br><span class=\"rsub\">페이지 넘김과 자막이 전부입니다</span></p></div>\n<div class=\"rl-sec\"><h3>삭제된 장면</h3><p>없던 본문 파일<br><span class=\"rsub\">찾아 헤맨 끝에, 처음부터 새로 쓰기로 했습니다</span></p></div>\n<div class=\"rl-sec\"><h3>제작 중 사고</h3><p>검증기가 기준 본문까지 미달로 판정한 첫 실행<br><span class=\"rsub\">어미 분류 규칙이 좁았던 것이 원인이었습니다. 고쳐서 다시 통과시켰습니다.</span></p></div>\n<div class=\"rl-sec\"><h3>출연 동물</h3><p>없음<br><span class=\"rsub\">다만 제작자는 강아지로 알려져 있습니다</span></p></div>\n<div class=\"rl-sec\"><h3>최종 작성자</h3><p>삐꾸강아쥐 by 딸깍</p></div>\n<div class=\"rl-end\">— 끝 —<small>다음 이야기는 아직 쓰이지 않았습니다</small></div>";
+const PARTS = {"1": {"name": "기술의 계보", "desc": "질문·학습·데이터·계산이 만나 발전한 연구"}, "2": {"name": "회사와 사람의 시대", "desc": "조직의 목표와 실제 성과, 사람의 이동을 구분해 읽기"}};
+const PART_TEXT = {"1": "첫 번째 부분은 기술의 계보예요. 질문과 학습 방법, 데이터와 계산 도구가 만나 발전한 연구를 살펴볼게요.", "2": "두 번째 부분은 회사와 사람의 시대예요. 조직이 밝힌 목표와 실제 성과, 사람들의 이동을 구분해서 살펴볼게요."};
+const END_QUOTE = "처음의 질문으로 돌아가 볼게요. 지금의 인공지능은 한 사람의 발명품이 아니라, 서로 다른 연구와 도구, 데이터와 조직이 만나 쌓인 결과예요. 튜링의 질문, 배우는 방법, 계산 장치, 연구팀의 협력을 하나씩 연결해 봤어요. 앞으로 새 모델 소식을 읽을 때는 세 가지를 물어보세요. 누가 어떤 문제를 풀었나요? 어떤 시험과 근거로 확인했나요? 아직 무엇을 해결하지 못했나요? 회사가 밝힌 목표와 실제 결과도 나누어 보세요. 장별 출처와 확인 질문을 다시 살펴보면 이 이야기를 자신의 설명으로 정리할 수 있어요. 끝까지 함께해 주셔서 감사합니다.";
+const ROLL_HTML = "<div class=\"rl-title\">인공지능을 만든 사람들<small>학습 자료 · AIStory · 2026.10.05 개정</small></div>\n<div class=\"rl-sec\"><h3>함께 만든 기술</h3><p>인물의 기여와 연구팀의 협력, 데이터와 도구를 함께 살펴보세요.</p></div>\n<div class=\"rl-sec\"><h3>학습 확인</h3><p>각 장의 대본 아래에서 질문을 펼쳐 볼 수 있어요.<br>답을 보기 전에 자신의 말로 설명해 보세요.</p></div>\n<div class=\"rl-sec\"><h3>작성과 검토</h3><p>AI의 도움을 받아 구성하고 공개 자료와 대조한 교육용 원고예요.<br><span class=\"rsub\">장별 출처와 저장소 SOURCES.md에 확인 범위를 기록했어요.<br>검토 과정이 오류가 없다는 보증을 뜻하지는 않아요.</span></p></div>\n<div class=\"rl-sec\"><h3>음성 상태</h3><p>개정 원고의 음성은 렌더링하지 않았어요.<br><span class=\"rsub\">기존 MP3는 보존했어요. 원고·파일 해시와 품질 검토가 확인되기 전에는 자동 재생하지 않아요.<br>개정본의 실제 낭독 시간은 아직 측정되지 않았어요.</span></p></div>\n<div class=\"rl-sec\"><h3>구성</h3><p>1부 기술의 계보 (1–10장)<br>2부 회사와 사람의 시대 (11–19장)</p></div>\n<div class=\"rl-sec\"><h3>자료를 읽는 법</h3><p>수상 연도와 발표일, 설립 목표와 실제 성과를 구분해요.<br>기업가치는 투자 당시의 평가액이며 능력의 순위가 아니에요.<br>최신 직함과 법률 절차는 발표 날짜와 원문을 확인하세요.</p></div>\n<div class=\"rl-sec\"><h3>인물 표시</h3><p>인물 사진 대신 이름을 줄인 글자와 색상을 사용했어요.</p></div>\n<div class=\"rl-sec\"><h3>기존 제작자 표기</h3><p>삐꾸강아쥐 by 딸깍</p></div>\n<div class=\"rl-end\">끝<small>새로운 소식에도 같은 질문을 적용해 보세요.</small></div>";
 
 const $=id=>document.getElementById(id);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1249,16 +2111,16 @@ function laneHTML(k){
 const scenePageEls=[], pageKind=[];
 function partDivider(part){
   const d=document.createElement('section');
-  d.className='page part'; d.id='part'+part;
+  d.className='page part'; d.id='part'+part; d.setAttribute('aria-labelledby','part-title-'+part);
   const list=SCENES.map((sc,i)=>[sc,i]).filter(([sc])=>(sc.part||1)===part).map(([sc,i])=>`<span>${i+1}장 ${esc(sc.title)}</span>`).join('');
-  d.innerHTML=`<p class="part-no">PART ${part}</p><h2 class="part-name">${esc(PARTS[part].name)}</h2><p class="part-desc">${esc(PARTS[part].desc)}</p><div class="part-list">${list}</div>`;
+  d.innerHTML=`<p class="part-no">PART ${part}</p><h2 class="part-name" id="part-title-${part}">${esc(PARTS[part].name)}</h2><p class="part-desc">${esc(PARTS[part].desc)}</p><div class="part-list">${list}</div>`;
   deck.appendChild(d); pages.push(d); pageKind.push({t:'part',part});
 }
 
 SCENES.forEach((sc,i)=>{
   if(i===0||(SCENES[i-1].part||1)!==(sc.part||1)) partDivider(sc.part||1);
   const s=document.createElement('section');
-  s.className='page';s.id='s'+i;
+  s.className='page';s.id='s'+i;s.setAttribute('aria-labelledby','scene-title-'+i);
   const people=(sc.who||[]).filter(who1);
   const photo=sc.contextImg?`<figure class="split-photo"><img src="${sc.contextImg.src}" alt="${esc(sc.contextImg.cap)}" loading="lazy"><figcaption>${esc(sc.contextImg.cap)}</figcaption></figure>`:'';
   const statsOnly=sc.stats&&!people.length&&!sc.table;
@@ -1276,21 +2138,23 @@ SCENES.forEach((sc,i)=>{
   if(table&&lanes&&!photo) main=`<div class="dg two${many}${cnt}"><div class="dg-col">${hook}${lanes}</div><div class="dg-col">${stats}${table}${terms}</div></div>`;
   else if(table&&lanes) main=`<div class="dg dense${many}${cnt}">${stats}${hook}${lanes}${table}${terms}</div>`;   /* 사진이 있으면 폭이 좁아 세로로 쌓는다 */
   else main=`<div class="dg${many}${cnt}">${stats&&!statsOnly?stats:''}${hook}${lanes}${terms}${table}${statsOnly?stats:''}</div>`;
-  const segs=SENTS[i].map((_,k)=>`<i class="seg${k===0?' active':''}" data-k="${k}"></i>`).join('');
-  const script=sc.lines.map((l,li)=>`<li data-li="${li}">${esc(l)}</li>`).join('');
+  const segs=SENTS[i].map((_,k)=>`<i class="seg${k===0?' active':''}"></i>`).join('');
+  const learning=sc.learning_question&&sc.learning_answer?`<details class="learning-check"><summary>생각해 보기: ${esc(sc.learning_question)}</summary><p>${esc(sc.learning_answer)}</p></details>`:'';
+  const script=sc.lines.map((l,li)=>`<li data-li="${li}"><button type="button" class="line-select" title="${li+1}번째 대본 문장 선택">${esc(l)}</button></li>`).join('');
   s.innerHTML=`
-    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2>${esc(sc.title)}</h2></div>${eraHTML(sc.year, sc.part||1)}</div>
+    <div class="sl-head"><span class="ch-no">${i+1}장</span><div class="tt"><div class="year">${esc(sc.year)}</div><h2 id="scene-title-${i}">${esc(sc.title)}</h2></div>${eraHTML(sc.year, sc.part||1)}</div>
     <div class="sl-body">
-      <div class="vis${photo?' has-photo':''}">${photo}${main}${src}</div>
-      <aside class="script" aria-label="전체 대본"><div class="script-head"><span>전체 대본</span><button class="cn" data-act="close" aria-label="대본 닫기">×</button></div><ol>${script}</ol></aside>
+      <div class="vis${photo?' has-photo':''}" tabindex="0" aria-label="장표 본문">${photo}${main}</div>
+      <aside class="script" id="script-${i}" role="dialog" aria-modal="true" aria-label="전체 대본" inert aria-hidden="true"><div class="script-head"><span>전체 대본</span><button class="cn" data-act="close" aria-label="대본 닫기">×</button></div><ol>${script}</ol>${learning}</aside>
     </div>
+    ${src?`<details class="src-list"><summary>출처 ${srcList.length}개 보기</summary>${src}</details>`:''}
     <footer class="cap">
       <div class="segs" aria-hidden="true">${segs}</div>
       <div class="cap-row">
         <button class="cn" data-act="sprev" aria-label="이전 문장">‹</button>
-        <p class="cap-text" aria-live="off"><span></span></p>
+        <p class="cap-text" aria-live="off" title="낭독 중 문장 위치는 글자 수 비율로 추정해요."><span></span></p>
         <button class="cn" data-act="snext" aria-label="다음 문장">›</button>
-        <button class="btn-script" data-act="script" aria-expanded="false">대본</button>
+        <button class="btn-script" data-act="script" aria-expanded="false" aria-controls="script-${i}">대본</button>
       </div>
     </footer>`;
   deck.appendChild(s);pages.push(s);pageKind.push({t:'scene',i});scenePageEls.push(s);
@@ -1300,45 +2164,34 @@ SCENES.forEach((sc,i)=>{
 
 /* 엔딩 슬라이드 */
 const endPage=document.createElement('section');
-endPage.className='page end';endPage.id='closing';
-endPage.innerHTML=`<p class="quote">${END_QUOTE}</p>
+endPage.className='page end';endPage.id='closing';endPage.setAttribute('aria-labelledby','closing-title');
+endPage.innerHTML=`<p class="quote" id="closing-title">${END_QUOTE}</p>
   <p class="cred">인공지능을 만든 사람들 · 1950년 튜링의 질문부터 2026년 현재까지<br>공개된 사실을 바탕으로 재구성했습니다.</p>
   <p class="pc">인물 사진은 사용하지 않았어요. 모든 인물은 이니셜로 표시됩니다.</p>`;
 deck.appendChild(endPage);pages.push(endPage);pageKind.push({t:'end'});
 if(typeof ROLL_HTML==='string'&&ROLL_HTML){       /* 엔딩 다음 화면: 영화식 크레딧 */
-  const rp=document.createElement('section'); rp.className='page roll'; rp.id='credits';
+  const rp=document.createElement('section'); rp.className='page roll'; rp.id='credits'; rp.setAttribute('aria-label','제작 및 출처 크레딧');
   rp.innerHTML=`<div class="roll-view"><div class="roll-track">${ROLL_HTML}</div></div><button type="button" class="roll-ctl" hidden>일시정지</button>`;
   deck.appendChild(rp); pages.push(rp); pageKind.push({t:'credits'});
-  /* 크레딧 자동 스크롤. 기본은 CSS 애니메이션(rollUp 95초). 시스템이 '동작 줄이기'(prefers-reduced-motion)를 켠 환경
-     (예: Windows '애니메이션 효과 표시' 끔)에서는 접근성 규칙에 따라 애니메이션이 꺼져 크레딧이 멈춰 보인다.
-     그 경우에만 같은 속도로 scrollTop 을 직접 올리고, 일시정지 버튼·마우스 올림·직접 스크롤로 멈출 수 있게 한다. */
+  /* 동작 줄이기는 수동 스크롤. 일반 모드의 CSS 롤에도 실제 정지 버튼을 제공한다. */
   (function(){
-    const view=rp.querySelector('.roll-view'), btn=rp.querySelector('.roll-ctl'), mq=matchMedia('(prefers-reduced-motion: reduce)'), DUR=95000;
-    let raf=0,last=0,pos=0,paused=false,hover=false;
-    const maxScroll=()=>Math.max(0,view.scrollHeight-view.clientHeight);
-    function frame(t){
-      if(!last) last=t;
-      const dt=t-last; last=t;
-      if(!paused&&!hover){
-        pos=Math.min(maxScroll(),pos+maxScroll()*dt/DUR);
-        view.scrollTop=pos;
-        if(pos>=maxScroll()-1){ raf=0; btn.hidden=true; return; }
-      }
-      raf=requestAnimationFrame(frame);
+    const view=rp.querySelector('.roll-view'), track=rp.querySelector('.roll-track'), btn=rp.querySelector('.roll-ctl');
+    const mq=matchMedia('(prefers-reduced-motion: reduce)');
+    let paused=false;
+    view.tabIndex=0; view.setAttribute('aria-label','제작 및 출처 크레딧');
+    function update(){
+      const active=rp.classList.contains('active');
+      btn.hidden=!active||mq.matches;
+      track.classList.toggle('is-paused',paused);
+      btn.textContent=paused?'계속':'일시정지';
+      btn.setAttribute('aria-pressed',String(paused));
     }
-    function start(){
-      cancelAnimationFrame(raf); raf=0; pos=0; last=0; paused=false; view.scrollTop=0;
-      if(!mq.matches){ btn.hidden=true; return; }
-      btn.hidden=false; btn.textContent='일시정지'; raf=requestAnimationFrame(frame);
-    }
-    function stop(){ cancelAnimationFrame(raf); raf=0; btn.hidden=true; view.scrollTop=0; }
-    btn.onclick=()=>{ paused=!paused; btn.textContent=paused?'계속':'일시정지'; if(!raf&&!paused){ last=0; raf=requestAnimationFrame(frame); } };
-    view.addEventListener('mouseenter',()=>{ hover=true; });
-    view.addEventListener('mouseleave',()=>{ hover=false; last=0; });
-    const manual=()=>{ if(raf&&!paused){ paused=true; btn.textContent='계속'; } };   /* 사용자가 직접 넘기면 자동 진행을 멈춘다 */
+    btn.onclick=()=>{ paused=!paused; update(); };
+    const manual=()=>{ if(!mq.matches){ paused=true; update(); } };
     ['wheel','touchstart','keydown'].forEach(ev=>view.addEventListener(ev,manual,{passive:true}));
-    new MutationObserver(()=>{ rp.classList.contains('active')?start():stop(); }).observe(rp,{attributes:true,attributeFilter:['class']});
-    mq.addEventListener&&mq.addEventListener('change',()=>{ if(rp.classList.contains('active')) start(); });
+    new MutationObserver(()=>{ if(!rp.classList.contains('active')){ paused=false; view.scrollTop=0; } update(); }).observe(rp,{attributes:true,attributeFilter:['class']});
+    if(mq.addEventListener) mq.addEventListener('change',update);
+    update();
   })();
 }
 const N=SCENES.length, TOTAL=pages.length;
@@ -1352,16 +2205,13 @@ function wireSlide(s,i){
   };
   s.addEventListener('click',e=>{
     const lane=e.target.closest('.lane'); if(lane){ toggleLane(lane); return; }
-    const seg=e.target.closest('.seg'); if(seg){ stop(); setSent(i,+seg.dataset.k); return; }
-    const li=e.target.closest('.script li'); if(li){ stop(); setSent(i,SENTS[i].findIndex(x=>x.li===+li.dataset.li)); return; }
+    const li=e.target.closest('.line-select')?.closest('.script li'); if(li){ stop(); setSent(i,SENTS[i].findIndex(x=>x.li===+li.dataset.li)); return; }
     const b=e.target.closest('[data-act]'); if(!b) return;
     const a=b.dataset.act;
     if(a==='sprev'){ stop(); setSent(i,cur[i]-1); }
     else if(a==='snext'){ stop(); setSent(i,cur[i]+1); }
     else if(a==='script'||a==='close'){
-      const open=!s.querySelector('.script').classList.contains('open');
-      s.querySelector('.script').classList.toggle('open',open);
-      s.querySelector('.btn-script').setAttribute('aria-expanded',String(open));
+      setScriptOpen(s,a==='script');
     }
   });
   s.addEventListener('keydown',e=>{
@@ -1371,15 +2221,40 @@ function wireSlide(s,i){
   });
 }
 
+function setScriptOpen(page,open){
+  const drawer=page.querySelector('.script'), trigger=page.querySelector('.btn-script');
+  if(!drawer||!trigger) return;
+  if(open) stop();
+  drawer.classList.toggle('open',open); drawer.inert=!open;
+  drawer.setAttribute('aria-hidden',String(!open));
+  trigger.setAttribute('aria-expanded',String(open));
+  page.querySelector('.vis').inert=open;
+  page.querySelector('.cap').inert=open;
+  const sources=page.querySelector('.src-list'); if(sources)sources.inert=open;
+  $('player').inert=open;
+  if(open) drawer.querySelector('[data-act="close"]').focus({preventScroll:true});
+  else trigger.focus({preventScroll:true});
+}
+
 /* ---------- 내비게이션 ---------- */
 let current=0;
+/* SCROLL_WITHIN_START */
+function scrollWithin(container,child){
+  if(!container||!child)return;
+  const outer=container.getBoundingClientRect(), inner=child.getBoundingClientRect();
+  if(inner.top<outer.top)container.scrollTop+=inner.top-outer.top;
+  else if(inner.bottom>outer.bottom)container.scrollTop+=inner.bottom-outer.bottom;
+}
+/* SCROLL_WITHIN_END */
 function setSent(i,k){
   const list=SENTS[i]; k=Math.max(0,Math.min(list.length-1,k)); cur[i]=k;
   const p=scenePageEls[i];
   const t=p.querySelector('.cap-text span'); t.textContent=list[k].t;
   t.style.animation='none'; void t.offsetWidth; t.style.animation='';
   p.querySelectorAll('.seg').forEach((el,n)=>{ el.classList.toggle('active',n===k); el.classList.toggle('done',n<k); });
-  p.querySelectorAll('.script li').forEach(el=>el.classList.toggle('on',+el.dataset.li===list[k].li));
+  p.querySelectorAll('.script li').forEach(el=>{ const selected=+el.dataset.li===list[k].li; el.classList.toggle('on',selected); el.querySelector('button').setAttribute('aria-current',String(selected)); });
+  p.querySelector('[data-act=sprev]').disabled=k===0;
+  p.querySelector('[data-act=snext]').disabled=k===list.length-1;
   if(k===0) p.querySelectorAll('.lane').forEach(el=>el.classList.remove('speaking'));
   const laneEls=[...p.querySelectorAll('.lane')], lastCount={};
   laneEls.forEach(el=>{ const q=who1(el.dataset.map).n.split(' '), l=q[q.length-1]; lastCount[l]=(lastCount[l]||0)+1; });
@@ -1389,15 +2264,18 @@ function setSent(i,k){
   });
   if(hits.length){ p.querySelectorAll('.lane').forEach(el=>el.classList.toggle('speaking',hits.includes(el))); p.classList.add('has-speaker'); }
   else if(k===0) p.classList.remove('has-speaker');
-  const on=p.querySelector('.script li.on'); if(on&&p.querySelector('.script').classList.contains('open')) on.scrollIntoView({block:'nearest'});
+  const on=p.querySelector('.script li.on');
+  if(on&&p.querySelector('.script').classList.contains('open')) scrollWithin(p.querySelector('.script ol'),on);
 }
 const pageOfScene=i=>pageKind.findIndex(k=>k.t==='scene'&&k.i===i);
 const pageOfPart=pt=>pageKind.findIndex(k=>k.t==='part'&&k.part===pt);
 function syncUI(){
-  pages.forEach((p,n)=>p.classList.toggle('active',n===current));
+  pages.forEach((p,n)=>{ const active=n===current; p.classList.toggle('active',active); p.inert=!active; p.setAttribute('aria-hidden',String(!active)); p.tabIndex=-1; });
   $('bar').style.width=((current+1)/TOTAL*100)+'%';
   const k=pageKind[current];
   $('pos').textContent=!k?'':k.t==='scene'?`${k.i+1} / ${N}`:k.t==='part'?`PART ${k.part}`:k.t==='end'?'끝':'크레딧';
+  $('prev').disabled=current===0; $('next').disabled=current===TOTAL-1;
+  markEngine();
 }
 /* 자동 펼침 칸이 화면에 안 들어가면(통계 카드·표와 함께 있거나 낮은 화면) 설명을 why 한 줄로 줄인다.
    칸이 내용을 담지 못해 글자가 상자 밖으로 흐르거나 스크롤이 생기는 것을 막는다. */
@@ -1408,194 +2286,177 @@ function fitLanes(p){
   if(over()) p.classList.add('tight');
 }
 addEventListener('resize',()=>fitLanes(pages[current]));
-function go(i){
+function go(i,preservePlayback=false){
+  if(!preservePlayback) stop();
+  const previous=pages[current], moveFocus=previous&&previous.contains(document.activeElement);
+  if(previous){
+    const drawer=previous.querySelector('.script.open');
+    if(drawer) setScriptOpen(previous,false);
+  }
   current=Math.max(0,Math.min(TOTAL-1,i));
+  if(!preservePlayback)audioError=false;
   syncUI();
   fitLanes(pages[current]);
   const k=pageKind[current];
   if(k&&k.t==='scene') setSent(k.i,0);
+  if(moveFocus) pages[current].focus({preventScroll:true});
 }
 
-/* ---------- 음성: audio18/<id>.{mp3,wav} 우선, 없으면 브라우저 TTS ---------- */
-const AUDIO_DIR='audio18/', AUDIO_EXT=['mp3','wav'];
-const clips={}; let engine='browser';
-/* 실측 자막 앵커(audio18/sync.json — stt_check.py 가 STT 단어 시각으로 만든다): {클립id:[[글자비율,시각(초)],...]}.
-   있으면 글자 수 비율 대신 앵커 사이를 보간해 현재 위치(글자 비율)를 구한다. 없거나 깨져 있으면 t/dur 로 폴백. */
-let SYNC=null;
-fetch(AUDIO_DIR+'sync.json').then(r=>r.ok?r.json():null).then(j=>{SYNC=j;}).catch(()=>{});
-function fracAt(id,t,dur){
-  const an=SYNC&&SYNC[id];
-  if(!an||an.length<2) return t/dur;
-  if(t<=an[0][1]) return an[0][0];
-  for(let k=1;k<an.length;k++){
-    if(t<=an[k][1]){
-      const f0=an[k-1][0],t0=an[k-1][1],f1=an[k][0],t1=an[k][1];
-      return t1>t0?f0+(f1-f0)*(t-t0)/(t1-t0):f1;
+/* ---------- 음성: 원고 해시가 검증된 MP3만 재생. 브라우저 TTS 대체 없음. ---------- */
+const AUDIO_DIR='audio18/';
+const audioStatus=typeof AUDIO_STATUS==='object'&&AUDIO_STATUS?AUDIO_STATUS:{};
+const narrationItems=typeof NARRATION==='object'&&Array.isArray(NARRATION.items)?NARRATION.items:[];
+const OPENING_TEXT=(()=>{const item=narrationItems.find(x=>x.id==='00-opening');return item?(item.display_text||item.text||''):'';})();
+const ENDING_TEXT=(endPage.querySelector('.quote').textContent||'').replace(/\s+/g,' ').trim();
+const clipName=i=>String(i+1).padStart(2,'0')+'-scene';
+const endingId=()=>String(SCENES.length+1).padStart(2,'0')+'-ending';
+const verified=id=>Boolean(id&&audioStatus[id]&&audioStatus[id].status==='verified');
+const idForPage=k=>!k?null:k.t==='scene'?clipName(k.i):k.t==='part'?'part'+k.part:k.t==='end'?endingId():null;
+const fmtTime=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
+
+/* AUDIO_SESSION_START — 의존성 없는 회귀 테스트가 이 실제 코드를 실행한다. */
+function createAudioSession({isVerified,makeAudio,onState=()=>{},onProgress=()=>{},schedule=setTimeout,cancel=clearTimeout}){
+  let generation=0,dispose=()=>{};
+  const stop=()=>{ generation++; dispose(); dispose=()=>{}; };
+  function play(id,onend=()=>{}){
+    stop();
+    if(!isVerified(id)){ onState('pending',id); return false; }
+    const ticket=generation, a=makeAudio(id), listeners=[];
+    let started=false, timeout=null;
+    const valid=()=>ticket===generation;
+    const listen=(type,fn)=>{a.addEventListener(type,fn);listeners.push([type,fn]);};
+    dispose=()=>{cancel(timeout);listeners.forEach(([type,fn])=>a.removeEventListener(type,fn));a.pause();};
+    const fail=()=>{if(!valid())return;stop();onState('error',id);};
+    const ready=()=>{
+      if(!valid()||started)return;
+      started=true;cancel(timeout);
+      try{
+        const result=a.play();
+        if(result&&result.then)result.then(()=>{if(!valid())a.pause();},fail);
+        if(valid())onState('playing',id);
+      }catch(_){fail();}
+    };
+    listen('canplay',ready);
+    listen('error',fail);
+    listen('ended',()=>{if(!valid())return;onProgress(id,a.currentTime,a.duration);stop();onend();});
+    listen('timeupdate',()=>{if(valid())onProgress(id,a.currentTime,a.duration);});
+    timeout=schedule(fail,10000);
+    onState('loading',id);
+    if(a.readyState>=3)ready();
+    return true;
+  }
+  return {play,stop};
+}
+/* AUDIO_SESSION_END */
+
+let playing=false,playGeneration=0,transitionTimer=null,openingDone=false;
+let activeClip=null,audioError=false;
+function renderTimer(id=activeClip,time=0,duration=null){
+  const item=id&&audioStatus[id];
+  const seconds=Number.isFinite(duration)&&duration>0?duration:item&&item.rendered_seconds;
+  $('timer').textContent=verified(id)&&Number.isFinite(seconds)&&seconds>0?`${fmtTime(time)} / ${fmtTime(seconds)}`:'길이 확인 대기';
+}
+function markEngine(){
+  const id=idForPage(pageKind[current]), ready=verified(id)&&(openingDone||current!==0||verified('00-opening'));
+  $('play').disabled=!playing&&!ready;
+  $('play').textContent=playing?'멈추기':'들려주기';
+  $('engine').textContent=audioError?'음성 파일 확인 필요':playing?'검증된 음성 재생':ready?'검증된 음성':id?'음성 재렌더링 대기':'직접 읽기';
+  $('introStart').disabled=!(verified('00-opening')&&verified('part1'));
+  $('audioNote').textContent=$('introStart').disabled?'음성 재렌더링 대기 · 직접 넘기며 읽을 수 있어요.':'검증된 음성으로 듣거나 직접 넘기며 읽을 수 있어요.';
+  if(!playing)renderTimer(id);
+}
+const audioSession=createAudioSession({
+  isVerified:verified,
+  makeAudio:id=>{const a=new Audio();a.preload='auto';a.src=AUDIO_DIR+id+'.mp3';return a;},
+  onState:(state,id)=>{
+    activeClip=id;
+    if(state==='error'||state==='pending'){playing=false;playGeneration++;audioError=state==='error';}
+    markEngine();renderTimer(id);
+  },
+  onProgress:(id,time,duration)=>{
+    renderTimer(id,time,duration);
+    const k=pageKind[current];
+    if(k?.t==='scene'&&id===clipName(k.i)&&Number.isFinite(duration)&&duration>0){
+      const chars=SENTS[k.i].map(x=>x.t.replace(/\s/g,'').length), total=chars.reduce((a,b)=>a+b,0);
+      let sum=0,index=0;
+      for(let n=0;n<chars.length;n++){sum+=chars[n];index=n;if(time/duration<=sum/total)break;}
+      if(index!==cur[k.i])setSent(k.i,index);
     }
   }
-  return 1;
-}
-const clipName=i=>String(i+1).padStart(2,'0')+'-scene';
-const endingId=()=>String(SCENES.length+1).padStart(2,'0')+'-ending';   /* extract_narration.py 와 같은 규칙 */
-/* extract_narration.py 의 OPENING 과 같은 문구를 유지한다. 엔딩은 DOM 에서 읽어 중복을 피한다. */
-const OPENING_TEXT='안녕하세요. 오늘은 인공지능의 발명품 이름을 늘어놓지 않으려고 해요. 지금 우리가 매일 쓰는 에이아이가 어떤 사람들 덕분에 여기까지 왔는지, 그 질문 하나만 따라가 볼게요. 계보라는 말은 이 이야기에서 쓰는 비유예요. 사람들이 만나고 갈라지며 이어진 길이라는 뜻이에요. 출발점은 천구백오십년, 기계가 생각할 수 있느냐는 질문이에요. 이야기는 두 부분으로 나뉘어요. 앞부분은 기술을 만든 사람들, 뒷부분은 회사를 세우고 갈라진 사람들의 이야기예요. 날짜와 숫자는 확인된 범위에서만 말씀드려요. 사람 이름을 외우기보다, 그 사람이 무엇을 배울 수 있게 만들었는지를 봐 주세요.';
-const ENDING_TEXT=(endPage.querySelector('.quote').textContent||'').replace(/\s+/g,' ').trim();
-
-function getClip(id){
-  if(clips[id]) return clips[id];
-  const a=new Audio(); a.preload='auto'; a.dataset.ok='0';
-  let k=0;
-  const tryNext=()=>{ if(k>=AUDIO_EXT.length){ a.dataset.ok='fail'; a.dispatchEvent(new Event('clipfail')); return; } a.src=AUDIO_DIR+id+'.'+AUDIO_EXT[k++]; };
-  a.addEventListener('canplaythrough',()=>{ a.dataset.ok='1'; if(!playing&&engine!=='omnivoice'){ engine='omnivoice'; markEngine(); } });   /* 재생 중에는 실제 재생 쪽이 라벨을 정한다 */
-  a.addEventListener('error',tryNext);
-  tryNext(); clips[id]=a; return a;
-}
-/* 확장자 탐색(mp3→wav)이 끝나기 전에 play() 를 부르면 src 교체로 거부돼 브라우저 음성으로 샌다 — 확정될 때까지 기다린다(최대 4초). */
-function whenReady(a,cb){
-  if(a.dataset.ok!=='0'){ cb(); return; }
-  let done=false; const fire=()=>{ if(done) return; done=true; cb(); };
-  a.addEventListener('canplaythrough',fire,{once:true});
-  a.addEventListener('clipfail',fire,{once:true});
-  setTimeout(fire,4000);
-}
-/* 재생 중 네트워크 끊김·디코딩 오류 대비: 재생 위치가 10초 넘게 멈추거나 error 가 나면 브라우저 음성으로 넘긴다(한 번만). */
-function guardClip(a,fb){
-  clearInterval(a._g);
-  let done=false,last=-1,stuck=0;
-  const bail=()=>{ if(done) return; done=true; clearInterval(a._g); try{a.pause();}catch(e){} if(playing) fb(); };
-  a.addEventListener('error',bail,{once:true});
-  a._g=setInterval(()=>{
-    if(a.ended){ done=true; clearInterval(a._g); return; }
-    if(a.paused) return;                       /* 사용자가 멈춘 것은 오류가 아니다 */
-    if(a.currentTime===last){ if(++stuck>=10) bail(); } else { last=a.currentTime; stuck=0; }
-  },1000);
-  return bail;
-}
-function markEngine(){ $('engine').textContent=engine==='omnivoice'?'고품질 음성':'브라우저 음성'; }
-
-const synth=window.speechSynthesis; let koVoice=null;
-function pickVoice(){ if(!synth) return; const vs=synth.getVoices();
-  koVoice=vs.find(v=>v.lang==='ko-KR'&&/female|여성|유나|Yuna|Heami/i.test(v.name))||vs.find(v=>v.lang==='ko-KR')||vs.find(v=>v.lang.startsWith('ko'))||null; }
-pickVoice(); if(synth&&synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice;
-
-let playing=false;
-const plain=i=>SCENES[i].lines.join(' ');
-
-function browserSay(text,onend){
-  engine='browser'; markEngine();
-  if(!synth||typeof SpeechSynthesisUtterance==='undefined'){ onend&&onend(); return; }
-  const u=new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=.94; u.pitch=1;
-  if(koVoice) u.voice=koVoice; u.onend=onend;
-  u.onerror=e=>{ if(e.error==='canceled'||e.error==='interrupted') return; onend&&onend(); };
-  synth.speak(u);
-}
+});
 function speakText(id,text,onend){
-  const a=getClip(id);
-  whenReady(a,()=>{
-    if(a.dataset.ok==='fail'){ browserSay(text,onend); return; }
-    a.onended=onend; a.currentTime=0;
-    const pr=a.play(); engine='omnivoice'; markEngine();
-    const gb=guardClip(a,()=>browserSay(text,onend));
-    if(pr&&pr.catch) pr.catch(gb);
-  });
+  const ticket=playGeneration;
+  return audioSession.play(id,()=>{if(playing&&ticket===playGeneration)onend?.();});
 }
 function afterScene(i){
-  if(!playing) return;
+  if(!playing)return;
+  const ticket=playGeneration;
   if(i<N-1){
-    const nxt=i+1;
-    setTimeout(()=>{ if(!playing) return;
-      if((SCENES[nxt].part||1)!==(SCENES[i].part||1)){
-        const pt=SCENES[nxt].part||1;
-        go(pageOfPart(pt));
-        speakText('part'+pt,PART_TEXT[pt],()=>{ if(!playing) return; go(pageOfScene(nxt)); speak(nxt); });
-      } else { go(pageOfScene(nxt)); speak(nxt); }
+    transitionTimer=setTimeout(()=>{
+      if(!playing||ticket!==playGeneration)return;
+      const next=i+1,part=SCENES[next].part||1;
+      go(part!==(SCENES[i].part||1)?pageOfPart(part):pageOfScene(next),true);playPage();
     },900);
-  }
-  else { go(pageKind.findIndex(k=>k.t==='end')); speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); const cp=pageKind.findIndex(k=>k.t==='credits'); if(cp>=0) go(cp); }); }
+  }else{go(pageKind.findIndex(k=>k.t==='end'),true);playPage();}
 }
-/* 현재 화면 기준으로 재생 — 구분 화면이면 그 부의 첫 장으로 이어진다 */
 function playPage(){
-  const k=pageKind[current]; if(!k) return;
-  if(k.t==='scene') speak(k.i);
-  else if(k.t==='part'){ const pt=k.part; speakText('part'+pt,PART_TEXT[pt],()=>{ if(!playing) return; const fi=SCENES.findIndex(sc=>(sc.part||1)===pt); go(pageOfScene(fi)); speak(fi); }); }
-  else if(k.t==='end'){ speakText(endingId(),ENDING_TEXT,()=>{ playing=false; $('play').textContent='들려주기'; timerStop(); }); }
-}
-/* 자막 동기화(근사): 클립이 장 전체 1개 파일이라 문장별 타이밍이 없다.
-   문장 글자 수 비율로 재생 길이를 나눠 현재 문장을 추정한다 — 몇 초 어긋날 수 있다.
-   render_tts.py --granularity line 으로 문장(줄)당 클립을 만들면 정확해진다. */
-function wireCaptionSync(i,a){
-  const chars=SENTS[i].map(x=>x.t.replace(/\s/g,'').length), total=chars.reduce((s,c)=>s+c,0);   /* 공백 제외 — sync.json 앵커와 같은 좌표 */
-  if(!total) return;
-  a.ontimeupdate=()=>{
-    const dur=a.duration; if(!dur||!isFinite(dur)) return;
-    let acc=0,idx=0;
-    for(let k=0;k<chars.length;k++){ acc+=chars[k]; idx=k; if(fracAt(clipName(i),a.currentTime,dur)<=acc/total) break; }
-    if(idx!==cur[i]) setSent(i,idx);
-  };
-}
-function speak(i){
-  silence();
-  const a=getClip(clipName(i));
-  if(i+1<N) getClip(clipName(i+1));   /* 다음 장 미리 로딩 */
-  whenReady(a,()=>{
-    if(!playing) return;   /* 대기 중 멈춤을 눌렀으면 재생하지 않는다 */
-    if(a.dataset.ok==='fail'){ browserSay(plain(i),()=>afterScene(i)); return; }
-    wireCaptionSync(i,a);
-    a.onended=()=>afterScene(i); a.currentTime=0;
-    const pr=a.play(); engine='omnivoice'; markEngine();
-    const gb=guardClip(a,()=>browserSay(plain(i),()=>afterScene(i)));
-    if(pr&&pr.catch) pr.catch(gb);
+  const k=pageKind[current];if(!k)return;
+  if(k.t==='scene')speakText(clipName(k.i),SCENES[k.i].lines.join(' '),()=>afterScene(k.i));
+  else if(k.t==='part')speakText('part'+k.part,PART_TEXT[k.part],()=>{
+    const first=SCENES.findIndex(sc=>(sc.part||1)===k.part);go(pageOfScene(first),true);playPage();
   });
+  else if(k.t==='end')speakText(endingId(),ENDING_TEXT,()=>{
+    stop();const credits=pageKind.findIndex(k=>k.t==='credits');if(credits>=0)go(credits);
+  });
+  else stop();
 }
-function silence(){
-  if(synth) synth.cancel();
-  Object.values(clips).forEach(a=>{ try{a.pause(); a.ontimeupdate=null; clearInterval(a._g);}catch(e){} });
-}
-
-/* 재생 경과 타이머 */
-let elapsedSec=0,targetSec=40*60,timerInt=null;
-const fmtTime=s=>{ s=Math.max(0,Math.round(s)); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; };
-const renderTimer=()=>{ $('timer').textContent=`${fmtTime(elapsedSec)} / ${fmtTime(targetSec)}`; };
-fetch(AUDIO_DIR+'manifest.json').then(r=>r.ok?r.json():null).then(m=>{
-  if(!m||!m.items) return; const sum=m.items.reduce((s,it)=>s+(it.seconds||0),0);
-  if(sum>0){ targetSec=sum; renderTimer(); }
-}).catch(()=>{});
-const timerStart=()=>{ clearInterval(timerInt); timerInt=setInterval(()=>{ elapsedSec++; renderTimer(); },1000); };
-const timerStop=()=>clearInterval(timerInt);
-renderTimer();
-
-let openingDone=false;
 function start(){
-  playing=true; $('play').textContent='멈추기';
-  const k0=pageKind[current];
-  if(!k0||k0.t==='credits') go(0);
-  if(!openingDone&&current===0){ elapsedSec=0; renderTimer(); }
-  timerStart();
+  if(playing)return;
+  if(!verified(idForPage(pageKind[current]))){markEngine();return;}
+  if(!openingDone&&current===0&&!verified('00-opening')){markEngine();return;}
+  playGeneration++;playing=true;audioError=false;markEngine();
   if(!openingDone&&current===0){
-    openingDone=true;
-    speakText('00-opening',OPENING_TEXT,()=>{ if(playing) playPage(); });
-  } else playPage();
+    speakText('00-opening',OPENING_TEXT,()=>{openingDone=true;playPage();});
+  }else playPage();
 }
-function stop(){ playing=false; $('play').textContent='들려주기'; silence(); timerStop(); }
+function stop(){
+  playing=false;playGeneration++;clearTimeout(transitionTimer);audioSession.stop();activeClip=null;markEngine();
+}
 $('play').onclick=()=>playing?stop():start();
-$('prev').onclick=()=>{ const n=current-1; stop(); go(n); };
-$('next').onclick=()=>{ const n=current+1; stop(); go(n); };
+$('prev').onclick=()=>go(current-1);
+$('next').onclick=()=>go(current+1);
 document.addEventListener('keydown',e=>{
-  const intro=$('intro'); if(intro&&!intro.hidden&&!intro.classList.contains('hide')) return;   /* 인트로가 떠 있는 동안 뒤에서 재생·이동되지 않게 */
-  if(e.key==='Escape'){ const sc=pages[current]&&pages[current].querySelector('.script.open'); if(sc){ sc.classList.remove('open'); const b=pages[current].querySelector('.btn-script'); if(b){ b.setAttribute('aria-expanded','false'); b.focus(); } return; } }
-  if(e.target.closest&&e.target.closest('button,[role=button]')&&(e.key===' '||e.key==='Enter')) return;
-  if(e.key==='ArrowRight'||e.key==='PageDown'){ const n=current+1; stop(); go(n); }
-  else if(e.key==='ArrowLeft'||e.key==='PageUp'){ const n=current-1; stop(); go(n); }
-  else if(e.key===' '){ e.preventDefault(); $('play').click(); }
+  const intro=$('intro');if(!intro.hidden&&!intro.classList.contains('hide'))return;
+  const drawer=pages[current]?.querySelector('.script.open');
+  if(drawer){
+    if(e.key==='Escape'){e.preventDefault();setScriptOpen(pages[current],false);return;}
+    if(e.key==='Tab'){
+      const targets=[...drawer.querySelectorAll('button,a[href],summary,[tabindex="0"]')].filter(el=>!el.disabled);
+      const first=targets[0],last=targets[targets.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus({preventScroll:true});}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus({preventScroll:true});}
+    }
+    return;
+  }
+  if(e.altKey||e.ctrlKey||e.metaKey||e.defaultPrevented)return;
+  if(e.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"]),[role="textbox"]'))return;
+  if(e.target.closest?.('button,a,summary,[role="button"]')&&(e.key===' '||e.key==='Enter'))return;
+  // 장표의 스크롤 영역에서는 화살표와 PageUp/Down을 원래 스크롤에 쓴다.
+  if(e.target.closest?.('.vis,.roll-view'))return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1);}
+  else if(e.key===' '){e.preventDefault();$('play').click();}
 });
 
-getClip(clipName(0)); markEngine(); go(0);
+go(0);
 function closeIntro(){
-  const intro=$('intro'); intro.classList.add('hide');
-  setTimeout(()=>{ intro.hidden=true; },reduceMotion?0:700);
+  const intro=$('intro');intro.classList.add('hide');intro.inert=true;intro.setAttribute('aria-hidden','true');
+  deck.inert=false;deck.removeAttribute('aria-hidden');$('player').inert=false;$('player').removeAttribute('aria-hidden');
+  pages[current].focus({preventScroll:true});
+  setTimeout(()=>{intro.hidden=true;},reduceMotion?0:700);
 }
-$('introStart').onclick=()=>{ closeIntro(); start(); };      /* 들으며 시작: 바로 낭독 */
-$('introManual').onclick=()=>{ closeIntro(); };               /* 직접 넘기기: 소리 없이 시작 */
+$('introStart').onclick=()=>{closeIntro();start();};
+$('introManual').onclick=closeIntro;
 </script>
 </body>
 </html>

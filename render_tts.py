@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OmniVoice 로 「빛이 된 아이」 내레이션을 렌더링한다.
+OmniVoice 로 「인공지능을 만든 사람들」 내레이션을 렌더링한다.
 
 핵심 설계
 ---------
@@ -18,11 +18,11 @@ OmniVoice 로 「빛이 된 아이」 내레이션을 렌더링한다.
         --narration narration.json \
         --ref-audio ref/narrator.wav \
         --ref-text "안녕하세요. 오늘은 아주 오래된 이야기를 하나 들려드리려고 합니다." \
-        --out-dir ../audio
+        --out-dir audio18
 
     # 참조 음성 없이 성우 특성만 지정 (voice design)
     python render_tts.py --narration narration.json \
-        --instruct "female, low pitch" --out-dir ../audio
+        --instruct "female, low pitch" --out-dir audio18
     # (omnivoice는 자유 서술이 아닌 고정 키워드만 허용한다: female/male, low/high/moderate pitch,
     #  whisper, child/teenager/young adult/middle-aged/elderly, 각종 accent 등)
 
@@ -34,16 +34,13 @@ import argparse
 import hashlib
 import json
 import logging
+import math
 import pathlib
 import subprocess
 import sys
+import tempfile
 import time
-
-# Windows 콘솔 기본 코드페이지(cp949)는 en-dash(–) 등 일부 한글 문구 속 유니코드 문자를
-# 인코딩하지 못해 UnicodeEncodeError로 즉시 죽는다. UTF-8로 강제 재설정한다.
-for _stream in (sys.stdout, sys.stderr):
-    if hasattr(_stream, "reconfigure"):
-        _stream.reconfigure(encoding="utf-8")
+import wave
 
 LOG = logging.getLogger("render")
 
@@ -54,7 +51,7 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     ap.add_argument("--narration", default="narration.json")
-    ap.add_argument("--out-dir", default="../audio")
+    ap.add_argument("--out-dir", default="audio18")
     ap.add_argument("--model", default="k2-fsa/OmniVoice")
 
     # 목소리 지정 (voice clone 우선, 없으면 voice design, 둘 다 없으면 auto)
@@ -120,22 +117,135 @@ def load_items(path: str, granularity: str) -> list[dict]:
     return units
 
 
+def _file_sha256(path: pathlib.Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _text_sha256(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _script_matches(entry: dict, text: str) -> bool:
+    """Legacy SHA1 can veto conflicting evidence, but cannot prove provenance."""
+    evidence = []
+    if "text" in entry:
+        evidence.append(entry["text"] == text)
+    if "text_sha256" in entry:
+        evidence.append(entry["text_sha256"] == _text_sha256(text))
+    if not evidence or not all(evidence):
+        return False
+    return "text_sha1" not in entry or entry["text_sha1"] == hashlib.sha1(text.encode("utf-8")).hexdigest()
+
+
+def wav_provenance_matches(unit: dict, wav: pathlib.Path, previous: dict | None = None) -> bool:
+    """Require a script hash bound to these exact WAV bytes, never --reuse alone."""
+    if not wav.is_file() or not wav.stat().st_size:
+        return False
+    wav_hash = _file_sha256(wav)
+    proof = wav.with_suffix(".provenance.json")
+    if proof.exists():
+        try:
+            entry = json.loads(proof.read_text(encoding="utf-8"))
+            return isinstance(entry, dict) and _script_matches(entry, unit["text"]) and entry.get("wav_sha256") == wav_hash
+        except (OSError, ValueError, TypeError):
+            return False
+    entry = previous or {}
+    if not _script_matches(entry, unit["text"]):
+        return False
+    # MP3 manifests can carry their source WAV digest. A WAV manifest binds
+    # audio_sha256 directly only when its file names this exact WAV.
+    expected = entry.get("wav_sha256")
+    if expected is None and entry.get("file") == wav.name:
+        expected = entry.get("audio_sha256")
+    return expected == wav_hash
+
+
+def record_wav_provenance(unit: dict, wav: pathlib.Path) -> None:
+    """Call only immediately after successful generation of this unit's WAV."""
+    proof = wav.with_suffix(".provenance.json")
+    pending = proof.with_suffix(".json.part")
+    pending.write_text(json.dumps({"id": unit["id"], "text_sha256": _text_sha256(unit["text"]),
+                                   "wav_sha256": _file_sha256(wav)}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    pending.replace(proof)
+
+
 def to_mp3(wav: pathlib.Path) -> pathlib.Path | None:
-    """웹 재생용 MP3 로 변환. 실패해도 WAV 는 그대로 쓸 수 있으므로 치명적이지 않다."""
+    """Atomically replace the MP3 only after conversion succeeds and is nonempty."""
     mp3 = wav.with_suffix(".mp3")
+    with tempfile.NamedTemporaryFile(prefix=wav.stem + ".", suffix=".part.mp3", dir=wav.parent, delete=False) as stream:
+        pending = pathlib.Path(stream.name)
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav),
-           "-codec:a", "libmp3lame", "-b:a", "128k", "-ar", "44100", str(mp3)]
+           "-codec:a", "libmp3lame", "-b:a", "128k", "-ar", "44100", str(pending)]
     try:
         subprocess.run(cmd, check=True)
+        if not pending.is_file() or pending.stat().st_size == 0:
+            LOG.warning("MP3 변환 결과가 비어 있습니다: %s", wav.name)
+            return None
+        pending.replace(mp3)
         return mp3
     except FileNotFoundError:
         LOG.warning("ffmpeg 가 없어 MP3 변환을 건너뜁니다. dnf install ffmpeg-free")
-    except subprocess.CalledProcessError as e:
-        LOG.warning("MP3 변환 실패(%s): %s", wav.name, e)
+    except (subprocess.CalledProcessError, OSError) as exc:
+        LOG.warning("MP3 변환 실패(%s): %s", wav.name, exc)
+    finally:
+        pending.unlink(missing_ok=True)
     return None
 
 
+def probe_audio_seconds(path: pathlib.Path) -> float | None:
+    """Measure the final selected format; never substitute WAV time for MP3."""
+    try:
+        if path.suffix.lower() == ".wav":
+            with wave.open(str(path)) as wav:
+                duration = wav.getnframes() / wav.getframerate()
+        else:
+            result = subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                 "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+                capture_output=True, text=True, check=True)
+            duration = float(result.stdout.strip())
+        return duration if math.isfinite(duration) and duration > 0 else None
+    except (OSError, ValueError, subprocess.CalledProcessError, EOFError, ZeroDivisionError, wave.Error) as exc:
+        LOG.warning("최종 오디오 길이를 측정하지 못했습니다(%s): %s", path.name, exc)
+        return None
+
+
+def make_manifest_entry(unit: dict, wav: pathlib.Path, output: pathlib.Path | None, *,
+                        wav_verified: bool, output_format: str, duration_probe=None) -> dict:
+    """Bind only successfully produced bytes to proven source text.
+
+    Passing output=None after conversion failure prevents a leftover MP3 from
+    gaining current script hashes. Unknown --reuse input never gains text proof.
+    duration_probe injection lets tests use synthetic bytes without codecs/TTS.
+    """
+    duration_probe = duration_probe or probe_audio_seconds
+    available = output is not None and output.is_file() and output.stat().st_size > 0
+    duration = duration_probe(output) if available else None
+    if isinstance(duration, bool) or not isinstance(duration, (int, float)) or not math.isfinite(duration) or duration <= 0:
+        duration = None
+    trusted = wav_verified and available
+    entry = {
+        "id": unit["id"], "label": unit["label"],
+        "requested_text_sha256": _text_sha256(unit["text"]),
+        "file": wav.with_suffix("." + output_format).name,
+        "audio_sha256": _file_sha256(output) if available else None,
+        "wav_sha256": _file_sha256(wav) if wav_verified else None,
+        "seconds": duration,
+        "output_status": "ready" if available else "missing_or_conversion_failed",
+        "provenance_status": "verified" if trusted else "unverified",
+        "quality_status": "pending_review" if trusted and duration is not None else "unreviewed",
+    }
+    if trusted:
+        entry.update({"text": unit["text"],
+                      "text_sha1": hashlib.sha1(unit["text"].encode("utf-8")).hexdigest(),
+                      "text_sha256": _text_sha256(unit["text"])})
+    return entry
+
+
 def main() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     logging.basicConfig(
         format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO, force=True
     )
@@ -145,33 +255,25 @@ def main() -> None:
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # 이미 있는 wav 라도 manifest 에 기록된 문구와 다르면 낡은 것이므로 다시 만든다(파일 존재만 보면
-    # 문구를 고치거나 장을 재배열했을 때 엉뚱한 낭독이 조용히 남는다).
-    prev_text: dict[str, str] = {}
+    # Read prior proof; an unverified reused WAV may be skipped explicitly,
+    # but it must never be relabeled as having the requested script.
+    previous = {}
     prev_manifest = out_dir / "manifest.json"
-    if prev_manifest.exists():
-        try:
-            for it in json.loads(prev_manifest.read_text(encoding="utf-8")).get("items", []):
-                prev_text[it["id"]] = it.get("text", "")
-        except Exception as e:  # 손상된 manifest 는 검증 불가로 취급
-            LOG.warning("manifest 를 읽지 못했습니다(%s) — 문구 일치 검증을 건너뜁니다.", e)
-    else:
-        LOG.warning("manifest.json 이 없어 기존 wav 의 문구 일치를 확인할 수 없습니다(존재하면 건너뜁니다).")
+    try:
+        entries = json.loads(prev_manifest.read_text(encoding="utf-8")).get("items", [])
+        for entry in entries:
+            if not isinstance(entry, dict) or not isinstance(entry.get("id"), str) or entry["id"] in previous:
+                raise ValueError("invalid or duplicate manifest id")
+            previous[entry["id"]] = entry
+    except (OSError, ValueError, TypeError, AttributeError) as exc:
+        previous = {}
+        LOG.warning("기존 manifest 검증 기록을 읽을 수 없습니다(%s). 검증되지 않은 WAV는 다시 생성합니다.", exc)
 
-    def sha(text: str) -> str:
-        return hashlib.sha1(text.encode("utf-8")).hexdigest()
+    wav_verified = {unit["id"]: wav_provenance_matches(
+        unit, out_dir / f"{unit['id']}.wav", previous.get(unit["id"])) for unit in units}
 
-    def stale(u: dict) -> bool:
-        """wav 는 있지만 현재 문구로 만들어졌다고 확인할 수 없으면 낡은 것으로 본다.
-        확인 근거: 클립별 <id>.sha1 사이드카 > manifest 의 text. 둘 다 없으면 --reuse 로 허용한 id 만 통과."""
-        if not (out_dir / f"{u['id']}.wav").exists():
-            return False
-        side = out_dir / f"{u['id']}.sha1"
-        if side.exists():
-            return side.read_text(encoding="utf-8").strip() != sha(u["text"])
-        if u["id"] in prev_text:
-            return prev_text[u["id"]] != u["text"]
-        return u["id"] not in args.reuse
+    def stale(unit: dict) -> bool:
+        return (out_dir / f"{unit['id']}.wav").is_file() and not wav_verified[unit["id"]] and unit["id"] not in args.reuse
 
     todo = [
         u for u in units
@@ -276,7 +378,9 @@ def main() -> None:
             part = out_dir / f"{u['id']}.wav.part"
             sf.write(str(part), audios[0], model.sampling_rate, format="WAV")
             part.replace(wav)                                # 도중에 죽어도 잘린 wav 가 남지 않는다
-            (out_dir / f"{u['id']}.sha1").write_text(sha(u["text"]) + "\n", encoding="utf-8")   # 이 wav 가 어떤 문구로 만들어졌는지 클립 단위로 기록
+            (out_dir / f"{u['id']}.sha1").write_text(hashlib.sha1(u["text"].encode("utf-8")).hexdigest() + "\n", encoding="utf-8")   # 이 wav 가 어떤 문구로 만들어졌는지 클립 단위로 기록
+            record_wav_provenance(u, wav)
+            wav_verified[u["id"]] = True
             (out_dir / f"{u['id']}.mp3").unlink(missing_ok=True)   # 옛 mp3 가 새 wav 를 가리지 않게
             dur = len(audios[0]) / model.sampling_rate
             elapsed = time.time() - t0
@@ -289,26 +393,24 @@ def main() -> None:
 
     # ---- MP3 + manifest ----
     entries = []
-    for u in units:
-        wav = out_dir / f"{u['id']}.wav"
-        if not wav.exists():
+    failed_ids = []
+    for unit in units:
+        wav = out_dir / f"{unit['id']}.wav"
+        if not wav.is_file():
             LOG.warning("파일 없음: %s", wav.name)
+            failed_ids.append(unit["id"])
             continue
-        if args.mp3:
-            to_mp3(wav)
-        try:
-            import wave
-
-            with wave.open(str(wav)) as w:
-                dur = w.getnframes() / w.getframerate()
-        except Exception:
-            dur = None
-        entries.append(
-            {"id": u["id"], "label": u["label"], "text": u["text"], "text_sha1": hashlib.sha1(u["text"].encode("utf-8")).hexdigest(), "seconds": dur}
-        )
+        output = to_mp3(wav) if args.mp3 else wav
+        entry = make_manifest_entry(unit, wav, output,
+                                    wav_verified=wav_provenance_matches(unit, wav, previous.get(unit["id"])),
+                                    output_format="mp3" if args.mp3 else "wav")
+        entries.append(entry)
+        if entry["output_status"] != "ready" or entry["seconds"] is None:
+            failed_ids.append(unit["id"])
 
     manifest = out_dir / "manifest.json"
-    manifest.write_text(
+    pending_manifest = manifest.with_suffix(".json.part")
+    pending_manifest.write_text(
         json.dumps(
             {
                 "engine": "OmniVoice (k2-fsa)",
@@ -324,15 +426,13 @@ def main() -> None:
         encoding="utf-8",
     )
 
+    pending_manifest.replace(manifest)
     total = sum(e["seconds"] or 0 for e in entries)
     LOG.info("완료: %d개 클립, 총 %.1f분 → %s", len(entries), total / 60, manifest)
 
-    # wav 만 있고 mp3 가 없는 클립은 페이지(특히 슬라이드)가 mp3 를 먼저 찾으므로 조용히 브라우저 음성으로 샌다.
-    if args.mp3:
-        no_mp3 = [e["id"] for e in entries if not (out_dir / f"{e['id']}.mp3").exists()]
-        if no_mp3:
-            LOG.error("mp3 가 없는 클립 %d개: %s (ffmpeg 확인 후 같은 명령을 다시 실행)", len(no_mp3), ", ".join(no_mp3))
-            sys.exit(2)
+    if failed_ids:
+        LOG.error("변환 또는 최종 길이 검증이 완료되지 않은 클립 %d개: %s", len(failed_ids), ", ".join(failed_ids))
+        sys.exit(2)
 
 
 if __name__ == "__main__":
