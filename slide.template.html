@@ -762,7 +762,7 @@ function markEngine(){
   const id=idForPage(pageKind[current]), ready=verified(id)&&(openingDone||current!==0||verified('00-opening'));
   $('play').disabled=!playing&&!ready;
   $('play').textContent=playing?'멈추기':'들려주기';
-  $('engine').textContent=audioError?'음성 파일 확인 필요':playing?'검증된 음성 재생':ready?'검증된 음성':id?'음성 재렌더링 대기':'직접 읽기';
+  $('engine').textContent=audioError?'음성 파일 확인 필요':playing?'고품질 음성':ready?'고품질 음성':id?'음성 재렌더링 대기':'직접 읽기';
   $('introStart').disabled=!(verified('00-opening')&&verified('part1'));
   $('audioNote').textContent=$('introStart').disabled?'음성 재렌더링 대기 · 직접 넘기며 읽을 수 있어요.':'검증된 음성으로 듣거나 직접 넘기며 읽을 수 있어요.';
   if(!playing)renderTimer(id);
