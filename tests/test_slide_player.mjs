@@ -231,5 +231,48 @@ test('speaking and selected auxiliary labels exceed 4.5:1 contrast',()=>{
   for(const background of ['paper','s-blue-soft']){
     assert.ok(ratio(color('ink-2'),color(background))>=4.5,`role label on ${background}`);
   }
-  assert.ok(ratio(color('ink-3'),color('s-blue-soft'))<4.5,'regression reproduces old insufficient palette');
+  assert.ok(ratio('#64748B',color('s-blue-soft'))<4.5,'regression reproduces old insufficient palette');
+});
+
+
+test('header labels and disabled controls do not reduce text opacity',()=>{
+  assert.match(template,/\.ch-no\{[^}]*background:var\(--s-blue-deep\)/);
+  assert.match(template,/\.year\{[^}]*opacity:1/);
+  assert.match(template,/\.era \.yr\{[^}]*color:#fff/);
+  assert.match(template,/button:disabled\{[^}]*opacity:1/);
+  assert.doesNotMatch(template,/\.page\.roll \.roll-view\{[^}]*mask-image:linear-gradient/);
+  assert.match(template,/#intro \.kicker\{color:var\(--s-blue-deep\)\}/);
+});
+test('small-text palette passes light, highlighted, footer, hover and status surfaces',()=>{
+  const palette=Object.fromEntries([...template.matchAll(/--([a-z][a-z0-9-]*):(#[0-9A-Fa-f]{6})/g)].map(m=>[m[1],m[2]]));
+  const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255);
+  const lum=channels=>channels.map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4)
+    .reduce((sum,c,i)=>sum+c*[0.2126,0.7152,0.0722][i],0);
+  const ratio=(a,b)=>(Math.max(lum(a),lum(b))+0.05)/(Math.min(lum(a),lum(b))+0.05);
+  const surfaces=['paper','s-blue-soft','bg','pending-bg','risk-bg'].map(k=>[k,rgb(palette[k])])
+    .concat([['table/source/term','#F6F9FF'],['intro gradient','#DCE7FF']].map(([k,v])=>[k,rgb(v)]));
+  for(const foreground of ['ink','ink-2','ink-3','s-blue','s-blue-deep','pending','risk','human']){
+    for(const [name,background] of surfaces){
+      assert.ok(ratio(rgb(palette[foreground]),background)>=4.5,`${foreground} on ${name}`);
+    }
+  }
+  const white=[1,1,1];
+  for(const name of ['s-blue','s-blue-deep','ink-2'])assert.ok(ratio(white,rgb(palette[name]))>=4.5,`white on ${name}`);
+  // Intro accents sit over decorative dots; test the darkest dot/background blend.
+  const dotted=rgb('#DCE7FF').map((c,i)=>c*.88+rgb(palette['s-blue'])[i]*.12);
+  for(const name of ['ink-2','ink-3','s-blue-deep','pending'])assert.ok(ratio(rgb(palette[name]),dotted)>=4.5,`${name} on dotted intro`);
+  // All intermediate career-step colors, not only gradient endpoints.
+  for(let t=0;t<=1;t+=.01){
+    const a=rgb(palette['s-blue']),b=rgb(palette['s-blue-deep']);
+    assert.ok(ratio(white,a.map((c,i)=>c*t+b[i]*(1-t)))>=4.5);
+  }
+  // Every generated avatar hue/lightness endpoint has sufficient white-letter contrast.
+  const hsl=(h,s,l)=>{
+    const a=s*Math.min(l,1-l);
+    return [0,8,4].map(n=>{const k=(n+h/30)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));});
+  };
+  for(let h=205;h<235;h++){
+    const a=hsl(h,.55,.42),b=hsl(h+8,.60,.26);
+    for(let t=0;t<=1;t+=.05)assert.ok(ratio(white,a.map((c,i)=>c*t+b[i]*(1-t)))>=4.5,`avatar hue ${h}`);
+  }
 });
