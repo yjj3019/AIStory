@@ -204,3 +204,13 @@ test('transcript scrolling adjusts only its own container',()=>{
   scrollWithin(container,{getBoundingClientRect:()=>({top:25,bottom:95})});assert.equal(container.scrollTop,115);
   assert.doesNotMatch(script,/\.scrollIntoView\(/);
 });
+
+
+test('mobile stats use one intrinsic column and width-based type for every scene',()=>{
+  const css=template.match(/\/\* MOBILE_STATS_GUARDS_START \*\/([\s\S]*?)\/\* MOBILE_STATS_GUARDS_END \*\//)[1];
+  assert.match(css,/@media \(max-width:900px\)/);
+  assert.match(css,/\.page \.dg \.stats\{grid-template-columns:minmax\(0,1fr\);min-width:0\}/);
+  assert.match(css,/\.page \.dg \.stats \.stat b\{font-size:clamp\(1\.35rem,6vw,1\.8rem\)/);
+  assert.match(css,/white-space:normal;overflow-wrap:anywhere;word-break:normal/);
+  assert.match(css,/\.page \.dg \.stats \.stat span\{font-size:\.9rem;line-height:1\.45;white-space:normal;overflow-wrap:anywhere\}/);
+});

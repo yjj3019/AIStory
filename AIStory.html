@@ -400,6 +400,14 @@ button:disabled{cursor:not-allowed;opacity:.55;box-shadow:none!important}
   .page .dg.two{display:flex;flex-direction:column;align-items:stretch}
   .page .dg.two .dg-col{flex:0 0 auto;height:auto;min-height:0;width:100%;justify-content:flex-start}
 }
+/* MOBILE_STATS_GUARDS_START */
+@media (max-width:900px){
+  .page .dg .stats{grid-template-columns:minmax(0,1fr);min-width:0}
+  .page .dg .stats .stat{min-width:0;max-width:100%;padding:.65rem .8rem}
+  .page .dg .stats .stat b{font-size:clamp(1.35rem,6vw,1.8rem);line-height:1.2;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+  .page .dg .stats .stat span{font-size:.9rem;line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+}
+/* MOBILE_STATS_GUARDS_END */
 /* LAYOUT_GUARDS_END */
 
 </style>
