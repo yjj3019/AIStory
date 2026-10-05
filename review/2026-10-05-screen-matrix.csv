@@ -1,0 +1,24 @@
+state_index,kind,chapter,title,1920x1080,1280x720,390x844,final_visual_candidate,scope
+0,part,,1부 · 기술의 계보,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+1,chapter,1,1장 · 질문을 만든 사람들,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+2,chapter,2,2장 · 첫 번째 대답과 겨울,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+3,chapter,3,3장 · 배우는 법을 만든 사람들,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+4,chapter,4,4장 · 겨울을 버틴 사람들,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+5,chapter,5,"5장 · 데이터와 칩, 그리고 가르친 사람",pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+6,chapter,6,6장 · 알렉스넷의 해,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+7,chapter,7,"7장 · 딥마인드, 게임에서 과학으로",pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+8,chapter,8,8장 · 강화학습과 알파고,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+9,chapter,9,9장 · 트랜스포머가 오기까지,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+10,chapter,10,10장 · GPT와 만드는 기계,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+11,part,,2부 · 회사와 사람의 시대,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+12,chapter,11,11장 · 오픈에이아이의 출발,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+13,chapter,12,12장 · 머스크의 이탈,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+14,chapter,13,13장 · 앤트로픽의 출발,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+15,chapter,14,14장 · ChatGPT의 등장,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+16,chapter,15,15장 · 조직의 통제권을 드러낸 사건,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+17,chapter,16,16장 · 연쇄 이탈,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+18,chapter,17,17장 · 연구 조직은 어떻게 바뀔까,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+19,chapter,18,18장 · 지금의 지도,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+20,chapter,19,19장 · 넓어지는 연구 지도,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+21,ending,,엔딩,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
+22,credits,,크레딧,pass,pass,pass,77b6ba52,base_screen_render; interaction evidence may reuse unchanged prior candidates
