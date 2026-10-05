@@ -43,33 +43,34 @@ python tools/export_narration.py --check --verify-html
 
 ## 렌더 담당자가 별도 승인 후 진행할 순서
 
-1. narration.json과 SHA256SUMS를 먼저 확인합니다. mp3-map.csv의 순서와 파일명이 웹페이지의 클립 순서입니다.
+1. narration.json과 SHA256SUMS를 먼저 확인합니다. mp3-map.csv의 순서와 파일명이 웹페이지의 클립 순서입니다. per-clip/의 TXT에는 낭독할 문장만 들어 있으며, 각 파일의 바이트 해시는 text_sha256과 같습니다. 제목·번호·라벨을 음성에 넣지 않습니다.
 2. 기존에 승인된 목소리 캐시를 보존합니다. 참조 음성은 사용 권한이 있는 파일만 사용하고, --num-step 32를 유지합니다. --refresh-prompt나 --reuse로 검증을 우회하지 않습니다.
 3. 디스크 여유와 모델·GPU 환경을 확인합니다. 다음 명령은 렌더 대상만 출력합니다.
 
 ```bash
-python render_tts.py --narration narration-export/narration.json --out-dir audio18 --dry-run
+python render_tts.py --narration narration-export/narration.json --out-dir audio18-render-candidate --dry-run
 ```
 
-4. 실제 합성은 별도 승인을 받은 환경에서 실행합니다. 아래 예시의 경로와 참조 전사는 승인된 값으로 바꿉니다. 이 문서 작성 과정에서는 실행하지 않았습니다.
+4. 실제 합성은 별도 승인을 받은 환경에서 새 출력 폴더에 실행합니다. 기존 audio18 파일은 덮어쓰지 않습니다. 아래 예시의 경로와 참조 전사는 승인된 값으로 바꿉니다. 이 문서 작성 과정에서는 실행하지 않았습니다.
 
 ```bash
 python render_tts.py --narration narration-export/narration.json \\
-  --out-dir audio18 --ref-audio ref/narrator.wav \\
+  --out-dir audio18-render-candidate --ref-audio ref/narrator.wav \\
   --ref-text "<승인된 참조 음성의 정확한 전사>" \\
   --prompt-cache voice_prompt.pt --speed 0.94 --num-step 32 --mp3
 ```
 
-5. 최종 MP3를 전부 디코드해 길이·자/초·긴 무음·클리핑·음량을 검증합니다. STANDARDS.md의 음량 기준과 tools/verify/README.md의 절차를 따릅니다. 표본 청취만으로 전량 통과를 선언하지 않습니다.
+5. 최종 MP3를 전부 디코드해 길이·자/초·긴 무음·클리핑·음량을 검증합니다. 기존 제작 규격의 목표는 최종 MP3 디코드 기준 -24.4 LUFS, 2.5초를 넘는 무음 0건, 클리핑 0건입니다. 이는 추후 검증 목표이며 이번 작업의 측정 결과가 아닙니다. 도구의 현재 적용 범위는 tools/verify/README.md를 확인합니다. 표본 청취만으로 전량 통과를 선언하지 않습니다.
 6. 발음, 문장 누락, 목소리·속도의 일관성을 듣고 확인합니다. 오디오를 바꾼 클립의 자막 앵커도 다시 만듭니다. 기존 sync.json을 새 원고에 재사용하지 않습니다.
 7. manifest에 각 클립의 text와 text_sha256, 최종 MP3 바이트의 audio_sha256, 실측 seconds를 기록합니다. 렌더 직후 quality_status는 pending_review입니다. 5~6단계의 전량 검증을 완료한 클립만 approved로 바꿉니다. 문구 해시를 현재 원고 값으로 덮어써서 기존 오디오를 새것으로 표시하면 안 됩니다. 음량 보정 등으로 MP3 바이트를 바꾸면 해시와 검증 기록도 다시 확인합니다.
-8. build_aistory.py와 내보내기를 다시 실행합니다. status, rendered_seconds, 전 클립 총길이를 확인하고 웹페이지에서 재생·이동·정지를 점검합니다.
+8. 승인된 파일과 매니페스트만 audio18에 배치한 뒤 build_aistory.py와 내보내기를 다시 실행합니다. status, rendered_seconds, 전 클립 총길이를 확인하고 웹페이지에서 재생·이동·정지를 점검합니다.
 
 ## 파일 구성
 
 - narration.json: 렌더 입력. 화면용 display_lines와 낭독용 lines, 파생 text·chars·SHA256 포함
 - narration.txt: 클립 ID·라벨을 붙인 낭독 원고
 - readthrough.txt: 제목이나 파일명 없이 이어 읽는 낭독 원고
+- per-clip/<id>.txt: 클립별 낭독 전용 UTF-8 텍스트, 라벨·머리말·끝줄바꿈 없음
 - pronunciation.md: 기존 확인된 발음 치환과 숫자 처리 범위
 - mp3-map.json / mp3-map.csv: 재생 순서·파일명·문구 해시·오디오 검증 상태
 - bundle-manifest.json: 입력 파일 해시와 묶음의 상태·수량
@@ -99,6 +100,8 @@ def make_bundle(narration: dict, root: pathlib.Path) -> dict[str, bytes]:
         for item in narration["items"]) + "\n")
     add("readthrough.txt", "\n\n".join(
         line for item in narration["items"] for line in item["lines"]) + "\n")
+    for item in narration["items"]:
+        add(f"per-clip/{item['id']}.txt", item["text"])
     pronunciation = ["# 낭독 표기 확인표", "",
                      "화면 원고는 그대로 보존하고 낭독 입력에만 아래 치환을 적용합니다.",
                      "기존 저장소에서 확인된 목록을 유지했습니다. 이 내보내기에서는 새 음성을 합성하거나 발음을 다시 청취하지 않았습니다.", "",
@@ -115,7 +118,7 @@ def make_bundle(narration: dict, root: pathlib.Path) -> dict[str, bytes]:
     rows = []
     for order, item in enumerate(narration["items"], 1):
         rows.append({"order": order, "id": item["id"], "label": item["label"],
-                     "chars": item["chars"], **states[item["id"]]})
+                     "chars": item["chars"], "spoken_txt": f"per-clip/{item['id']}.txt", **states[item["id"]]})
     all_verified = all(row["status"] == "verified" and row["rendered_seconds"] is not None for row in rows)
     past_seconds = [row["existing_audio_seconds"] for row in rows if row["existing_audio_seconds"] is not None]
     current_total = round(sum(row["rendered_seconds"] for row in rows), 3) if all_verified else None
@@ -161,6 +164,7 @@ def write_bundle(files: dict[str, bytes], output: pathlib.Path, *, check: bool =
         if not path.is_file() or path.read_bytes() != content:
             changed.append(name)
             if not check:
+                path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(content)
     return changed
 

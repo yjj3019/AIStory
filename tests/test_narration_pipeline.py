@@ -258,6 +258,16 @@ class AudioEvidenceTests(unittest.TestCase):
 
 
 class ExportTests(unittest.TestCase):
+    def test_per_clip_text_is_exact_spoken_input_and_hash(self):
+        narration = narration_from_source(build_aistory)
+        bundle = make_bundle(narration, ROOT)
+        names = {name for name in bundle if name.startswith("per-clip/")}
+        self.assertEqual(len(names), len(narration["items"]))
+        for item in narration["items"]:
+            data = bundle[f"per-clip/{item['id']}.txt"]
+            self.assertEqual(data.decode("utf-8"), item["text"])
+            self.assertEqual(hashlib.sha256(data).hexdigest(), item["text_sha256"])
+
     def test_bundle_deterministic_and_hashes_valid(self):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
