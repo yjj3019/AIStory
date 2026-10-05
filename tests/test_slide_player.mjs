@@ -214,3 +214,22 @@ test('mobile stats use one intrinsic column and width-based type for every scene
   assert.match(css,/white-space:normal;overflow-wrap:anywhere;word-break:normal/);
   assert.match(css,/\.page \.dg \.stats \.stat span\{font-size:\.9rem;line-height:1\.45;white-space:normal;overflow-wrap:anywhere\}/);
 });
+
+
+test('speaking and selected auxiliary labels exceed 4.5:1 contrast',()=>{
+  assert.match(template,/\.lane\.speaking \.ln-id i,\.lane\[aria-pressed=true\] \.ln-id i\{color:var\(--ink-2\)\}/);
+  const color=name=>template.match(new RegExp(`--${name}:(#[0-9A-Fa-f]{6})`))[1];
+  const luminance=hex=>{
+    const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255)
+      .map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4);
+    return 0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2];
+  };
+  const ratio=(foreground,background)=>{
+    const a=luminance(foreground),b=luminance(background);
+    return (Math.max(a,b)+0.05)/(Math.min(a,b)+0.05);
+  };
+  for(const background of ['paper','s-blue-soft']){
+    assert.ok(ratio(color('ink-2'),color(background))>=4.5,`role label on ${background}`);
+  }
+  assert.ok(ratio(color('ink-3'),color('s-blue-soft'))<4.5,'regression reproduces old insufficient palette');
+});
