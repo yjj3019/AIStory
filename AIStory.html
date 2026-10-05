@@ -120,7 +120,8 @@ button:focus-visible,[role=button]:focus-visible,a:focus-visible,summary:focus-v
 .page.tight .lane[data-auto]:not(.speaking) .ln-d{display:none}
 .page.tight .lane[data-auto]:not(.speaking) .ln-why{margin-bottom:0}
 .dg-steps li{word-break:keep-all;overflow-wrap:break-word}   /* 단계 글자는 어절 단위로만 줄바꿈("박/사" 처럼 단어 중간에서 끊기지 않게) */
-.page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:.62}
+/* Emphasis changes decoration only; text contrast must remain unchanged. */
+.page.has-speaker .lane:not(.speaking):not([aria-pressed=true]){opacity:1}
 .lane.speaking{background:var(--s-blue-soft);border-color:var(--s-blue);box-shadow:0 0 0 3px rgba(1,86,252,.22);
   max-height:none;flex:0 1 auto}   /* 낭독 중 강조 칸도 펼친 칸처럼 내용만큼 커진다 — 밀집 모드의 max-height 에 묶이면 설명이 칸 밖으로 넘친다 */
 .lane.speaking .ln-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
@@ -382,6 +383,25 @@ button:disabled{cursor:not-allowed;opacity:.55;box-shadow:none!important}
   .tb{font-size:.8rem;table-layout:fixed;overflow-wrap:anywhere}
   .tb th,.tb td,.dg.two .tb th,.dg.two .tb td{padding:.4rem}
 }
+
+/* PC QA regression fixes: content sets card height; the visual region owns scrolling. */
+/* LAYOUT_GUARDS_START */
+.page:not(.part):not(.end):not(.roll){overflow:clip}
+.page .vis{display:block;overflow:auto;overscroll-behavior:contain;overflow-anchor:none}
+.page .vis > .dg{height:auto;min-height:100%;justify-content:flex-start}
+.page .dg .lane,
+.page .dg .lane[aria-pressed=true],
+.page .dg .lane.speaking{flex:0 0 auto;min-height:max-content;max-height:none}
+.page .dg.two{grid-template-rows:auto;align-items:start}
+.page .dg.two .dg-col{height:auto;min-height:0;justify-content:flex-start}
+.page .dg.two .stats,.page .dg.two .stat{flex:0 0 auto}
+@media (max-width:900px){
+  .page .vis > .dg{min-height:0}
+  .page .dg.two{display:flex;flex-direction:column;align-items:stretch}
+  .page .dg.two .dg-col{flex:0 0 auto;height:auto;min-height:0;width:100%;justify-content:flex-start}
+}
+/* LAYOUT_GUARDS_END */
+
 </style>
 </head>
 <body>
@@ -2201,12 +2221,20 @@ function setScriptOpen(page,open){
   page.querySelector('.cap').inert=open;
   const sources=page.querySelector('.src-list'); if(sources)sources.inert=open;
   $('player').inert=open;
-  if(open) drawer.querySelector('[data-act="close"]').focus();
-  else trigger.focus();
+  if(open) drawer.querySelector('[data-act="close"]').focus({preventScroll:true});
+  else trigger.focus({preventScroll:true});
 }
 
 /* ---------- 내비게이션 ---------- */
 let current=0;
+/* SCROLL_WITHIN_START */
+function scrollWithin(container,child){
+  if(!container||!child)return;
+  const outer=container.getBoundingClientRect(), inner=child.getBoundingClientRect();
+  if(inner.top<outer.top)container.scrollTop+=inner.top-outer.top;
+  else if(inner.bottom>outer.bottom)container.scrollTop+=inner.bottom-outer.bottom;
+}
+/* SCROLL_WITHIN_END */
 function setSent(i,k){
   const list=SENTS[i]; k=Math.max(0,Math.min(list.length-1,k)); cur[i]=k;
   const p=scenePageEls[i];
@@ -2225,7 +2253,8 @@ function setSent(i,k){
   });
   if(hits.length){ p.querySelectorAll('.lane').forEach(el=>el.classList.toggle('speaking',hits.includes(el))); p.classList.add('has-speaker'); }
   else if(k===0) p.classList.remove('has-speaker');
-  const on=p.querySelector('.script li.on'); if(on&&p.querySelector('.script').classList.contains('open')) on.scrollIntoView({block:'nearest'});
+  const on=p.querySelector('.script li.on');
+  if(on&&p.querySelector('.script').classList.contains('open')) scrollWithin(p.querySelector('.script ol'),on);
 }
 const pageOfScene=i=>pageKind.findIndex(k=>k.t==='scene'&&k.i===i);
 const pageOfPart=pt=>pageKind.findIndex(k=>k.t==='part'&&k.part===pt);
@@ -2393,8 +2422,8 @@ document.addEventListener('keydown',e=>{
     if(e.key==='Tab'){
       const targets=[...drawer.querySelectorAll('button,a[href],summary,[tabindex="0"]')].filter(el=>!el.disabled);
       const first=targets[0],last=targets[targets.length-1];
-      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus({preventScroll:true});}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus({preventScroll:true});}
     }
     return;
   }

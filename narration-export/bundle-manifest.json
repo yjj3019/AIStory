@@ -12,7 +12,7 @@
     "build_aistory.py": "4a122296301a71310297b3fc49dcdbc48c663a84ab7990c2b665db81a9101d52",
     "extract_narration.py": "11ed8262c43b3a406c3e857c4d7623a94f0ffd4fc93f35104ba509d8ae49eae3",
     "tools/export_narration.py": "a08f8b0d25f0b43b136da7959c78ed6e42894f9f7d7731ca4ad27c2c77049781",
-    "slide.template.html": "d0d8cc1ba3e8764fa33b66ad8e1b9ecd1fb4d2bc8efa45ac40b0d4b06ad2e777",
+    "slide.template.html": "007786fc9381df3e9b6357333d4e77f5b1c36de7f7db79b3c6bb21d22d3af0f3",
     "render_tts.py": "bb6b39905c36f56671a8634ed63a7da2c50cab2949ec033f17b71001754e75f4",
     "audio18/manifest.json": "7bf0492df4c433bdee69bf53e24ff03f4e87d615dbe83d151a82f4a9218837c6"
   }

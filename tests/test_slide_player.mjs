@@ -182,3 +182,25 @@ test('global PageDown navigation prevents native page scrolling',()=>{
 test('space on a focused button does not also invoke global playback',()=>{
   const k=keyboard(),e=k.event(' ',selector=>selector.includes('button'));k.handler(e);assert.equal(k.player.clicks,0);assert.equal(e.prevented,false);
 });
+
+
+test('layout guard keeps dense cards intrinsic and mobile columns in normal flow',()=>{
+  const rules=template.match(/\/\* LAYOUT_GUARDS_START \*\/([\s\S]*?)\/\* LAYOUT_GUARDS_END \*\//)[1];
+  assert.match(rules,/\.page \.dg \.lane\.speaking\{flex:0 0 auto;min-height:max-content;max-height:none\}/);
+  assert.match(rules,/\.page \.dg\.two \.dg-col\{height:auto;min-height:0;justify-content:flex-start\}/);
+  assert.match(rules,/\.page \.dg\.two\{display:flex;flex-direction:column;align-items:stretch\}/);
+  assert.match(rules,/\.page \.vis\{display:block;overflow:auto;overscroll-behavior:contain;overflow-anchor:none\}/);
+});
+test('speaker emphasis never dims non-speaking text',()=>{
+  assert.doesNotMatch(template,/\.page\.has-speaker[^}]*opacity:\s*\.62/);
+  assert.match(template,/\.page\.has-speaker[^}]*opacity:1/);
+});
+test('transcript scrolling adjusts only its own container',()=>{
+  const code=script.match(/\/\* SCROLL_WITHIN_START \*\/([\s\S]*?)\/\* SCROLL_WITHIN_END \*\//)[1];
+  const scrollWithin=vm.runInNewContext(`${code};scrollWithin`);
+  const container={scrollTop:100,getBoundingClientRect:()=>({top:10,bottom:110})};
+  scrollWithin(container,{getBoundingClientRect:()=>({top:-10,bottom:25})});assert.equal(container.scrollTop,80);
+  scrollWithin(container,{getBoundingClientRect:()=>({top:95,bottom:145})});assert.equal(container.scrollTop,115);
+  scrollWithin(container,{getBoundingClientRect:()=>({top:25,bottom:95})});assert.equal(container.scrollTop,115);
+  assert.doesNotMatch(script,/\.scrollIntoView\(/);
+});
